@@ -4,16 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8D41C7AA-354E-47B4-8EC8-5F84B8628449}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MegaCorps.Core</RootNamespace>
-    <AssemblyName>MegaCorps.Core</AssemblyName>
+    <ProjectGuid>{7E4F2817-4C62-4079-9F3A-11BD4D46FD48}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Corps.Analysis</RootNamespace>
+    <AssemblyName>Corps.Analysis</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -41,25 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\Analizer.cs" />
-    <Compile Include="Model\Cards\AttackCard.cs" />
-    <Compile Include="Model\Cards\DefenceCard.cs" />
-    <Compile Include="Model\Cards\DeveloperCard.cs" />
-    <Compile Include="Model\Cards\GameCard.cs" />
-    <Compile Include="Model\Deck.cs" />
-    <Compile Include="Model\Enums\AttackType.cs" />
-    <Compile Include="Model\Enums\CardDirection.cs" />
-    <Compile Include="Model\Enums\CardState.cs" />
-    <Compile Include="Model\Enums\DefenceType.cs" />
-    <Compile Include="Model\GameEngine.cs" />
-    <Compile Include="Model\GameUser.cs" />
-    <Compile Include="Model\GameUtils\DeckBuilder.cs" />
-    <Compile Include="Model\GameUtils\ISelectionStrategy.cs" />
-    <Compile Include="Model\GameUtils\ScoreHelper.cs" />
-    <Compile Include="Model\GameUtils\UserSetup.cs" />
-    <Compile Include="Model\Player.cs" />
-    <Compile Include="Model\GameUtils\SelectHelper.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MegaCorps.Core\MegaCorps.Core.csproj">
+      <Project>{8D41C7AA-354E-47B4-8EC8-5F84B8628449}</Project>
+      <Name>MegaCorps.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

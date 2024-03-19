@@ -3,6 +3,7 @@ using MegaCorps.Core.Model.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,9 @@ namespace MegaCorps.Core.Model.GameUtils
 {
     public static class DeckBuilder
     {
-        public static readonly int MaxCards = 6;
+        private  const int MAX_DECK_SIZE = 72;
+        private const int MAX_ATTACK_CARDS_COUNT = 20;
+        private const int MAX_DEFENCE_CARDS_COUNT = 20;
         public static void UpdateDeck(List<GameCard> deck,int players)
         {
            
@@ -20,13 +23,13 @@ namespace MegaCorps.Core.Model.GameUtils
         {
             var deck= new List<GameCard>();
 
-            for (int i = 0; i < 72; i++)
+            for (int i = 0; i < MAX_DECK_SIZE; i++)
             {
-                if (i < 20)
+                if (i < MAX_ATTACK_CARDS_COUNT)
                 {
                     deck.Add(new AttackCard(i,CardDirection.Left));
                 }
-                else if (i < 40)
+                else if (i < MAX_ATTACK_CARDS_COUNT + MAX_DEFENCE_CARDS_COUNT)
                 {
                     deck.Add(new DefenceCard(i));
                 }

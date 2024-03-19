@@ -17,6 +17,7 @@ namespace MegaCorps.Core.Model
         public List<Player> Players { get => _players; set => _players = value; }
         public bool Win { get => _win; set => _win = value; }
         public int Winner { get => _winner; set => _winner = value; }
+        public int NumberOfPlayers { get; }
 
         private int _winner;
 
@@ -32,14 +33,43 @@ namespace MegaCorps.Core.Model
             _win = false;
         }
 
+        public GameEngine(int numberOfPlayers)
+        {
+            NumberOfPlayers = numberOfPlayers;
+            Deck = DeckBuilder.GetDeck();
+            Deck.Shuffle();
+            Players = Enumerable.Repeat(new Player(), NumberOfPlayers).ToList();
+            _win = false;
+        }
+
         public void Deal(int dealCount)
         {
-            List<List<GameCard>> hands = Deck.Deal(dealCount, 4);
+            List<List<GameCard>> hands = Deck.Deal(dealCount, NumberOfPlayers);
 
             for (int i = 0; i < Players.Count; i++)
             {
                 Players[i].Hand.Cards.AddRange(hands[i]);
             }
+        }
+
+        public void Reset()
+        {
+            Deck = DeckBuilder.GetDeck();
+            Deck.Shuffle();
+            Players = Enumerable.Repeat(new Player(), NumberOfPlayers).ToList();
+            _win = false;
+        }
+
+        public List<List<GameCard>> GetPlayersHands()
+        {
+            List<List<GameCard>> hands = new List<List<GameCard>>();
+
+            for (int i = 0; i < Players.Count; i++)
+            {
+                hands.Add(Players[i].Hand.Cards);
+            }
+            
+            return hands;
         }
 
         public void Turn()
@@ -62,15 +92,15 @@ namespace MegaCorps.Core.Model
 
         }
 
-        public bool ValidateSelection(GameCard card,int playerPosition)
+        public void SelectCards(List<List<int>> hands)
         {
-            Players[playerPosition].Selected.Enqueue(card);
-            if (Players[playerPosition].Selected.Count > 3)
+            for (int i = 0; i < hands.Count; i++)
             {
-                Players[playerPosition].Selected.Dequeue();
-                return false;
+                foreach (var card in hands[i])
+                {
+                    Players[i].Hand.Cards[card].State = CardState.Used;
+                }
             }
-            return true;
         }
     }
 }
