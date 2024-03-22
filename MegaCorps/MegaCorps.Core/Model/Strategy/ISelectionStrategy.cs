@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace MegaCorps.Core.Model
 {
@@ -22,8 +23,8 @@ namespace MegaCorps.Core.Model
     {
         List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect)
         {
-            Random rnd = new Random();
-            return Enumerable.Range(0, cards[0].Count()).OrderBy(x => rnd.Next()).Take(numberToSelect).ToList();
+            
+            return Enumerable.Range(0, cards[0].Count()).OrderBy(x => RandomHelper.Next()).Take(numberToSelect).ToList();
         }
     }
     public class AgressiveSelectStrategy : ISelectionStrategy
@@ -35,7 +36,7 @@ namespace MegaCorps.Core.Model
 
             for (int i = 0; i < cards[playerIndex].Count(); i++)
             {
-                if (selected.Count() > 3)
+                if (selected.Count() >= 3)
                 {
                     return selected;
                 }
@@ -46,7 +47,7 @@ namespace MegaCorps.Core.Model
             }
             for (int i = 0; i < cards[playerIndex].Count(); i++)
             {
-                if (selected.Count() > 3)
+                if (selected.Count() >= 3)
                 {
                     return selected;
                 }
@@ -57,7 +58,7 @@ namespace MegaCorps.Core.Model
             }
             for (int i = 0; i < cards[playerIndex].Count(); i++)
             {
-                if (selected.Count() > 3)
+                if (selected.Count() >= 3)
                 {
                     return selected;
                 }
@@ -80,7 +81,7 @@ namespace MegaCorps.Core.Model
 
             for (int i = 0; i < cards[playerIndex].Count(); i++)
             {
-                if (selected.Count() > 3)
+                if (selected.Count() >= 3)
                 {
                     return selected;
                 }
@@ -91,7 +92,7 @@ namespace MegaCorps.Core.Model
             }
             for (int i = 0; i < cards[playerIndex].Count(); i++)
             {
-                if (selected.Count() > 3)
+                if (selected.Count() >= 3)
                 {
                     return selected;
                 }
@@ -102,7 +103,7 @@ namespace MegaCorps.Core.Model
             }
             for (int i = 0; i < cards[playerIndex].Count(); i++)
             {
-                if (selected.Count() > 3)
+                if (selected.Count() >= 3)
                 {
                     return selected;
                 }
@@ -124,7 +125,7 @@ namespace MegaCorps.Core.Model
 
             for (int i = 0; i < cards[playerIndex].Count(); i++)
             {
-                if (selected.Count() > 3)
+                if (selected.Count() >= 3)
                 {
                     return selected;
                 }
@@ -135,7 +136,7 @@ namespace MegaCorps.Core.Model
             }
             for (int i = 0; i < cards[playerIndex].Count(); i++)
             {
-                if (selected.Count() > 3)
+                if (selected.Count() >= 3)
                 {
                     return selected;
                 }
@@ -146,7 +147,7 @@ namespace MegaCorps.Core.Model
             }
             for (int i = 0; i < cards[playerIndex].Count(); i++)
             {
-                if (selected.Count() > 3)
+                if (selected.Count() >= 3)
                 {
                     return selected;
                 }

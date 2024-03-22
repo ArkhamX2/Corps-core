@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Corps.Analysis
@@ -26,39 +27,40 @@ namespace Corps.Analysis
         static void Main(string[] args)
         {
             TestBestStrategy();
+            Console.ReadKey();
         }
 
         private static void TestBestStrategy()
         {
             AnalizeGame(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY]
+                possibleStrategy[ATTACK_STRATEGY]
             });
             AnalizeGame(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY]
+                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[ATTACK_STRATEGY]
             });
             AnalizeGame(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY]
+                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[ATTACK_STRATEGY],
             });
             AnalizeGame(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY]
+                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[ATTACK_STRATEGY],
             });
             AnalizeGame(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY]
+                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[ATTACK_STRATEGY],
             });
         }
 
@@ -66,11 +68,7 @@ namespace Corps.Analysis
         {
             Analizer analizer = new Analizer(strategyList);
 
-            Console.WriteLine(analizer.Run(50));
-            Console.WriteLine(analizer.Run(100));
-            Console.WriteLine(analizer.Run(250));
-            Console.WriteLine(analizer.Run(500));
-            Console.WriteLine(analizer.Run(1000));
+            Console.WriteLine(analizer.Run(10000));
 
         }
     }

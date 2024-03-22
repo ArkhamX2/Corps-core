@@ -21,6 +21,7 @@ namespace MegaCorps.Core.Model
 
         private int _winner;
 
+
         private bool _win;
 
         private List<Player> _players;
@@ -29,7 +30,7 @@ namespace MegaCorps.Core.Model
         {
             Deck = DeckBuilder.GetDeck();
             Deck.Shuffle();
-            Players = new List<Player> { new Player(), new Player(), new Player(), new Player() };
+            Players = UserSetup.CreateUserList(4);
             _win = false;
         }
 
@@ -38,13 +39,21 @@ namespace MegaCorps.Core.Model
             NumberOfPlayers = numberOfPlayers;
             Deck = DeckBuilder.GetDeck();
             Deck.Shuffle();
-            Players = Enumerable.Repeat(new Player(), NumberOfPlayers).ToList();
+            Players = UserSetup.CreateUserList(numberOfPlayers);
             _win = false;
         }
+
 
         public void Deal(int dealCount)
         {
             List<List<GameCard>> hands = Deck.Deal(dealCount, NumberOfPlayers);
+
+            if(hands.Count == 0)
+            {
+                Deck = DeckBuilder.GetDeck();
+                Deck.Shuffle();
+                hands = Deck.Deal(dealCount, NumberOfPlayers);
+            }
 
             for (int i = 0; i < Players.Count; i++)
             {
@@ -56,7 +65,7 @@ namespace MegaCorps.Core.Model
         {
             Deck = DeckBuilder.GetDeck();
             Deck.Shuffle();
-            Players = Enumerable.Repeat(new Player(), NumberOfPlayers).ToList();
+            Players = UserSetup.CreateUserList(NumberOfPlayers);
             _win = false;
         }
 

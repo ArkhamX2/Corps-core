@@ -15,7 +15,7 @@ namespace MegaCorps.Core.Model
             {
                 strategyList[0].Select(0, hands,numberToSelect)
             };
-            for (int i = 1; i < hands.Count; i++)
+            for (int i = 1; i < hands.Count(); i++)
             {
                 selected.Add(strategyList[i].Select(i, hands, numberToSelect));
             }

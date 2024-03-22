@@ -52,6 +52,10 @@ namespace MegaCorps.Core.Model
             {
                 foreach (var player in hands)
                 {
+                    if (UnplayedCards.Count == 0)
+                    {
+                        return new List<List<GameCard>>();
+                    }
                     player.Add(UnplayedCards[UnplayedCards.Count - 1]);
                     UnplayedCards.RemoveAt(UnplayedCards.Count - 1);
                     if (UnplayedCards.Count == 0)

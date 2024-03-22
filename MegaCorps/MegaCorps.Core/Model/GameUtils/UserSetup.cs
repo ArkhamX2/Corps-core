@@ -9,11 +9,11 @@ namespace MegaCorps.Core.Model.GameUtils
 {
     public static  class UserSetup
     {
-        public static List<GameUser> CreateUserList(int count){
-            var UserList= new List<GameUser>();
+        public static List<Player> CreateUserList(int count){
+            var UserList= new List<Player>();
             for(int i = 0; i < count; i++)
             {
-                GameUser user = new GameUser(i);
+                Player user = new Player(i);
                 if (i==0)
                 {
                     user.NextId=i+1;

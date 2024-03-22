@@ -37,23 +37,39 @@ namespace Corps.Analysis
                     //имитация хода - создать n ботиков с разными стратегиями, которые будут просто выбирать из предложенных карт определённые 3
                     _engine.SelectCards(SelectHelper.SelectCards(_engine.GetPlayersHands(), _selectionStrategyList, CARDS_TO_CHOOSE));
                     _engine.Turn();
+                    if (_engine.Players[0].Hand.Cards.Count < 3)
+                    {
+                        Console.WriteLine("qwerty");
+                    }
                     _engine.Deal(CARDS_TO_DEAL);
                     turnCount++;
                 }
-                _winners[_engine.Winner]++;
+                _winners[_engine.Winner-1]++;
                 _engine.Reset();
             }
 
             float averageTurnCount = turnCount / numberOfIterations;
             List<float> averageWins = new List<float>();
-            foreach (var winCount in _winners)
+            foreach (int winCount in _winners)
             {
-                averageWins.Add(winCount / numberOfIterations);
+                float percentage = (float)winCount / numberOfIterations;
+                averageWins.Add(percentage);
             }
 
             _winners = Enumerable.Repeat(0, NumberOfPlayers).ToList();
 
-            return "";
+            return $"Количество итераций: {numberOfIterations}; Игроков: {NumberOfPlayers}; Среднее количество ходов: {averageTurnCount};\n\tСреднее количество выигрышей: \n{WinsToString(averageWins)}";
+        }
+
+        private object WinsToString(List<float> averageWins)
+        {
+            string ans = "";
+            for (int i = 0; i < averageWins.Count; i++)
+            {
+                float wins = averageWins[i];
+                ans += $"\t\t{i+1} Игрок:" + averageWins[i].ToString() + "\n";
+            }
+            return ans;
         }
     }
 }
