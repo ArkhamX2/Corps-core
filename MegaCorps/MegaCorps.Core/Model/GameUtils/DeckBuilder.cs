@@ -13,8 +13,8 @@ namespace MegaCorps.Core.Model.GameUtils
     public static class DeckBuilder
     {
         private  const int MAX_DECK_SIZE = 72;
-        private const int MAX_ATTACK_CARDS_COUNT = 40;
-        private const int MAX_DEFENCE_CARDS_COUNT = 10;
+        private const int MAX_ATTACK_CARDS_COUNT = 20;
+        private const int MAX_DEFENCE_CARDS_COUNT = 20;
         public static void UpdateDeck(List<GameCard> deck,int players)
         {
            

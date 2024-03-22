@@ -29,6 +29,7 @@ namespace Corps.Analysis
         {
             int turnCount = 0;
 
+            //Запускаем сами игры
             for (int i = 0; i < numberOfIterations; i++)
             {
                 _engine.Deal(MAX_CARDS);

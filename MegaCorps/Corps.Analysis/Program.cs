@@ -34,33 +34,33 @@ namespace Corps.Analysis
         {
             AnalizeGame(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[ATTACK_STRATEGY]
+                possibleStrategy[DEFENCE_STRATEGY]
             });
             AnalizeGame(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[ATTACK_STRATEGY]
+                possibleStrategy[DEFENCE_STRATEGY],
+                possibleStrategy[DEVELOP_STRATEGY],
             });
             AnalizeGame(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[DEFENCE_STRATEGY],
+                possibleStrategy[DEVELOP_STRATEGY],
+                possibleStrategy[RANDOM_STRATEGY],
+            });
+            AnalizeGame(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[DEFENCE_STRATEGY],
+                possibleStrategy[DEVELOP_STRATEGY],
+                possibleStrategy[RANDOM_STRATEGY],
                 possibleStrategy[ATTACK_STRATEGY],
             });
             AnalizeGame(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[DEFENCE_STRATEGY],
+                possibleStrategy[DEVELOP_STRATEGY],
                 possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[ATTACK_STRATEGY],
-            });
-            AnalizeGame(new List<ISelectionStrategy> {
-                possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[DEFENCE_STRATEGY],
+                possibleStrategy[DEVELOP_STRATEGY],
             });
         }
 
@@ -68,7 +68,7 @@ namespace Corps.Analysis
         {
             Analizer analizer = new Analizer(strategyList);
 
-            Console.WriteLine(analizer.Run(10000));
+            Console.WriteLine(analizer.Run(int.MaxValue));
 
         }
     }
