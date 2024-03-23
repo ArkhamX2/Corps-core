@@ -12,30 +12,47 @@ namespace MegaCorps.Core.Model.GameUtils
 {
     public static class DeckBuilder
     {
-        private  const int MAX_DECK_SIZE = 72;
+        private const int MAX_DECK_SIZE = 72;
         private const int MAX_ATTACK_CARDS_COUNT = 20;
         private const int MAX_DEFENCE_CARDS_COUNT = 20;
-        public static void UpdateDeck(List<GameCard> deck,int players)
-        {
-           
-        }
+        static List<AttackType> attackTypes = new List<AttackType>() { 
+            AttackType.Trojan, 
+            AttackType.Worm,
+            AttackType.DoS, 
+            AttackType.Scripting, 
+            AttackType.Botnet, AttackType.Fishing, AttackType.Spy };
         public static Deck GetDeck()
         {
-            var deck= new List<GameCard>();
+            var deck = new List<GameCard>();
 
             for (int i = 0; i < MAX_DECK_SIZE; i++)
             {
                 if (i < MAX_ATTACK_CARDS_COUNT)
                 {
-                    deck.Add(new AttackCard(i,CardDirection.Left, 1));
+                    deck.Add(new AttackCard(
+                        i, 
+                        CardDirection.Left, 
+                        i >= MAX_ATTACK_CARDS_COUNT * 0.75 ? 2 : 1,
+                        attackTypes[i % attackTypes.Count()]));
                 }
                 else if (i < MAX_ATTACK_CARDS_COUNT + MAX_DEFENCE_CARDS_COUNT)
                 {
-                    deck.Add(new DefenceCard(i,1));
+                    deck.Add(new DefenceCard(
+                        i,
+                        i >= MAX_DEFENCE_CARDS_COUNT * 0.75 ? 2 : 1,
+                        new List<AttackType> { attackTypes[
+                            i % attackTypes.Count() > 0 ?
+                                i % attackTypes.Count() - 1 :
+                                attackTypes.Count() - 1
+                            ],
+                            attackTypes[i % attackTypes.Count()] }));
                 }
                 else
                 {
-                    deck.Add(new DeveloperCard(i,1));
+                    deck.Add(new DeveloperCard(
+                        i, 
+                        i >= MAX_DECK_SIZE - MAX_ATTACK_CARDS_COUNT - MAX_DEFENCE_CARDS_COUNT * 0.75 ? 2 : 1
+                        ));
                 }
             }
 

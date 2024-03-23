@@ -11,11 +11,13 @@ namespace MegaCorps.Core.Model.Cards
     {
         public int Damage {  get; set; }
         public CardDirection Direction { get; set; }
-        public AttackCard(int id,CardDirection direction, int damage) : base(id)
+        public AttackType AttackType { get; set; }
+        public AttackCard(int id,CardDirection direction, int damage, AttackType type) : base(id)
         {
             Direction = direction;
             Damage = damage;
             Color = "Red";
+            AttackType = type;
         }
         
 

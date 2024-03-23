@@ -15,7 +15,7 @@ namespace MegaCorps.Core.Model
         private List<GameCard> _targeted;
         private Queue<GameCard> _selected;
 
-        public int Score { get => _score; set => _score = value; }
+        public new int Score { get => _score; set => _score = value; }
         public PlayerHand Hand { get => _hand; set => _hand = value; }
         public List<GameCard> Targeted { get => _targeted; set => _targeted = value; }
         public Queue<GameCard> Selected { get => _selected; set => _selected = value; }

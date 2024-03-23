@@ -85,7 +85,8 @@ namespace MegaCorps.Core.Model
         {
             for (int i = 0; i < Players.Count; i++)
             {
-                Players[i].Targeted = Players[i == 0 ? Players.Count() - 1 : i - 1].Hand.Cards.Where((card) => card.State == CardState.Used && card.Color == "Red").ToList();
+                Players.ForEach(player =>
+                Players[i].Targeted.Add([i == 0 ? Players.Count() - 1 : i - 1].Hand.Cards.Where((card) => card.State == CardState.Used && card.Color == "Red").ToList()));
                 Players[i].PlayHand();
             }
             for (int i = 0; i < Players.Count; i++)

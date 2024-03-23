@@ -8,7 +8,8 @@ namespace MegaCorps.Core.Model
 {
     public interface ISelectionStrategy
     {
-        List<int> Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect);
+        List<int> Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected);
+        string Print();
     }
 
     public class BestSelectStrategy : ISelectionStrategy
@@ -17,7 +18,11 @@ namespace MegaCorps.Core.Model
         {
             //смотрим на карты других игроков, считаем сколько очков они заработают и выбираем из своих 
             List<int> selected = new List<int>();
+            return selected;
 
+        }
+        string ISelectionStrategy.Print() {
+            return "BestSelectStrategy";
         }
 
     }
@@ -27,6 +32,10 @@ namespace MegaCorps.Core.Model
         {
             
             return Enumerable.Range(0, cards[0].Count()).OrderBy(x => RandomHelper.Next()).Take(numberToSelect).ToList();
+        }
+        string ISelectionStrategy.Print()
+        {
+            return "RandomSelectStrategy";
         }
     }
     public class AgressiveSelectStrategy : ISelectionStrategy
@@ -73,6 +82,11 @@ namespace MegaCorps.Core.Model
 
             return selected;
         }
+
+        string ISelectionStrategy.Print()
+        {
+            return "AgressiveSelectStrategy";
+        }
     }
     public class DefenciveSelectStrategy : ISelectionStrategy
     {
@@ -117,6 +131,10 @@ namespace MegaCorps.Core.Model
 
             return selected;
         }
+        string ISelectionStrategy.Print()
+        {
+            return "DefenciveSelectStrategy";
+        }
     }
     public class DevelopSelectStrategy : ISelectionStrategy
     {
@@ -160,6 +178,10 @@ namespace MegaCorps.Core.Model
             }
             
             return selected;
+        }
+        string ISelectionStrategy.Print()
+        {
+            return "DevelopSelectStrategy";
         }
     }
 }
