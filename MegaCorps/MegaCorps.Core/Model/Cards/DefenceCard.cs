@@ -9,9 +9,11 @@ namespace MegaCorps.Core.Model.Cards
 {
     public class DefenceCard:GameCard
     {
-        public DefenceCard(int id): base(id)
+        public int Damage { get; set; }
+        public DefenceCard(int id, int damage) : base(id)
         {
             Color = "Green";
+            Damage = damage;
         }
     }
 }

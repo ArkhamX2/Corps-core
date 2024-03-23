@@ -106,15 +106,15 @@ namespace Corps.Analysis
             {
                 averageWins[i] = averageWins[i] / localIterationCount;
             }
-            Console.WriteLine($"Количество итераций: {localIterationCount * 1000}; Игроков: {numberOfPlayers}; Среднее количество ходов: {averageTurnCount};\n\tСреднее количество выигрышей: \n{WinsToString(averageWins)}");
+            Console.WriteLine($"Количество итераций: {localIterationCount * 1000}; Игроков: {numberOfPlayers}; Среднее количество ходов: {averageTurnCount};\n\tСреднее количество выигрышей: \n{WinsToString(averageWins, strategyList)}");
         }
-        private static object WinsToString(List<float> averageWins)
+        private static object WinsToString(List<float> averageWins, List<ISelectionStrategy> strategyList)
         {
             string ans = "";
             for (int i = 0; i < averageWins.Count; i++)
             {
                 float wins = averageWins[i];
-                ans += $"\t\t{i + 1} Игрок:" + averageWins[i].ToString() + "\n";
+                ans += $"\t\t{i + 1} Игрок:" + averageWins[i].ToString() + " " + strategyList[i].Print() + "\n";
             }
             return ans;
         }

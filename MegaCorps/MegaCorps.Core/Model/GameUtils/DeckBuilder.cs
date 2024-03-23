@@ -27,15 +27,15 @@ namespace MegaCorps.Core.Model.GameUtils
             {
                 if (i < MAX_ATTACK_CARDS_COUNT)
                 {
-                    deck.Add(new AttackCard(i,CardDirection.Left));
+                    deck.Add(new AttackCard(i,CardDirection.Left, 1));
                 }
                 else if (i < MAX_ATTACK_CARDS_COUNT + MAX_DEFENCE_CARDS_COUNT)
                 {
-                    deck.Add(new DefenceCard(i));
+                    deck.Add(new DefenceCard(i,1));
                 }
                 else
                 {
-                    deck.Add(new DeveloperCard(i));
+                    deck.Add(new DeveloperCard(i,1));
                 }
             }
 

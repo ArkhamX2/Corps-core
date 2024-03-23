@@ -11,14 +11,12 @@ namespace MegaCorps.Core.Model
     {
         public static List<List<int>> SelectCards(List<List<GameCard>> hands, List<ISelectionStrategy> strategyList, int numberToSelect)
         {
-            var selected = new List<List<int>>
+            var selected = new List<List<int>>();
+            for (int i = 0; i < hands.Count()-1; i++)
             {
-                strategyList[0].Select(0, hands,numberToSelect)
-            };
-            for (int i = 1; i < hands.Count(); i++)
-            {
-                selected.Add(strategyList[i].Select(i, hands, numberToSelect));
+                selected.Add(strategyList[i].Select(i, hands, numberToSelect, selected));
             }
+            selected.Add(strategyList[hands.Count() - 1].Select(hands.Count() - 1, hands, numberToSelect, selected));
             return selected;
         }
     }

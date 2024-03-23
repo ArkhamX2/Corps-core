@@ -59,7 +59,7 @@
     <Compile Include="Model\GameUtils\UserSetup.cs" />
     <Compile Include="Model\Player.cs" />
     <Compile Include="Model\GameUtils\SelectHelper.cs" />
-    <Compile Include="Model\Strategy\RandomHelper.cs" />
+    <Compile Include="Model\GameUtils\RandomHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
