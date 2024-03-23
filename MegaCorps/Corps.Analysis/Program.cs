@@ -1,6 +1,7 @@
 ﻿using MegaCorps.Core.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -15,6 +16,7 @@ namespace Corps.Analysis
         private const string ATTACK_STRATEGY = "AttackStrategy";
         private const string DEFENCE_STRATEGY = "DefenseStrategy";
         private const string DEVELOP_STRATEGY = "DeveloperStrategy";
+        private const int ITERATION_COUNT = 100000;
         private static Dictionary<string, ISelectionStrategy> possibleStrategy = new Dictionary<string, ISelectionStrategy>() {
 
             {BEST_STRATEGY ,new BestSelectStrategy() },
@@ -23,38 +25,40 @@ namespace Corps.Analysis
             {DEFENCE_STRATEGY ,new DefenciveSelectStrategy() },
             {DEVELOP_STRATEGY ,new DevelopSelectStrategy() }
         };
+        private static List<List<ISelectionStrategy>> strategiesList = new List<List<ISelectionStrategy>> { };
 
         static void Main(string[] args)
         {
+            FillStrategiesList();
             TestBestStrategy();
             Console.ReadKey();
         }
 
-        private static void TestBestStrategy()
+        private static void FillStrategiesList()
         {
-            AnalizeGame(new List<ISelectionStrategy> {
+            strategiesList.Add(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
                 possibleStrategy[DEFENCE_STRATEGY]
             });
-            AnalizeGame(new List<ISelectionStrategy> {
+            strategiesList.Add(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
                 possibleStrategy[DEFENCE_STRATEGY],
                 possibleStrategy[DEVELOP_STRATEGY],
             });
-            AnalizeGame(new List<ISelectionStrategy> {
-                possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[DEFENCE_STRATEGY],
-                possibleStrategy[DEVELOP_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-            });
-            AnalizeGame(new List<ISelectionStrategy> {
+            strategiesList.Add(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
                 possibleStrategy[DEFENCE_STRATEGY],
                 possibleStrategy[DEVELOP_STRATEGY],
                 possibleStrategy[RANDOM_STRATEGY],
+            });
+            strategiesList.Add(new List<ISelectionStrategy> {
+                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[DEFENCE_STRATEGY],
+                possibleStrategy[DEVELOP_STRATEGY],
+                possibleStrategy[RANDOM_STRATEGY],
                 possibleStrategy[ATTACK_STRATEGY],
             });
-            AnalizeGame(new List<ISelectionStrategy> {
+            strategiesList.Add(new List<ISelectionStrategy> {
                 possibleStrategy[ATTACK_STRATEGY],
                 possibleStrategy[DEFENCE_STRATEGY],
                 possibleStrategy[DEVELOP_STRATEGY],
@@ -64,12 +68,55 @@ namespace Corps.Analysis
             });
         }
 
+        private static void TestBestStrategy()
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            Parallel.ForEach(strategiesList, AnalizeGame);
+            stopwatch.Stop();
+            Console.WriteLine("Заняло времени: "+stopwatch.Elapsed);
+        }
+
         private static void AnalizeGame(List<ISelectionStrategy> strategyList)
         {
-            Analizer analizer = new Analizer(strategyList);
-
-            Console.WriteLine(analizer.Run(int.MaxValue));
-
+            int localIterationCount = ITERATION_COUNT/1000;
+            int numberOfPlayers = strategyList.Count;
+            List<AnalizerResult> resultList = new List<AnalizerResult>();
+            float averageTurnCount = 0;
+            List<float> averageWins = new List<float>();
+            for (int i = 0; i < numberOfPlayers; i++)
+            {
+                averageWins.Add(0);
+            }
+            Parallel.For(0, localIterationCount, action =>
+            {
+                Analizer analizer = new Analizer(strategyList);
+                resultList.Add(analizer.Run(1000));
+            });
+            foreach (AnalizerResult analizerResult in resultList)
+            {
+                averageTurnCount += analizerResult.averageTurnCount;
+                for (int i = 0; i < numberOfPlayers; i++)
+                {
+                    averageWins[i] += analizerResult.averageWins[i];
+                }
+            }
+            averageTurnCount=averageTurnCount / localIterationCount;
+            for (int i = 0; i < numberOfPlayers; i++)
+            {
+                averageWins[i] = averageWins[i] / localIterationCount;
+            }
+            Console.WriteLine($"Количество итераций: {localIterationCount * 1000}; Игроков: {numberOfPlayers}; Среднее количество ходов: {averageTurnCount};\n\tСреднее количество выигрышей: \n{WinsToString(averageWins)}");
+        }
+        private static object WinsToString(List<float> averageWins)
+        {
+            string ans = "";
+            for (int i = 0; i < averageWins.Count; i++)
+            {
+                float wins = averageWins[i];
+                ans += $"\t\t{i + 1} Игрок:" + averageWins[i].ToString() + "\n";
+            }
+            return ans;
         }
     }
 }

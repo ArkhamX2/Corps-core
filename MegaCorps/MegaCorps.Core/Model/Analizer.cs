@@ -25,7 +25,8 @@ namespace Corps.Analysis
         public GameEngine Engine { get => _engine; set => _engine = value; }
         public int NumberOfPlayers { get => _numberOfPlayers; set => _numberOfPlayers = value; }
 
-        public string Run(int numberOfIterations)
+
+        public AnalizerResult Run(int numberOfIterations)
         {
             int turnCount = 0;
 
@@ -59,18 +60,19 @@ namespace Corps.Analysis
 
             _winners = Enumerable.Repeat(0, NumberOfPlayers).ToList();
 
-            return $"Количество итераций: {numberOfIterations}; Игроков: {NumberOfPlayers}; Среднее количество ходов: {averageTurnCount};\n\tСреднее количество выигрышей: \n{WinsToString(averageWins)}";
-        }
+            return new AnalizerResult(averageTurnCount, averageWins);
+            //return $"Количество итераций: {numberOfIterations}; Игроков: {NumberOfPlayers}; Среднее количество ходов: {averageTurnCount};\n\tСреднее количество выигрышей: \n{WinsToString(averageWins)}";
+        }        
+    }
 
-        private object WinsToString(List<float> averageWins)
+    public class AnalizerResult
+    {
+        public float averageTurnCount;
+        public List<float> averageWins;
+        public AnalizerResult(float averageTurnCount, List<float> averageWins)
         {
-            string ans = "";
-            for (int i = 0; i < averageWins.Count; i++)
-            {
-                float wins = averageWins[i];
-                ans += $"\t\t{i+1} Игрок:" + averageWins[i].ToString() + "\n";
-            }
-            return ans;
+            this.averageTurnCount = averageTurnCount;
+            this.averageWins = averageWins;
         }
     }
 }

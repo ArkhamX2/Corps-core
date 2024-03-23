@@ -9,6 +9,7 @@ namespace MegaCorps.Core.Model
     public interface ISelectionStrategy
     {
         List<int> Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect);
+        //string Print();
     }
 
     public class BestSelectStrategy : ISelectionStrategy
