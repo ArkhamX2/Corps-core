@@ -48,7 +48,7 @@ namespace MegaCorps.Core.Model
         {
             List<List<GameCard>> hands = Deck.Deal(dealCount, NumberOfPlayers);
 
-            if(hands.Count == 0)
+            if (hands.Count == 0)
             {
                 Deck = DeckBuilder.GetDeck();
                 Deck.Shuffle();
@@ -77,17 +77,52 @@ namespace MegaCorps.Core.Model
             {
                 hands.Add(Players[i].Hand.Cards);
             }
-            
+
             return hands;
         }
 
         public void Turn()
         {
-            for (int i = 0; i < Players.Count; i++)
+            List<List<GameCard>> all = GetPlayersHands();
+            for (int i = 0; i < all.Count(); i++)
             {
-                Players[i].Targeted = Players[i == 0 ? Players.Count() - 1 : i - 1].Hand.Cards.Where((card) => card.State == CardState.Used && card.Color == "Red").ToList();
-                Players[i].PlayHand();
+                List<GameCard> playerUsedAttacks = all[i].Where((card) => card.State == CardState.Used && card is AttackCard).ToList();
+                for (int j = 0; j < playerUsedAttacks.Count(); j++)
+                {
+                    AttackCard currentCard = playerUsedAttacks[j] as AttackCard;
+                    switch (currentCard.Direction)
+                    {
+                        case CardDirection.Left:
+                            Players[i == 0 ? Players.Count() - 1 : i - 1].Targeted.Add(currentCard);
+                            break;
+                        case CardDirection.Right:
+                            Players[i == Players.Count() - 1 ? 0 : i + 1].Targeted.Add(currentCard);
+                            break;
+                        case CardDirection.All:
+                            foreach (Player player in Players)
+                            {
+                                player.Targeted.Add(currentCard);
+                            }
+                            break;
+                        case CardDirection.Allbutnotme:
+                            for (int k = 0; k < Players.Count; k++)
+                            {
+                                if (k != i)
+                                {
+                                    Players[k].Targeted.Add(currentCard);
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
+            foreach (Player player in Players)
+            {
+                player.PlayHand();
+            }
+
             for (int i = 0; i < Players.Count; i++)
             {
                 Deck.PlayedCards.AddRange(Players[i].Hand.Cards.Where((card) => card.State == CardState.Used));
@@ -97,7 +132,7 @@ namespace MegaCorps.Core.Model
             }
 
             Win = Players.Any(player => player.Score >= 10);
-            Winner = Players.FindIndex(player => player.Score == Players.Max((item) => item.Score))+1;
+            Winner = Players.FindIndex(player => player.Score == Players.Max((item) => item.Score)) + 1;
 
         }
 

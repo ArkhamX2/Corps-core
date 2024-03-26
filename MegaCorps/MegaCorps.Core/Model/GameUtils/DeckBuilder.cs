@@ -15,11 +15,11 @@ namespace MegaCorps.Core.Model.GameUtils
         private const int MAX_DECK_SIZE = 72;
         private const int MAX_ATTACK_CARDS_COUNT = 20;
         private const int MAX_DEFENCE_CARDS_COUNT = 20;
-        static List<AttackType> attackTypes = new List<AttackType>() { 
-            AttackType.Trojan, 
+        static List<AttackType> attackTypes = new List<AttackType>() {
+            AttackType.Trojan,
             AttackType.Worm,
-            AttackType.DoS, 
-            AttackType.Scripting, 
+            AttackType.DoS,
+            AttackType.Scripting,
             AttackType.Botnet, AttackType.Fishing, AttackType.Spy };
         public static Deck GetDeck()
         {
@@ -30,8 +30,8 @@ namespace MegaCorps.Core.Model.GameUtils
                 if (i < MAX_ATTACK_CARDS_COUNT)
                 {
                     deck.Add(new AttackCard(
-                        i, 
-                        CardDirection.Left, 
+                        i,
+                        CardDirection.Left,
                         i >= MAX_ATTACK_CARDS_COUNT * 0.75 ? 2 : 1,
                         attackTypes[i % attackTypes.Count()]));
                 }
@@ -39,7 +39,6 @@ namespace MegaCorps.Core.Model.GameUtils
                 {
                     deck.Add(new DefenceCard(
                         i,
-                        i >= MAX_DEFENCE_CARDS_COUNT * 0.75 ? 2 : 1,
                         new List<AttackType> { attackTypes[
                             i % attackTypes.Count() > 0 ?
                                 i % attackTypes.Count() - 1 :
@@ -50,7 +49,7 @@ namespace MegaCorps.Core.Model.GameUtils
                 else
                 {
                     deck.Add(new DeveloperCard(
-                        i, 
+                        i,
                         i >= MAX_DECK_SIZE - MAX_ATTACK_CARDS_COUNT - MAX_DEFENCE_CARDS_COUNT * 0.75 ? 2 : 1
                         ));
                 }
