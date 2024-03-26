@@ -52,7 +52,7 @@ namespace MegaCorps.Core.Model.GameUtils
                 {
                     deck.Add(new DeveloperCard(
                         i,
-                        i >= MAX_DECK_SIZE - MAX_ATTACK_CARDS_COUNT - MAX_DEFENCE_CARDS_COUNT * 0.75 ? 2 : 1
+                        i - MAX_ATTACK_CARDS_COUNT - MAX_DEFENCE_CARDS_COUNT >= (MAX_DECK_SIZE - MAX_ATTACK_CARDS_COUNT - MAX_DEFENCE_CARDS_COUNT) * 0.75 ? 2 : 1
                         ));
                 }
             }

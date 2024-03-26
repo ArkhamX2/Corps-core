@@ -93,10 +93,10 @@ namespace MegaCorps.Core.Model
                     switch (currentCard.Direction)
                     {
                         case CardDirection.Left:
-                            Players[i == 0 ? Players.Count() - 1 : i - 1].Targeted.Add(currentCard);
+                            Players[i == Players.Count() - 1 ? 0 : i + 1].Targeted.Add(currentCard);
                             break;
                         case CardDirection.Right:
-                            Players[i == Players.Count() - 1 ? 0 : i + 1].Targeted.Add(currentCard);
+                            Players[i == 0 ? Players.Count() - 1 : i - 1].Targeted.Add(currentCard);
                             break;
                         case CardDirection.All:
                             foreach (Player player in Players)

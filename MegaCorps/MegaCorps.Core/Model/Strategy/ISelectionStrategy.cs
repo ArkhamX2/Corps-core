@@ -30,7 +30,6 @@ namespace MegaCorps.Core.Model
     {
         List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected)
         {
-            
             return Enumerable.Range(0, cards[0].Count()).OrderBy(x => RandomHelper.Next()).Take(numberToSelect).ToList();
         }
         string ISelectionStrategy.Print()
@@ -51,9 +50,61 @@ namespace MegaCorps.Core.Model
                 {
                     return selected;
                 }
-                if (cards[playerIndex][i].Color == "Red")
+                if (cards[playerIndex][i] is AttackCard)
                 {
-                    selected.Add(i);
+                    AttackCard card = cards[playerIndex][i] as AttackCard;
+                    if(card.Damage == 2)
+                    {
+                        selected.Add(i);
+                    }
+                }
+            }
+
+            for (int i = 0; i < cards[playerIndex].Count(); i++)
+            {
+                if (selected.Count() >= 3)
+                {
+                    return selected;
+                }
+                if (cards[playerIndex][i] is AttackCard)
+                {
+                    AttackCard card = cards[playerIndex][i] as AttackCard;
+                    if (card.Damage != 2)
+                    {
+                        selected.Add(i);
+                    }
+                }
+            }
+
+            for (int i = 0; i < cards[playerIndex].Count(); i++)
+            {
+                if (selected.Count() >= 3)
+                {
+                    return selected;
+                }
+                if (cards[playerIndex][i] is DeveloperCard)
+                {
+                    DeveloperCard card = cards[playerIndex][i] as DeveloperCard;
+                    if (card.DevelopmentPoint == 2)
+                    {
+                        selected.Add(i);
+                    }
+                }
+            }
+
+            for (int i = 0; i < cards[playerIndex].Count(); i++)
+            {
+                if (selected.Count() >= 3)
+                {
+                    return selected;
+                }
+                if (cards[playerIndex][i] is DeveloperCard)
+                {
+                    DeveloperCard card = cards[playerIndex][i] as DeveloperCard;
+                    if (card.DevelopmentPoint != 2)
+                    {
+                        selected.Add(i);
+                    }
                 }
             }
             for (int i = 0; i < cards[playerIndex].Count(); i++)
@@ -62,18 +113,7 @@ namespace MegaCorps.Core.Model
                 {
                     return selected;
                 }
-                if (cards[playerIndex][i].Color == "Yellow")
-                {
-                    selected.Add(i);
-                }
-            }
-            for (int i = 0; i < cards[playerIndex].Count(); i++)
-            {
-                if (selected.Count() >= 3)
-                {
-                    return selected;
-                }
-                if (cards[playerIndex][i].Color == "Green")
+                if (cards[playerIndex][i] is DefenceCard)
                 {
                     selected.Add(i);
                 }
@@ -101,31 +141,73 @@ namespace MegaCorps.Core.Model
                 {
                     return selected;
                 }
-                if (cards[playerIndex][i].Color == "Green")
+                if (cards[playerIndex][i] is DefenceCard)
                 {
                     selected.Add(i);
                 }
             }
+
             for (int i = 0; i < cards[playerIndex].Count(); i++)
             {
                 if (selected.Count() >= 3)
                 {
                     return selected;
                 }
-                if (cards[playerIndex][i].Color == "Yellow")
+                if (cards[playerIndex][i] is DeveloperCard)
                 {
-                    selected.Add(i);
+                    DeveloperCard card = cards[playerIndex][i] as DeveloperCard;
+                    if (card.DevelopmentPoint == 2)
+                    {
+                        selected.Add(i);
+                    }
                 }
             }
+
             for (int i = 0; i < cards[playerIndex].Count(); i++)
             {
                 if (selected.Count() >= 3)
                 {
                     return selected;
                 }
-                if (cards[playerIndex][i].Color == "Red")
+                if (cards[playerIndex][i] is DeveloperCard)
                 {
-                    selected.Add(i);
+                    DeveloperCard card = cards[playerIndex][i] as DeveloperCard;
+                    if (card.DevelopmentPoint != 2)
+                    {
+                        selected.Add(i);
+                    }
+                }
+            }
+
+            for (int i = 0; i < cards[playerIndex].Count(); i++)
+            {
+                if (selected.Count() >= 3)
+                {
+                    return selected;
+                }
+                if (cards[playerIndex][i] is AttackCard)
+                {
+                    AttackCard card = cards[playerIndex][i] as AttackCard;
+                    if (card.Damage == 2)
+                    {
+                        selected.Add(i);
+                    }
+                }
+            }
+
+            for (int i = 0; i < cards[playerIndex].Count(); i++)
+            {
+                if (selected.Count() >= 3)
+                {
+                    return selected;
+                }
+                if (cards[playerIndex][i] is AttackCard)
+                {
+                    AttackCard card = cards[playerIndex][i] as AttackCard;
+                    if (card.Damage != 2)
+                    {
+                        selected.Add(i);
+                    }
                 }
             }
 
@@ -149,9 +231,29 @@ namespace MegaCorps.Core.Model
                 {
                     return selected;
                 }
-                if (cards[playerIndex][i].Color == "Yellow")
+                if (cards[playerIndex][i] is DeveloperCard)
                 {
-                    selected.Add(i);
+                    DeveloperCard card = cards[playerIndex][i] as DeveloperCard;
+                    if (card.DevelopmentPoint == 2)
+                    {
+                        selected.Add(i);
+                    }
+                }
+            }
+
+            for (int i = 0; i < cards[playerIndex].Count(); i++)
+            {
+                if (selected.Count() >= 3)
+                {
+                    return selected;
+                }
+                if (cards[playerIndex][i] is DeveloperCard)
+                {
+                    DeveloperCard card = cards[playerIndex][i] as DeveloperCard;
+                    if (card.DevelopmentPoint != 2)
+                    {
+                        selected.Add(i);
+                    }
                 }
             }
             for (int i = 0; i < cards[playerIndex].Count(); i++)
@@ -160,20 +262,41 @@ namespace MegaCorps.Core.Model
                 {
                     return selected;
                 }
-                if (cards[playerIndex][i].Color == "Green")
+                if (cards[playerIndex][i] is DefenceCard)
                 {
                     selected.Add(i);
                 }
             }
+
             for (int i = 0; i < cards[playerIndex].Count(); i++)
             {
                 if (selected.Count() >= 3)
                 {
                     return selected;
                 }
-                if (cards[playerIndex][i].Color == "Red")
+                if (cards[playerIndex][i] is AttackCard)
                 {
-                    selected.Add(i);
+                    AttackCard card = cards[playerIndex][i] as AttackCard;
+                    if (card.Damage == 2)
+                    {
+                        selected.Add(i);
+                    }
+                }
+            }
+
+            for (int i = 0; i < cards[playerIndex].Count(); i++)
+            {
+                if (selected.Count() >= 3)
+                {
+                    return selected;
+                }
+                if (cards[playerIndex][i] is AttackCard)
+                {
+                    AttackCard card = cards[playerIndex][i] as AttackCard;
+                    if (card.Damage != 2)
+                    {
+                        selected.Add(i);
+                    }
                 }
             }
             
