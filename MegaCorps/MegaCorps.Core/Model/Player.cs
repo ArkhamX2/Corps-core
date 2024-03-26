@@ -3,6 +3,7 @@ using MegaCorps.Core.Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,6 +35,7 @@ namespace MegaCorps.Core.Model
                 defenceTypes.AddRange(current.AttackTypes);
             }
 
+            //Карта защиты кроет карту атаки (сбрасывать тогда) ИЛИ как сейчас - если 2 трояна, а защита от трояна одна, то она защищает от обоих
             int damage = 0;
 
             foreach (AttackCard attack in Targeted)
@@ -44,8 +46,17 @@ namespace MegaCorps.Core.Model
                 }
             }
 
-            Score += Hand.Cards.Where((card) => card is DeveloperCard && card.State == CardState.Used).Count() - damage;
-        
+            List<GameCard> develeopmentCards = Hand.Cards.Where((card) => card is DeveloperCard && card.State == CardState.Used).ToList();
+
+            int devPoints = 0;
+
+            foreach (DeveloperCard devCard in develeopmentCards)
+            {
+                devPoints += devCard.DevelopmentPoint;
+            }
+
+            Score += devPoints - damage;
+
         }
     }
 

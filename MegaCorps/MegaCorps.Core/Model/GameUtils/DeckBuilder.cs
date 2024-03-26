@@ -13,14 +13,16 @@ namespace MegaCorps.Core.Model.GameUtils
     public static class DeckBuilder
     {
         private const int MAX_DECK_SIZE = 72;
-        private const int MAX_ATTACK_CARDS_COUNT = 20;
-        private const int MAX_DEFENCE_CARDS_COUNT = 20;
+        private const int MAX_ATTACK_CARDS_COUNT = 21; //Всех типов атак по 3
+        private const int MAX_DEFENCE_CARDS_COUNT = 21;
         static List<AttackType> attackTypes = new List<AttackType>() {
             AttackType.Trojan,
             AttackType.Worm,
             AttackType.DoS,
             AttackType.Scripting,
-            AttackType.Botnet, AttackType.Fishing, AttackType.Spy };
+            AttackType.Botnet, 
+            AttackType.Fishing,
+            AttackType.Spy };
         public static Deck GetDeck()
         {
             var deck = new List<GameCard>();
