@@ -1,4 +1,5 @@
 ﻿using MegaCorps.Core.Model;
+using MegaCorps.Core.Model.Cards;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,7 +17,7 @@ namespace Corps.Analysis
         private const string ATTACK_STRATEGY = "AttackStrategy";
         private const string DEFENCE_STRATEGY = "DefenseStrategy";
         private const string DEVELOP_STRATEGY = "DeveloperStrategy";
-        private const int ITERATION_COUNT = 1000000;
+        private const int ITERATION_COUNT = 100000;
         private static Dictionary<string, ISelectionStrategy> possibleStrategy = new Dictionary<string, ISelectionStrategy>() {
             {BEST_STRATEGY ,new BestSelectStrategy() },
             {RANDOM_STRATEGY ,new RandomSelectStrategy() },
@@ -29,6 +30,12 @@ namespace Corps.Analysis
         static void Main(string[] args)
         {
             FillStrategiesList();
+            strategiesList.Add(Shuffle(strategiesList[4]));
+            strategiesList.Add(Shuffle(strategiesList[4]));
+            strategiesList.Add(Shuffle(strategiesList[4]));
+            strategiesList.Add(Shuffle(strategiesList[4]));
+            strategiesList.Add(Shuffle(strategiesList[4]));
+            //AnalizeOneGame(strategiesList[4]);
             TestBestStrategy();
             Console.ReadKey();
         }
@@ -65,6 +72,28 @@ namespace Corps.Analysis
                 possibleStrategy[DEFENCE_STRATEGY],
                 possibleStrategy[DEVELOP_STRATEGY],
             });
+        }
+        public static List<ISelectionStrategy> Shuffle(List<ISelectionStrategy> basestrategyList)
+        {
+            List<ISelectionStrategy> strategyList = new List<ISelectionStrategy>(basestrategyList);
+            Random r = new Random();
+            for (int n = strategyList.Count - 1; n > 0; --n)
+            {
+                int k = r.Next(n + 1);
+                ISelectionStrategy temp = strategyList[n];
+                strategyList[n] = strategyList[k];
+                strategyList[k] = temp;
+            }
+            if (strategiesList.Contains(strategyList))
+            return Shuffle(strategyList);
+            else
+            return strategyList;
+        }
+
+        private static void AnalizeOneGame(List<ISelectionStrategy> strategyList)
+        {
+            Analizer analizer = new Analizer(strategyList);
+            analizer.Run(1);
         }
 
         private static void TestBestStrategy()
