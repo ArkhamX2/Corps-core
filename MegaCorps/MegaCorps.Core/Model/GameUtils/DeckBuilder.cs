@@ -12,17 +12,19 @@ namespace MegaCorps.Core.Model.GameUtils
 {
     public static class DeckBuilder
     {
-        private const int MAX_DECK_SIZE = 72;
-        private const int MAX_ATTACK_CARDS_COUNT = 21; //Всех типов атак по 3
-        private const int MAX_DEFENCE_CARDS_COUNT = 21;
+        private const int MAX_DECK_SIZE = 100;
+        private const int MAX_ATTACK_CARDS_COUNT = 35; //Всех типов атак по 3
+        private const int MAX_DEFENCE_CARDS_COUNT = 35;
         static List<AttackType> attackTypes = new List<AttackType>() {
             AttackType.Trojan,
             AttackType.Worm,
             AttackType.DoS,
             AttackType.Scripting,
-            AttackType.Botnet, 
+            AttackType.Botnet,
             AttackType.Fishing,
             AttackType.Spy };
+        static List<CardDirection> directionList = new List<CardDirection>() {
+            CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Right, CardDirection.Right,CardDirection.Right, CardDirection.Right,CardDirection.Right,CardDirection.Right,CardDirection.All,CardDirection.Allbutnotme };
         public static Deck GetDeck()
         {
             var deck = new List<GameCard>();
@@ -33,7 +35,7 @@ namespace MegaCorps.Core.Model.GameUtils
                 {
                     deck.Add(new AttackCard(
                         i,
-                        CardDirection.Left,
+                        directionList[i % directionList.Count()],
                         i >= MAX_ATTACK_CARDS_COUNT * 0.75 ? 2 : 1,
                         attackTypes[i % attackTypes.Count()]));
                 }

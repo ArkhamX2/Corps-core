@@ -57,6 +57,8 @@ namespace MegaCorps.Core.Model
 
             Score += devPoints - damage;
 
+            Score = Score <= 1 ? 1 : Score;
+
         }
     }
 
