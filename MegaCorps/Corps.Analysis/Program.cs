@@ -17,7 +17,7 @@ namespace Corps.Analysis
         private const string ATTACK_STRATEGY = "AttackStrategy";
         private const string DEFENCE_STRATEGY = "DefenseStrategy";
         private const string DEVELOP_STRATEGY = "DeveloperStrategy";
-        private const int ITERATION_COUNT = 100000;
+        private const int ITERATION_COUNT = 10000000;
         private static Dictionary<string, ISelectionStrategy> possibleStrategy = new Dictionary<string, ISelectionStrategy>() {
             {BEST_STRATEGY ,new BestSelectStrategy() },
             {RANDOM_STRATEGY ,new RandomSelectStrategy() },
@@ -30,6 +30,11 @@ namespace Corps.Analysis
         static void Main(string[] args)
         {
             FillStrategiesList();
+            strategiesList.Add(Shuffle(strategiesList[3]));
+            strategiesList.Add(Shuffle(strategiesList[3]));
+            strategiesList.Add(Shuffle(strategiesList[3]));
+            strategiesList.Add(Shuffle(strategiesList[3]));
+            strategiesList.Add(Shuffle(strategiesList[3]));
             strategiesList.Add(Shuffle(strategiesList[4]));
             strategiesList.Add(Shuffle(strategiesList[4]));
             strategiesList.Add(Shuffle(strategiesList[4]));

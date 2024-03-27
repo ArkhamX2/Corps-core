@@ -13,7 +13,7 @@ namespace MegaCorps.Core.Model.GameUtils
     public static class DeckBuilder
     {
         private const int MAX_DECK_SIZE = 100;
-        private const int MAX_ATTACK_CARDS_COUNT = 35; //Всех типов атак по 3
+        private const int MAX_ATTACK_CARDS_COUNT = 35; //Всех типов атак по 5
         private const int MAX_DEFENCE_CARDS_COUNT = 35;
         static List<AttackType> attackTypes = new List<AttackType>() {
             AttackType.Trojan,
