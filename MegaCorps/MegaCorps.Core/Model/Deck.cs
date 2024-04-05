@@ -7,12 +7,21 @@ using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model
 {
+    /// <summary>
+    /// Класс колоды
+    /// </summary>
     public class Deck
     {
         private List<GameCard> playedCards;
         private List<GameCard> unplayedCards;
 
+        /// <summary>
+        /// Сброс карт
+        /// </summary>
         public List<GameCard> PlayedCards { get => playedCards; set => playedCards = value; }
+        /// <summary>
+        /// Колода карт
+        /// </summary>
         public List<GameCard> UnplayedCards { get => unplayedCards; set => unplayedCards = value; }
 
         public Deck(List<GameCard> cards) 
@@ -21,6 +30,9 @@ namespace MegaCorps.Core.Model
             PlayedCards = new List<GameCard>();
         }
 
+        /// <summary>
+        /// Перемешать колоду
+        /// </summary>
         public void Shuffle()
         {
             Random r = new Random();
@@ -33,6 +45,12 @@ namespace MegaCorps.Core.Model
             }
         }
 
+        /// <summary>
+        /// Раздать карты игрокам
+        /// </summary>
+        /// <param name="dealCount">Количество карт, которые необходимо раздать</param>
+        /// <param name="playersCount">Количество игроков, которым необходимо раздать карты</param>
+        /// <returns></returns>
         public List<List<GameCard>> Deal(int dealCount, int playersCount)
         {
             if(UnplayedCards.Count <= dealCount * playersCount)

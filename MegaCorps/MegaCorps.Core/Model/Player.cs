@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model
 {
+    /// <summary>
+    /// Класс игрока
+    /// </summary>
     public class Player : GameUser
     {
         private int _score;
@@ -16,13 +19,30 @@ namespace MegaCorps.Core.Model
         private List<AttackCard> _targeted;
         private Queue<GameCard> _selected;
 
+        /// <summary>
+        /// Количество очков
+        /// </summary>
         public new int Score { get => _score; set => _score = value; }
+        /// <summary>
+        /// "Рука" игрока
+        /// </summary>
         public PlayerHand Hand { get => _hand; set => _hand = value; }
+
+        /// <summary>
+        /// Направленные на игрока атаки
+        /// </summary>
         public List<AttackCard> Targeted { get => _targeted; set => _targeted = value; }
+
+        /// <summary>
+        /// Очередь выбранных карт
+        /// </summary>
         public Queue<GameCard> Selected { get => _selected; set => _selected = value; }
 
         public Player(int id) : base(id) { Score = 1; Hand = new PlayerHand(); Selected = new Queue<GameCard>(); Targeted = new List<AttackCard>(); }
 
+        /// <summary>
+        /// Метод для реализации текущей руки. Отбиваем направленные атаки, используем выбранные карты
+        /// </summary>
         public void PlayHand()
         {
             List<GameCard> defenceCards = Hand.Cards.Where((card) => card is DefenceCard && card.State == CardState.Used).ToList();
@@ -61,7 +81,9 @@ namespace MegaCorps.Core.Model
 
         }
     }
-
+    /// <summary>
+    /// Класс "руки" игрока
+    /// </summary>
     public class PlayerHand
     {
         private List<GameCard> _cards;

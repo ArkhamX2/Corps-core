@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model.GameUtils
 {
+    /// <summary>
+    /// Класс, формирующий набор игроков
+    /// </summary>
     public static  class UserSetup
     {
         public static List<Player> CreateUserList(int count){

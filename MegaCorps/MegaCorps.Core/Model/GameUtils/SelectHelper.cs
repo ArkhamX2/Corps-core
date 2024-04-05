@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model
 {
+    /// <summary>
+    /// Класс, позволяющий выбрать карты статично
+    /// </summary>
     public static class SelectHelper
     {
         public static List<List<int>> SelectCards(List<List<GameCard>> hands, List<ISelectionStrategy> strategyList, int numberToSelect)

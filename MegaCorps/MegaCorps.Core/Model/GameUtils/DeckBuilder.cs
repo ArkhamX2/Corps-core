@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model.GameUtils
 {
+    /// <summary>
+    /// Класс, формирующий колоду
+    /// </summary>
     public static class DeckBuilder
     {
         private const int MAX_DECK_SIZE = 100;
@@ -25,6 +28,10 @@ namespace MegaCorps.Core.Model.GameUtils
             AttackType.Spy };
         static List<CardDirection> directionList = new List<CardDirection>() {
             CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Right, CardDirection.Right,CardDirection.Right, CardDirection.Right,CardDirection.Right,CardDirection.Right,CardDirection.All,CardDirection.Allbutnotme };
+        /// <summary>
+        /// Сформировать колоду с нуля
+        /// </summary>
+        /// <returns></returns>
         public static Deck GetDeck()
         {
             var deck = new List<GameCard>();

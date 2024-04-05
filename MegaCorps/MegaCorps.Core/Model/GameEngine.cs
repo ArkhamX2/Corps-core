@@ -10,13 +10,31 @@ using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model
 {
+    /// <summary>
+    /// Игровой движок
+    /// </summary>
     public class GameEngine
     {
         private Deck _deck;
+        /// <summary>
+        /// Колода
+        /// </summary>
         public Deck Deck { get => _deck; set => _deck = value; }
+        /// <summary>
+        /// Игроки
+        /// </summary>
         public List<Player> Players { get => _players; set => _players = value; }
+        /// <summary>
+        /// Индикатор победы
+        /// </summary>
         public bool Win { get => _win; set => _win = value; }
+        /// <summary>
+        /// Индекс победителя в списке игроков
+        /// </summary>
         public int Winner { get => _winner; set => _winner = value; }
+        /// <summary>
+        /// Количество игроков
+        /// </summary>
         public int NumberOfPlayers { get; }
 
         private int _winner;
@@ -43,7 +61,10 @@ namespace MegaCorps.Core.Model
             _win = false;
         }
 
-
+        /// <summary>
+        /// Раздать карты игрокам
+        /// </summary>
+        /// <param name="dealCount">Количество карт, которые необходимо раздать</param>
         public void Deal(int dealCount)
         {
             List<List<GameCard>> hands = Deck.Deal(dealCount, NumberOfPlayers);
@@ -61,6 +82,9 @@ namespace MegaCorps.Core.Model
             }
         }
 
+        /// <summary>
+        /// Привести движок к начальному состоянию
+        /// </summary>
         public void Reset()
         {
             Deck = DeckBuilder.GetDeck();
@@ -69,6 +93,10 @@ namespace MegaCorps.Core.Model
             _win = false;
         }
 
+        /// <summary>
+        /// Получить руки всех игроков
+        /// </summary>
+        /// <returns></returns>
         public List<List<GameCard>> GetPlayersHands()
         {
             List<List<GameCard>> hands = new List<List<GameCard>>();
@@ -81,6 +109,9 @@ namespace MegaCorps.Core.Model
             return hands;
         }
 
+        /// <summary>
+        /// Совершить 1 ход
+        /// </summary>
         public void Turn()
         {
             List<List<GameCard>> all = GetPlayersHands();
@@ -136,6 +167,10 @@ namespace MegaCorps.Core.Model
 
         }
 
+        /// <summary>
+        /// Выбрать карты в соответствии с списком индексов
+        /// </summary>
+        /// <param name="hands"></param>
         public void SelectCards(List<List<int>> hands)
         {
             for (int i = 0; i < hands.Count; i++)

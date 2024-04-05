@@ -7,17 +7,19 @@ using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model.Cards
 {
+    /// <summary>
+    /// Базовый класс карты
+    /// </summary>
     public class GameCard
     {
         public int Id { get; set; }
+        /// <summary>
+        /// Состояние карты
+        /// </summary>
         public CardState State { get; set; }
-        public int UserId { get; set; }
-
-        public string Color { get; set; }
         public GameCard(int id)
         {
             Id=id;
-            UserId=-1;
             State= CardState.Unused;
         }
 

@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace Corps.Analysis
 {
+    /// <summary>
+    /// Анализатор игры
+    /// </summary>
     public class Analizer
     {
         private const int MAX_CARDS = 6;
@@ -22,10 +25,20 @@ namespace Corps.Analysis
             Engine = new GameEngine(NumberOfPlayers);
         }
 
+        /// <summary>
+        /// Движок игры
+        /// </summary>
         public GameEngine Engine { get => _engine; set => _engine = value; }
+        /// <summary>
+        /// Количество игроков
+        /// </summary>
         public int NumberOfPlayers { get => _numberOfPlayers; set => _numberOfPlayers = value; }
 
-
+        /// <summary>
+        /// Запуск анализа набора игр
+        /// </summary>
+        /// <param name="numberOfIterations">количество игр в наборе</param>
+        /// <returns></returns>
         public AnalizerResult Run(int numberOfIterations)
         {
             int turnCount = 0;
@@ -65,6 +78,9 @@ namespace Corps.Analysis
         }        
     }
 
+    /// <summary>
+    /// Результат анализа набора игр
+    /// </summary>
     public class AnalizerResult
     {
         public float averageTurnCount;

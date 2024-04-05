@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model
 {
+
+    /// <summary>
+    /// Класс пользователя
+    /// </summary>
     public class GameUser
     {
         public int ID { get; set; }

@@ -30,6 +30,7 @@ namespace Corps.Analysis
         static void Main(string[] args)
         {
             FillStrategiesList();
+            //Добавляем ещё несколько вариантов игр, где игроки сидят в разном порядке
             strategiesList.Add(Shuffle(strategiesList[3]));
             strategiesList.Add(Shuffle(strategiesList[3]));
             strategiesList.Add(Shuffle(strategiesList[3]));
@@ -45,6 +46,9 @@ namespace Corps.Analysis
             Console.ReadKey();
         }
 
+        /// <summary>
+        /// Формирование набора стратегий с разным количеством игроков
+        /// </summary>
         private static void FillStrategiesList()
         {
             strategiesList.Add(new List<ISelectionStrategy> {
@@ -78,6 +82,12 @@ namespace Corps.Analysis
                 possibleStrategy[DEVELOP_STRATEGY],
             });
         }
+
+        /// <summary>
+        /// Перемешать порядок рассадки игроков
+        /// </summary>
+        /// <param name="basestrategyList"></param>
+        /// <returns></returns>
         public static List<ISelectionStrategy> Shuffle(List<ISelectionStrategy> basestrategyList)
         {
             List<ISelectionStrategy> strategyList = new List<ISelectionStrategy>(basestrategyList);
@@ -95,12 +105,19 @@ namespace Corps.Analysis
             return strategyList;
         }
 
+        /// <summary>
+        /// Проанализировать одну игру
+        /// </summary>
+        /// <param name="strategyList"></param>
         private static void AnalizeOneGame(List<ISelectionStrategy> strategyList)
         {
             Analizer analizer = new Analizer(strategyList);
             analizer.Run(1);
         }
 
+        /// <summary>
+        /// Проанализировать набор стратегий на большом количестве игр параллельно
+        /// </summary>
         private static void TestBestStrategy()
         {
             Stopwatch stopwatch = new Stopwatch();
@@ -110,6 +127,10 @@ namespace Corps.Analysis
             Console.WriteLine("Заняло времени: "+stopwatch.Elapsed);
         }
 
+        /// <summary>
+        /// Анализ ITERATION_COUNT игр. Разбиваем их на кусочки по 1000 и считаем параллельно
+        /// </summary>
+        /// <param name="strategyList"></param>
         private static void AnalizeGame(List<ISelectionStrategy> strategyList)
         {
             int localIterationCount = ITERATION_COUNT/1000;
@@ -141,6 +162,13 @@ namespace Corps.Analysis
             }
             Console.WriteLine($"Количество итераций: {localIterationCount * 1000}; Игроков: {numberOfPlayers}; Среднее количество ходов: {averageTurnCount};\n\tСреднее количество выигрышей: \n{WinsToString(averageWins, strategyList)}");
         }
+
+        /// <summary>
+        /// Преобразовать список выигрышей игроков в строку
+        /// </summary>
+        /// <param name="averageWins"></param>
+        /// <param name="strategyList"></param>
+        /// <returns></returns>
         private static object WinsToString(List<float> averageWins, List<ISelectionStrategy> strategyList)
         {
             string ans = "";

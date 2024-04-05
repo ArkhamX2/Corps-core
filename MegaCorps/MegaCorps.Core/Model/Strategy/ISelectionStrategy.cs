@@ -6,12 +6,18 @@ using System.Threading;
 
 namespace MegaCorps.Core.Model
 {
+    /// <summary>
+    /// Стратегия выбора карты
+    /// </summary>
     public interface ISelectionStrategy
     {
         List<int> Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected);
         string Print();
     }
 
+    /// <summary>
+    /// Выбор лучших карт
+    /// </summary>
     public class BestSelectStrategy : ISelectionStrategy
     {
         List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected)
@@ -26,6 +32,9 @@ namespace MegaCorps.Core.Model
         }
 
     }
+    /// <summary>
+    /// Случайный выбор карт
+    /// </summary>
     public class RandomSelectStrategy : ISelectionStrategy
     {
         List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected)
@@ -37,6 +46,9 @@ namespace MegaCorps.Core.Model
             return "RandomSelectStrategy";
         }
     }
+    /// <summary>
+    /// Агрессивный выбор карт
+    /// </summary>
     public class AgressiveSelectStrategy : ISelectionStrategy
     {
         List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected)
@@ -128,6 +140,9 @@ namespace MegaCorps.Core.Model
             return "AgressiveSelectStrategy";
         }
     }
+    /// <summary>
+    /// Защитный выбор карт
+    /// </summary>
     public class DefenciveSelectStrategy : ISelectionStrategy
     {
         List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected)
@@ -218,6 +233,9 @@ namespace MegaCorps.Core.Model
             return "DefenciveSelectStrategy";
         }
     }
+    /// <summary>
+    /// Развивающийся выбор карт
+    /// </summary>
     public class DevelopSelectStrategy : ISelectionStrategy
     {
         List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected)
