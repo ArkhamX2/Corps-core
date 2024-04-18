@@ -11,22 +11,41 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public interface ISelectionStrategy
     {
-        List<int> Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected);
+        List<int> Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores);
         string Print();
     }
 
     /// <summary>
     /// Выбор лучших карт
     /// </summary>
-    public class BestSelectStrategy : ISelectionStrategy
+    public class MonteCarloSelectStrategy : ISelectionStrategy
     {
-        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected)
+        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores)
         {
-            //смотрим на карты других игроков, считаем сколько очков они заработают и выбираем из своих 
             List<int> selected = new List<int>();
-            return selected;
+            
+            Dictionary<int,List<int>> selectedList = new Dictionary<int, List<int>>();
+            for (int i = 0; i < cards.Count()-2; i++)
+            {
+                for (int j = i+1; j < cards.Count()-1; j++)
+                {
+                    for (int k = j+1; k < cards.Count(); k++)
+                    {
+                        List<int> tmp = new List<int> { i, j, k };
+                        selectedList[AnalizeMonteCarlo(tmp,scores,cards)] = tmp;
+                    }
+                }
+            }
+
+            return selectedList[selectedList.Keys.Max()];
 
         }
+
+        private int AnalizeMonteCarlo(List<int> tmp, List<int> scores, List<List<GameCard>> cards)
+        {
+            throw new NotImplementedException();
+        }
+
         string ISelectionStrategy.Print() {
             return "BestSelectStrategy";
         }
@@ -37,7 +56,7 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public class RandomSelectStrategy : ISelectionStrategy
     {
-        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected)
+        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores)
         {
             return Enumerable.Range(0, cards[0].Count()).OrderBy(x => RandomHelper.Next()).Take(numberToSelect).ToList();
         }
@@ -51,7 +70,7 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public class AgressiveSelectStrategy : ISelectionStrategy
     {
-        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected)
+        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores)
         {
             //атака, разраб,защита
             List<int> selected = new List<int>();
@@ -145,7 +164,7 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public class DefenciveSelectStrategy : ISelectionStrategy
     {
-        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected)
+        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores)
         {
             //защита, разраб,атака
             List<int> selected = new List<int>();
@@ -238,7 +257,7 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public class DevelopSelectStrategy : ISelectionStrategy
     {
-        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<List<int>> prev_selected)
+        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores)
         {
             //разраб,защита, атака
             List<int> selected = new List<int>();
