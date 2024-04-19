@@ -37,10 +37,14 @@ namespace MegaCorps.Core.Model
         public void Shuffle()
         {
             var r = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
-
+            //Random r = new Random();
+            //Guid guid = Guid.NewGuid();
             for (int n = UnplayedCards.Count - 1; n > 0; --n)
             {
                 int k = r.Value.Next(n + 1);
+
+                //int k = r.Next(n + 1);
+                //int k = RandomHelper.Next(n + 1);
                 GameCard temp = UnplayedCards[n];
                 UnplayedCards[n] = UnplayedCards[k];
                 UnplayedCards[k] = temp;
@@ -85,5 +89,21 @@ namespace MegaCorps.Core.Model
             return hands;
         }
 
+
+        public override string ToString()
+        {
+            string ans = "";
+            ans += " Played: ";
+            foreach (GameCard item in PlayedCards)
+            {
+                ans += item.ToString() + " ";
+            }
+            ans += "|| Unplayed: ";
+            foreach (GameCard item in UnplayedCards)
+            {
+                ans += item.ToString() + " ";
+            }
+            return ans;
+        }
     }
 }

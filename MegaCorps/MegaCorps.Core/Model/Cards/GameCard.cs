@@ -23,5 +23,11 @@ namespace MegaCorps.Core.Model.Cards
             State= CardState.Unused;
         }
 
+        public override string ToString()
+        {
+            string ans = "";
+            ans += $"{Id}:{State}";
+            return ans;
+        }
     }
 }

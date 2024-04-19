@@ -10,5 +10,10 @@ namespace MegaCorps.Core.Model
         {
             return rnd.Next();
         }
+
+        internal static int Next(int v)
+        {
+            return rnd.Next(v);
+        }
     }
 }

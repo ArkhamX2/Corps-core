@@ -12,14 +12,14 @@ namespace Corps.Analysis
 {
     internal class Program
     {
-        private const string BEST_STRATEGY = "BestStrategy";
+        private const string MONTE_CARLO = "BestStrategy";
         private const string RANDOM_STRATEGY = "RandomStrategy";
         private const string ATTACK_STRATEGY = "AttackStrategy";
         private const string DEFENCE_STRATEGY = "DefenseStrategy";
         private const string DEVELOP_STRATEGY = "DeveloperStrategy";
-        private const int ITERATION_COUNT = 10000000;
+        private const int ITERATION_COUNT = 1000;
         private static Dictionary<string, ISelectionStrategy> possibleStrategy = new Dictionary<string, ISelectionStrategy>() {
-            {BEST_STRATEGY ,new MonteCarloSelectStrategy() },
+            {MONTE_CARLO ,new MonteCarloSelectStrategy() },
             {RANDOM_STRATEGY ,new RandomSelectStrategy() },
             {ATTACK_STRATEGY ,new AgressiveSelectStrategy() },
             {DEFENCE_STRATEGY ,new DefenciveSelectStrategy() },
@@ -31,18 +31,21 @@ namespace Corps.Analysis
         {
             FillStrategiesList();
             //Добавляем ещё несколько вариантов игр, где игроки сидят в разном порядке
-            strategiesList.Add(Shuffle(strategiesList[3]));
-            strategiesList.Add(Shuffle(strategiesList[3]));
-            strategiesList.Add(Shuffle(strategiesList[3]));
-            strategiesList.Add(Shuffle(strategiesList[3]));
-            strategiesList.Add(Shuffle(strategiesList[3]));
-            strategiesList.Add(Shuffle(strategiesList[4]));
-            strategiesList.Add(Shuffle(strategiesList[4]));
-            strategiesList.Add(Shuffle(strategiesList[4]));
-            strategiesList.Add(Shuffle(strategiesList[4]));
-            strategiesList.Add(Shuffle(strategiesList[4]));
-            //AnalizeOneGame(strategiesList[4]);
-            TestBestStrategy();
+            //strategiesList.Add(Shuffle(strategiesList[3]));
+            //strategiesList.Add(Shuffle(strategiesList[3]));
+            //strategiesList.Add(Shuffle(strategiesList[3]));
+            //strategiesList.Add(Shuffle(strategiesList[3]));
+            //strategiesList.Add(Shuffle(strategiesList[3]));
+            //strategiesList.Add(Shuffle(strategiesList[4]));
+            //strategiesList.Add(Shuffle(strategiesList[4]));
+            //strategiesList.Add(Shuffle(strategiesList[4]));
+            //strategiesList.Add(Shuffle(strategiesList[4]));
+            //strategiesList.Add(Shuffle(strategiesList[4]));
+            for (int i = 0; i < 5; i++)
+            {
+                AnalizeOneGame(strategiesList[0]);
+            }
+            //TestBestStrategy();
             Console.ReadKey();
         }
 
@@ -52,11 +55,11 @@ namespace Corps.Analysis
         private static void FillStrategiesList()
         {
             strategiesList.Add(new List<ISelectionStrategy> {
-                possibleStrategy[ATTACK_STRATEGY],
-                possibleStrategy[DEFENCE_STRATEGY]
+                possibleStrategy[MONTE_CARLO],
+                possibleStrategy[RANDOM_STRATEGY]
             });
             strategiesList.Add(new List<ISelectionStrategy> {
-                possibleStrategy[ATTACK_STRATEGY],
+                possibleStrategy[MONTE_CARLO],
                 possibleStrategy[DEFENCE_STRATEGY],
                 possibleStrategy[DEVELOP_STRATEGY],
             });
@@ -112,7 +115,29 @@ namespace Corps.Analysis
         private static void AnalizeOneGame(List<ISelectionStrategy> strategyList)
         {
             Analizer analizer = new Analizer(strategyList);
-            analizer.Run(1);
+            List<AnalizerResult> resultList = new List<AnalizerResult>() { analizer.Run(1)};
+            float averageTurnCount = 0;
+            int numberOfPlayers = strategyList.Count;
+            List<float> averageWins = new List<float>();
+            for (int i = 0; i < numberOfPlayers; i++)
+            {
+                averageWins.Add(0);
+            }
+            foreach (AnalizerResult analizerResult in resultList)
+            {
+                averageTurnCount += analizerResult.averageTurnCount;
+                for (int i = 0; i < numberOfPlayers; i++)
+                {
+                    averageWins[i] += analizerResult.averageWins[i];
+                }
+
+            }
+            averageTurnCount = averageTurnCount / 1;
+            for (int i = 0; i < numberOfPlayers; i++)
+            {
+                averageWins[i] = averageWins[i] / 1;
+            }
+            Console.WriteLine($" Количество итераций: {1}; Игроков: {numberOfPlayers}; Среднее количество ходов: {averageTurnCount};\n\tСреднее количество выигрышей: \n{WinsToString(averageWins, strategyList)}");
         }
 
         /// <summary>
@@ -138,6 +163,7 @@ namespace Corps.Analysis
             List<AnalizerResult> resultList = new List<AnalizerResult>();
             float averageTurnCount = 0;
             List<float> averageWins = new List<float>();
+            int sumDups = 0;
             for (int i = 0; i < numberOfPlayers; i++)
             {
                 averageWins.Add(0);
@@ -154,13 +180,15 @@ namespace Corps.Analysis
                 {
                     averageWins[i] += analizerResult.averageWins[i];
                 }
+                sumDups += analizerResult.duplicates.Where(x => x.Count() > 0).Select(x => x.Count()).ToList().Sum();
+                
             }
             averageTurnCount=averageTurnCount / localIterationCount;
             for (int i = 0; i < numberOfPlayers; i++)
             {
                 averageWins[i] = averageWins[i] / localIterationCount;
             }
-            Console.WriteLine($"Количество итераций: {localIterationCount * 1000}; Игроков: {numberOfPlayers}; Среднее количество ходов: {averageTurnCount};\n\tСреднее количество выигрышей: \n{WinsToString(averageWins, strategyList)}");
+            Console.WriteLine($"Дубликатов: {sumDups} Количество итераций: {localIterationCount * 1000}; Игроков: {numberOfPlayers}; Среднее количество ходов: {averageTurnCount};\n\tСреднее количество выигрышей: \n{WinsToString(averageWins, strategyList)}");
         }
 
         /// <summary>

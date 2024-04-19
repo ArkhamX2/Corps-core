@@ -69,5 +69,12 @@ namespace MegaCorps.Core.Model.GameUtils
             return new Deck(deck);
         }
 
+        public static Deck CopyDeck(Deck deck)
+        {
+            List<GameCard> cards =  new List<GameCard>();
+            cards.AddRange(deck.UnplayedCards);
+            cards.AddRange(deck.PlayedCards);
+            return new Deck(cards);
+        }
     }
 }
