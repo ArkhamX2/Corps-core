@@ -24,6 +24,7 @@ namespace MegaCorps.Core.Model
         List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores)
         {
             Dictionary<float, List<int>> selectedList = new Dictionary<float, List<int>>();
+
             for (int l = 0; l < cards.Count(); l++)
             {
                 for (int i = 0; i < cards[l].Count() - 2; i++)

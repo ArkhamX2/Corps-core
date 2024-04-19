@@ -36,14 +36,14 @@ namespace MegaCorps.Core.Model
         /// </summary>
         public void Shuffle()
         {
-            var r = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
-            //Random r = new Random();
+            //var r = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
+            Random r = new Random();
             //Guid guid = Guid.NewGuid();
             for (int n = UnplayedCards.Count - 1; n > 0; --n)
             {
-                int k = r.Value.Next(n + 1);
+                //int k = r.Value.Next(n + 1);
 
-                //int k = r.Next(n + 1);
+                int k = r.Next(n + 1);
                 //int k = RandomHelper.Next(n + 1);
                 GameCard temp = UnplayedCards[n];
                 UnplayedCards[n] = UnplayedCards[k];
