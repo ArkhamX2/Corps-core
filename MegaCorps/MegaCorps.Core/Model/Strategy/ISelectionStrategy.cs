@@ -58,7 +58,7 @@ namespace MegaCorps.Core.Model
     {
         List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores)
         {
-            return Enumerable.Range(0, cards[0].Count()).OrderBy(x => RandomHelper.Next()).Take(numberToSelect).ToList();
+            return Enumerable.Range(0, cards[0].Count()).OrderBy(x => new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode())).Value.Next()).Take(numberToSelect).ToList();
         }
         string ISelectionStrategy.Print()
         {
