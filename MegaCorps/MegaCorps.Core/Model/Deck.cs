@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model
@@ -35,10 +36,11 @@ namespace MegaCorps.Core.Model
         /// </summary>
         public void Shuffle()
         {
-            Random r = new Random();
+            var r = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
+
             for (int n = UnplayedCards.Count - 1; n > 0; --n)
             {
-                int k = r.Next(n + 1);
+                int k = r.Value.Next(n + 1);
                 GameCard temp = UnplayedCards[n];
                 UnplayedCards[n] = UnplayedCards[k];
                 UnplayedCards[k] = temp;
@@ -62,7 +64,6 @@ namespace MegaCorps.Core.Model
                 UnplayedCards = new List<GameCard>(PlayedCards);
                 PlayedCards = new List<GameCard>();
             }
-            Random random = new Random();
             List<List<GameCard>> hands = Enumerable.Range(0, playersCount).Select(i => new List<GameCard>()).ToList();
 
             int counter = 0;
