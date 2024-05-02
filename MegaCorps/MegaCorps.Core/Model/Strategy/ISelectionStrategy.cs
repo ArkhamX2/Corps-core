@@ -1,5 +1,6 @@
 ﻿using Corps.Analysis;
 using MegaCorps.Core.Model.Cards;
+using MegaCorps.Core.Model.GameUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public interface ISelectionStrategy
     {
-        List<int> Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores);
+        List<int> Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect);
         string Print();
     }
 
@@ -21,76 +22,77 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public class MonteCarloSelectStrategy : ISelectionStrategy
     {
-        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores)
+        public List<int> Scores { get; set; }
+        public Deck Deck { get; set; }
+        public List<ISelectionStrategy> Strategies { get; set; }
+
+        public float ChosenProbability { get; set; }
+        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect)
         {
             Dictionary<float, List<int>> selectedList = new Dictionary<float, List<int>>();
-
-            for (int l = 0; l < cards.Count(); l++)
+            for (int i = 0; i < cards[0].Count() - 2; i++)
             {
-                for (int i = 0; i < cards[l].Count() - 2; i++)
+                for (int j = i + 1; j < cards[0].Count() - 1; j++)
                 {
-                    for (int j = i + 1; j < cards[l].Count() - 1; j++)
+                    for (int k = j + 1; k < cards[0].Count(); k++)
                     {
-                        for (int k = j + 1; k < cards[l].Count(); k++)
-                        {
-                            List<int> tmp = new List<int> { i, j, k };
-                            selectedList[AnalizeMonteCarlo(tmp, scores, cards)] = tmp;
-                        }
+                        List<int> tmp = new List<int> { i, j, k };
+                        selectedList[AnalizeMonteCarlo(tmp, Scores, cards, Deck, Strategies)] = tmp;
                     }
                 }
             }
-            
-
-            return selectedList[selectedList.Keys.Max()];
-
+            ChosenProbability = selectedList.Keys.Max();
+            return selectedList[ChosenProbability];
         }
 
-        private float AnalizeMonteCarlo(List<int> currentChoose, List<int> scores, List<List<GameCard>> cards)
+        private float AnalizeMonteCarlo(List<int> currentChoose, List<int> scores, List<List<GameCard>> cards, Deck deck, List<ISelectionStrategy> strategies)
         {
-            string BEST_STRATEGY = "BestStrategy";
-            string RANDOM_STRATEGY = "RandomStrategy";
-            string ATTACK_STRATEGY = "AttackStrategy";
-            string DEFENCE_STRATEGY = "DefenseStrategy";
-            string DEVELOP_STRATEGY = "DeveloperStrategy";
-
-            Dictionary<string, ISelectionStrategy> possibleStrategy = new Dictionary<string, ISelectionStrategy>() {
-            {BEST_STRATEGY ,new MonteCarloSelectStrategy() },
-            {RANDOM_STRATEGY ,new RandomSelectStrategy() },
-            {ATTACK_STRATEGY ,new AgressiveSelectStrategy() },
-            {DEFENCE_STRATEGY ,new DefenciveSelectStrategy() },
-            {DEVELOP_STRATEGY ,new DevelopSelectStrategy() }
-            };
-
-            List<ISelectionStrategy> selectionStrategyList = new List<ISelectionStrategy> {
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-                possibleStrategy[RANDOM_STRATEGY],
-            };
-
-            int numberOfPlayers = selectionStrategyList.Count();
+            int numberOfPlayers = strategies.Count();
             List<int> winners = Enumerable.Repeat(0, numberOfPlayers).ToList();
+            List<ISelectionStrategy> selectionStrategies = new List<ISelectionStrategy>(strategies);
+            selectionStrategies[0] = new RandomSelectStrategy();
 
             int turnCount = 0;
             int numberOfIterations = 1000;
             int CARDS_TO_CHOOSE = 3;
             int CARDS_TO_DEAL = 3;
 
+            List<List<GameCard>> cardsCopy;
+            SelectHelper selectHelper = new SelectHelper();
+            GameEngine engine;
+
             for (int i = 0; i < numberOfIterations; i++)
             {
-                GameEngine engine = new GameEngine(scores,cards);
-
-                List<List<int>> tmpSelected = SelectHelper.SelectCards(engine.GetPlayersHands(), selectionStrategyList, CARDS_TO_CHOOSE, engine.GetPlayersScores());
+                cardsCopy = new List<List<GameCard>>();
+                cards.ForEach(cardList => {
+                    cardsCopy.Add(new List<GameCard>());
+                    cardList.ForEach(card =>
+                    {
+                        if(card is AttackCard)
+                        {
+                            cardsCopy.Last().Add(new AttackCard(card as AttackCard));
+                        }
+                        if (card is DefenceCard)
+                        {
+                            cardsCopy.Last().Add(new DefenceCard(card as DefenceCard));
+                        }
+                        if (card is DeveloperCard)
+                        {
+                            cardsCopy.Last().Add(new DeveloperCard(card as DeveloperCard));
+                        }
+                    });
+                });
+                engine = new GameEngine(new List<int>(scores), cardsCopy, DeckBuilder.CopyDeck(deck));
+                List<List<int>> tmpSelected = selectHelper.SelectCards(engine.GetPlayersHands(), selectionStrategies, CARDS_TO_CHOOSE, engine.GetPlayersScores(), engine.Deck).Values.First();
                 tmpSelected[0] = currentChoose;
-                engine.SelectCards(tmpSelected);
+                engine.SelectCards(tmpSelected); 
                 engine.Turn();
-                engine.Deal(CARDS_TO_DEAL);
+                engine.Deal(CARDS_TO_DEAL); 
                 turnCount++;
 
                 while (!engine.Win)
                 {
-                    engine.SelectCards(SelectHelper.SelectCards(engine.GetPlayersHands(), selectionStrategyList, CARDS_TO_CHOOSE, engine.GetPlayersScores()));
+                    engine.SelectCards(selectHelper.SelectCards(engine.GetPlayersHands(), selectionStrategies, CARDS_TO_CHOOSE, engine.GetPlayersScores(), engine.Deck).Values.First());
                     engine.Turn();
                     engine.Deal(CARDS_TO_DEAL);
                     turnCount++;
@@ -113,14 +115,13 @@ namespace MegaCorps.Core.Model
         {
             return "BestSelectStrategy";
         }
-
     }
     /// <summary>
     /// Случайный выбор карт
     /// </summary>
     public class RandomSelectStrategy : ISelectionStrategy
     {
-        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores)
+        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect)
         {
             return Enumerable.Range(0, cards[0].Count()).OrderBy(x => RandomHelper.Next()).Take(numberToSelect).ToList();
         }
@@ -134,7 +135,7 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public class AgressiveSelectStrategy : ISelectionStrategy
     {
-        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores)
+        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect)
         {
             //атака, разраб,защита
             List<int> selected = new List<int>();
@@ -217,7 +218,7 @@ namespace MegaCorps.Core.Model
 
             return selected;
         }
-
+         
         string ISelectionStrategy.Print()
         {
             return "AgressiveSelectStrategy";
@@ -228,7 +229,7 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public class DefenciveSelectStrategy : ISelectionStrategy
     {
-        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores)
+        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect)
         {
             //защита, разраб,атака
             List<int> selected = new List<int>();
@@ -321,7 +322,7 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public class DevelopSelectStrategy : ISelectionStrategy
     {
-        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect, List<int> scores)
+        List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect)
         {
             //разраб,защита, атака
             List<int> selected = new List<int>();

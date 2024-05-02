@@ -23,6 +23,12 @@ namespace MegaCorps.Core.Model.Cards
             State= CardState.Unused;
         }
 
+        public GameCard(GameCard card)
+        {
+            Id = card.Id;
+            State= card.State;
+        }
+
         public override string ToString()
         {
             string ans = "";

@@ -1,4 +1,6 @@
 ﻿using MegaCorps.Core.Model;
+using MegaCorps.Core.Model.Cards;
+using MegaCorps.Core.Model.GameUtils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -42,37 +44,26 @@ namespace Corps.Analysis
         /// <returns></returns>
         public AnalizerResult Run(int numberOfIterations)
         {
-            List<List<List<int>>> dups = new List<List<List<int>>>();
+            SelectHelper selectHelper = new SelectHelper();
             int turnCount = 0;
-            //Guid guid = Guid.NewGuid();
-            //Запускаем сами игры
+            List<string> scores = new List<string>();
+            string probs = "";
             for (int i = 0; i < numberOfIterations; i++)
             {
+                _engine.Reset();
                 _engine.Deal(MAX_CARDS);
                 while (!_engine.Win)
                 {
-                    //имитация хода - создать n ботиков с разными стратегиями, которые будут просто выбирать из предложенных карт определённые 3
-                    _engine.SelectCards(SelectHelper.SelectCards(_engine.GetPlayersHands(), _selectionStrategyList, CARDS_TO_CHOOSE, _engine.GetPlayersScores()));
+                    Dictionary<string,List<List<int>>> tmp = selectHelper.SelectCards(_engine.GetPlayersHands(), _selectionStrategyList, CARDS_TO_CHOOSE, _engine.GetPlayersScores(), _engine.Deck);
+                    probs += tmp.Keys.First() + "|-|";
+                    _engine.SelectCards(tmp.Values.First());
                     _engine.Turn();
-                    _engine.Deal(CARDS_TO_DEAL);
+                    _engine.Deal(CARDS_TO_DEAL); 
+                    
                     turnCount++;
                 }
-
-                List<List<int>> tmp = _engine.decks.Select(x => {
-                    List<int> q = new List<int>();
-                    q.AddRange(x.UnplayedCards.Select(y => y.Id).Reverse());
-                    q.AddRange(x.PlayedCards.Select(y => y.Id));
-                    return q;
-                }).ToList();
-
+                _engine.Players.Select(x => x.Score).ToList().ForEach(x => scores.Add(Convert.ToString(x)));
                 _winners[_engine.Winner - 1]++;
-
-                var duplicates = (from list in tmp
-                                 where tmp.Except(new[] { list }).Any(l => l.SequenceEqual(list))
-                                 select list).ToList();
-
-                dups.Add(duplicates);
-                
             }
 
             float averageTurnCount = turnCount / numberOfIterations;
@@ -85,8 +76,7 @@ namespace Corps.Analysis
 
             _winners = Enumerable.Repeat(0, NumberOfPlayers).ToList();
 
-            return new AnalizerResult(averageTurnCount, averageWins,dups);
-            //return $"Количество итераций: {numberOfIterations}; Игроков: {NumberOfPlayers}; Среднее количество ходов: {averageTurnCount};\n\tСреднее количество выигрышей: \n{WinsToString(averageWins)}";
+            return new AnalizerResult(averageTurnCount, averageWins,scores,probs);
         }
     }
 
@@ -97,12 +87,14 @@ namespace Corps.Analysis
     {
         public float averageTurnCount;
         public List<float> averageWins;
-        public List<List<List<int>>> duplicates;
-        public AnalizerResult(float averageTurnCount, List<float> averageWins, List<List<List<int>>> dups)
+        public List<string> scores;
+        public string MCProbability;
+        public AnalizerResult(float averageTurnCount, List<float> averageWins,List<string> scores, string probabilities)
         {
             this.averageTurnCount = averageTurnCount;
             this.averageWins = averageWins;
-            this.duplicates = dups;
+            this.scores = scores;
+            this.MCProbability = probabilities;
         }
     }
 }

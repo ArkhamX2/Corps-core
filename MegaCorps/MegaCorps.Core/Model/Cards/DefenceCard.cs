@@ -20,5 +20,7 @@ namespace MegaCorps.Core.Model.Cards
         {
             AttackTypes = attackTypes;
         }
+
+        public DefenceCard(DefenceCard card) : this(card.Id,card.AttackTypes){}
     }
 }

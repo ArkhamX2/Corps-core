@@ -30,7 +30,7 @@ namespace MegaCorps.Core.Model.Cards
             Damage = damage;
             AttackType = type;
         }
-        
 
+        public AttackCard(AttackCard card) : this(card.Id,card.Direction,card.Damage, card.AttackType){}
     }
 }

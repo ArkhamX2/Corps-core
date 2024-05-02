@@ -15,6 +15,7 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public class GameEngine
     {
+        
         private Deck _deck;
         /// <summary>
         /// Колода
@@ -33,7 +34,6 @@ namespace MegaCorps.Core.Model
         /// </summary>
         public int Winner { get => _winner; set => _winner = value; }
 
-        public List<Deck> decks = new List<Deck>();
 
         /// <summary>
         /// Количество игроков
@@ -51,7 +51,6 @@ namespace MegaCorps.Core.Model
         {
             Deck = DeckBuilder.GetDeck();
             Deck.Shuffle();
-            decks.Add(DeckBuilder.CopyDeck(Deck));
             Players = UserSetup.CreateUserList(4);
             _win = false;
         }
@@ -61,17 +60,15 @@ namespace MegaCorps.Core.Model
             NumberOfPlayers = numberOfPlayers;
             Deck = DeckBuilder.GetDeck();
             Deck.Shuffle();
-            decks.Add(DeckBuilder.CopyDeck(Deck));
             Players = UserSetup.CreateUserList(numberOfPlayers);
             _win = false;
         }
 
-        public GameEngine(List<int> scores, List<List<GameCard>> cards)
+        public GameEngine(List<int> scores, List<List<GameCard>> cards, Deck deck)
         {
             NumberOfPlayers = cards.Count();
-            Deck = DeckBuilder.GetDeck();
-            Deck.Shuffle();
-            decks.Add(DeckBuilder.CopyDeck(Deck));
+            Deck = DeckBuilder.CopyDeck(deck);
+            Deck.UnplayedCards.ForEach(x => x.State = CardState.Unused);
             Players = UserSetup.CreateUserList(NumberOfPlayers);
             for (int i = 0; i < Players.Count; i++)
             {
@@ -79,46 +76,6 @@ namespace MegaCorps.Core.Model
                 player.Score = scores[i];
                 player.Hand = new PlayerHand(cards[i]);
             }
-            for (int i = 0; i < cards.Count(); i++)
-            {
-                for (int j = 0; j < cards[i].Count; j++)
-                {
-                    for (int k = 0; k < Deck.UnplayedCards.Count; k++)
-                    {
-                        GameCard card = Deck.UnplayedCards[k];
-                        if (card is AttackCard && cards[i][j] is AttackCard)
-                        {
-                            AttackCard deckCard = card as AttackCard;
-                            AttackCard input = card as AttackCard;
-                            if(deckCard.AttackType == input.AttackType && deckCard.Damage == input.Damage && deckCard.Direction == input.Direction)
-                            {
-                                Deck.UnplayedCards[k] = input;
-                            }
-                        }
-                        if (card is DefenceCard && cards[i][j] is DefenceCard)
-                        {
-                            DefenceCard deckCard = card as DefenceCard;
-                            DefenceCard input = card as DefenceCard;
-                            if (deckCard.AttackTypes.All(input.AttackTypes.Contains))
-                            {
-                                Deck.UnplayedCards[k] = input;
-                            }
-                        }
-                        if (card is DeveloperCard && cards[i][j] is DeveloperCard)
-                        {
-                            DeveloperCard deckCard = card as DeveloperCard;
-                            DeveloperCard input = card as DeveloperCard;
-                            if (deckCard.DevelopmentPoint == input.DevelopmentPoint)
-                            {
-                                Deck.UnplayedCards[k] = input;
-                            }
-                        }
-
-                    }
-                }
-
-            }
-
             _win = false;
         }
 
@@ -129,15 +86,13 @@ namespace MegaCorps.Core.Model
         public void Deal(int dealCount)
         {
             List<List<GameCard>> hands = Deck.Deal(dealCount, NumberOfPlayers);
-
+         
             if (hands.Count == 0)
             {
                 Deck = DeckBuilder.GetDeck();
                 Deck.Shuffle();
-                decks.Add(DeckBuilder.CopyDeck(Deck));
                 hands = Deck.Deal(dealCount, NumberOfPlayers);
             }
-
             for (int i = 0; i < Players.Count; i++)
             {
                 Players[i].Hand.Cards.AddRange(hands[i]);
@@ -151,7 +106,6 @@ namespace MegaCorps.Core.Model
         {
             Deck = DeckBuilder.GetDeck();
             Deck.Shuffle();
-            decks.Clear();
             Players = UserSetup.CreateUserList(NumberOfPlayers);
             _win = false;
         }
@@ -168,6 +122,7 @@ namespace MegaCorps.Core.Model
             {
                 hands.Add(Players[i].Hand.Cards);
             }
+
 
             return hands;
         }
@@ -224,8 +179,6 @@ namespace MegaCorps.Core.Model
                 Players[i].Targeted.Clear();
                 Players[i].Selected.Clear();
             }
-
-            decks.Add(DeckBuilder.CopyDeck(Deck));
             Win = Players.Any(player => player.Score >= 10);
             Winner = Players.FindIndex(player => player.Score == Players.Max((item) => item.Score)) + 1;
 

@@ -19,5 +19,7 @@ namespace MegaCorps.Core.Model.Cards
         {
             DevelopmentPoint = devPoint;
         }
+
+        public DeveloperCard(DeveloperCard card) : this(card.Id,card.DevelopmentPoint){}
     }
 }

@@ -15,7 +15,6 @@ namespace MegaCorps.Core.Model
     {
         private List<GameCard> playedCards;
         private List<GameCard> unplayedCards;
-
         /// <summary>
         /// Сброс карт
         /// </summary>
@@ -31,24 +30,19 @@ namespace MegaCorps.Core.Model
             PlayedCards = new List<GameCard>();
         }
 
+        public Deck(List<GameCard> unplayed, List<GameCard> played)
+        {
+            UnplayedCards = unplayed;
+            PlayedCards = played;
+        }
+
         /// <summary>
         /// Перемешать колоду
         /// </summary>
         public void Shuffle()
         {
-            //var r = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
-            Random r = new Random();
-            //Guid guid = Guid.NewGuid();
-            for (int n = UnplayedCards.Count - 1; n > 0; --n)
-            {
-                //int k = r.Value.Next(n + 1);
-
-                int k = r.Next(n + 1);
-                //int k = RandomHelper.Next(n + 1);
-                GameCard temp = UnplayedCards[n];
-                UnplayedCards[n] = UnplayedCards[k];
-                UnplayedCards[k] = temp;
-            }
+            var r = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
+            UnplayedCards = UnplayedCards.OrderBy(x => r.Value.Next(UnplayedCards.Count-1)).ToList();
         }
 
         /// <summary>
@@ -59,51 +53,25 @@ namespace MegaCorps.Core.Model
         /// <returns></returns>
         public List<List<GameCard>> Deal(int dealCount, int playersCount)
         {
-            if(UnplayedCards.Count <= dealCount * playersCount)
-            {
-                foreach (GameCard card in PlayedCards)
-                {
-                    card.State = Enums.CardState.Unused;
-                }
-                UnplayedCards = new List<GameCard>(PlayedCards);
-                PlayedCards = new List<GameCard>();
-            }
-            List<List<GameCard>> hands = Enumerable.Range(0, playersCount).Select(i => new List<GameCard>()).ToList();
+            List<List<GameCard>> hands = new List<List<GameCard>>();
 
-            int counter = 0;
-            while (counter < dealCount*playersCount)
+            for (int i = 0; i < playersCount; i++)
             {
-                foreach (var player in hands)
+                if(UnplayedCards.Count < dealCount)
                 {
-                    if (UnplayedCards.Count == 0)
+                    foreach (GameCard card in PlayedCards)
                     {
-                        return new List<List<GameCard>>();
+                        card.State = Enums.CardState.Unused;
                     }
-                    player.Add(UnplayedCards[UnplayedCards.Count - 1]);
-                    UnplayedCards.RemoveAt(UnplayedCards.Count - 1);
-                    if (UnplayedCards.Count == 0)
-                        break;
-                    counter++;
+                    UnplayedCards.AddRange(PlayedCards);
+                    PlayedCards.Clear();
+                    Shuffle();
                 }
+                List<GameCard> dealt = UnplayedCards.GetRange(0, dealCount);
+                UnplayedCards.RemoveRange(0, dealCount);
+                hands.Add(dealt);
             }
             return hands;
-        }
-
-
-        public override string ToString()
-        {
-            string ans = "";
-            ans += " Played: ";
-            foreach (GameCard item in PlayedCards)
-            {
-                ans += item.ToString() + " ";
-            }
-            ans += "|| Unplayed: ";
-            foreach (GameCard item in UnplayedCards)
-            {
-                ans += item.ToString() + " ";
-            }
-            return ans;
         }
     }
 }

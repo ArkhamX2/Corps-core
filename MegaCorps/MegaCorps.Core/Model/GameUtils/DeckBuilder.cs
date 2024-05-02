@@ -16,8 +16,8 @@ namespace MegaCorps.Core.Model.GameUtils
     public static class DeckBuilder
     {
         private const int MAX_DECK_SIZE = 100;
-        private const int MAX_ATTACK_CARDS_COUNT = 28; //Всех типов атак по 5
-        private const int MAX_DEFENCE_CARDS_COUNT = 28;
+        private const int MAX_ATTACK_CARDS_COUNT = 35; //Всех типов атак по 5
+        private const int MAX_DEFENCE_CARDS_COUNT = 35;
         static List<AttackType> attackTypes = new List<AttackType>() {
             AttackType.Trojan,
             AttackType.Worm,
@@ -72,9 +72,39 @@ namespace MegaCorps.Core.Model.GameUtils
         public static Deck CopyDeck(Deck deck)
         {
             List<GameCard> cards =  new List<GameCard>();
-            cards.AddRange(deck.UnplayedCards);
-            cards.AddRange(deck.PlayedCards);
-            return new Deck(cards);
+            List<GameCard> unplayed = new List<GameCard>();
+            deck.UnplayedCards.ForEach(card =>
+            {
+                if (card is AttackCard)
+                {
+                    unplayed.Add(new AttackCard(card as AttackCard));
+                }
+                if (card is DefenceCard)
+                {
+                    unplayed.Add(new DefenceCard(card as DefenceCard));
+                }
+                if (card is DeveloperCard)
+                {
+                    unplayed.Add(new DeveloperCard(card as DeveloperCard));
+                }
+            });
+            List<GameCard> played = new List<GameCard>();
+            deck.PlayedCards.ForEach(card =>
+            {
+                if (card is AttackCard)
+                {
+                    played.Add(new AttackCard(card as AttackCard));
+                }
+                if (card is DefenceCard)
+                {
+                    played.Add(new DefenceCard(card as DefenceCard));
+                }
+                if (card is DeveloperCard)
+                {
+                    played.Add(new DeveloperCard(card as DeveloperCard));
+                }
+            });
+            return new Deck(unplayed,played);
         }
     }
 }
