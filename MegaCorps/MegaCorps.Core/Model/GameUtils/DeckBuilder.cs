@@ -26,8 +26,10 @@ namespace MegaCorps.Core.Model.GameUtils
             AttackType.Botnet,
             AttackType.Fishing,
             AttackType.Spy };
-        static List<CardDirection> directionList = new List<CardDirection>() {
-            CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Right, CardDirection.Right,CardDirection.Right, CardDirection.Right,CardDirection.Right,CardDirection.Right,CardDirection.All,CardDirection.Allbutnotme };
+        static List<CardDirection> directionList = new List<CardDirection>() { CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Left,CardDirection.Left,
+            CardDirection.Right, CardDirection.Right,CardDirection.Right,CardDirection.Right,CardDirection.Right,CardDirection.Right,
+            CardDirection.All,CardDirection.Allbutnotme };
+
         /// <summary>
         /// Сформировать колоду с нуля
         /// </summary>
@@ -71,7 +73,7 @@ namespace MegaCorps.Core.Model.GameUtils
 
         public static Deck CopyDeck(Deck deck)
         {
-            List<GameCard> cards =  new List<GameCard>();
+            List<GameCard> cards = new List<GameCard>();
             List<GameCard> unplayed = new List<GameCard>();
             deck.UnplayedCards.ForEach(card =>
             {
@@ -104,7 +106,7 @@ namespace MegaCorps.Core.Model.GameUtils
                     played.Add(new DeveloperCard(card as DeveloperCard));
                 }
             });
-            return new Deck(unplayed,played);
+            return new Deck(unplayed, played);
         }
     }
 }

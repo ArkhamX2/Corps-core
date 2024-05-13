@@ -16,23 +16,7 @@ namespace MegaCorps.Core.Model.GameUtils
             var UserList= new List<Player>();
             for(int i = 0; i < count; i++)
             {
-                Player user = new Player(i);
-                if (i==0)
-                {
-                    user.NextId=i+1;
-                    user.PrevId=count-1;
-                }
-                else if(i==count-1) 
-                {
-                    user.NextId=0;
-                    user.PrevId=i-1;
-                }
-                else
-                {
-                    user.NextId=i+1;
-                    user.PrevId=i-1;
-                }
-                UserList.Add(user);
+                UserList.Add(new Player(i));
             }
             return UserList;
         }       

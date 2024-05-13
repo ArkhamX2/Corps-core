@@ -56,7 +56,6 @@
     <Compile Include="Model\GameUser.cs" />
     <Compile Include="Model\GameUtils\DeckBuilder.cs" />
     <Compile Include="Model\Strategy\ISelectionStrategy.cs" />
-    <Compile Include="Model\GameUtils\ScoreHelper.cs" />
     <Compile Include="Model\GameUtils\UserSetup.cs" />
     <Compile Include="Model\Player.cs" />
     <Compile Include="Model\GameUtils\SelectHelper.cs" />

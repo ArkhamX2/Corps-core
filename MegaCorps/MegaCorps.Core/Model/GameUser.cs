@@ -13,8 +13,6 @@ namespace MegaCorps.Core.Model
     public class GameUser
     {
         public int ID { get; set; }
-        public int NextId { get; set; }
-        public int PrevId { get; set; }
         public int Score { get; set; }
         public GameUser(int id)
         {

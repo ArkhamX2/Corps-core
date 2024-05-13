@@ -26,7 +26,9 @@ namespace MegaCorps.Core.Model
         public Deck Deck { get; set; }
         public List<ISelectionStrategy> Strategies { get; set; }
 
-        public float ChosenProbability { get; set; }
+        private List<float> _chosenProbability = new List<float>();
+        public List<float> ChosenProbability { get => _chosenProbability; set => _chosenProbability = value; }
+
         List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect)
         {
             Dictionary<float, List<int>> selectedList = new Dictionary<float, List<int>>();
@@ -41,14 +43,13 @@ namespace MegaCorps.Core.Model
                     }
                 }
             }
-            ChosenProbability = selectedList.Keys.Max();
-            return selectedList[ChosenProbability];
+            ChosenProbability.Add(selectedList.Keys.Max());
+            return selectedList[ChosenProbability.Last()];
         }
 
         private float AnalizeMonteCarlo(List<int> currentChoose, List<int> scores, List<List<GameCard>> cards, Deck deck, List<ISelectionStrategy> strategies)
         {
             int numberOfPlayers = strategies.Count();
-            List<int> winners = Enumerable.Repeat(0, numberOfPlayers).ToList();
             List<ISelectionStrategy> selectionStrategies = new List<ISelectionStrategy>(strategies);
             selectionStrategies[0] = new RandomSelectStrategy();
 
@@ -56,6 +57,7 @@ namespace MegaCorps.Core.Model
             int numberOfIterations = 1000;
             int CARDS_TO_CHOOSE = 3;
             int CARDS_TO_DEAL = 3;
+            int monteCarloWins = 0;
 
             List<List<GameCard>> cardsCopy;
             SelectHelper selectHelper = new SelectHelper();
@@ -83,7 +85,7 @@ namespace MegaCorps.Core.Model
                     });
                 });
                 engine = new GameEngine(new List<int>(scores), cardsCopy, DeckBuilder.CopyDeck(deck));
-                List<List<int>> tmpSelected = selectHelper.SelectCards(engine.GetPlayersHands(), selectionStrategies, CARDS_TO_CHOOSE, engine.GetPlayersScores(), engine.Deck).Values.First();
+                List<List<int>> tmpSelected = selectHelper.SelectCards(engine.GetPlayersHands(), selectionStrategies, CARDS_TO_CHOOSE, engine.GetPlayersScores(), engine.Deck);
                 tmpSelected[0] = currentChoose;
                 engine.SelectCards(tmpSelected); 
                 engine.Turn();
@@ -92,23 +94,17 @@ namespace MegaCorps.Core.Model
 
                 while (!engine.Win)
                 {
-                    engine.SelectCards(selectHelper.SelectCards(engine.GetPlayersHands(), selectionStrategies, CARDS_TO_CHOOSE, engine.GetPlayersScores(), engine.Deck).Values.First());
+                    engine.SelectCards(selectHelper.SelectCards(engine.GetPlayersHands(), selectionStrategies, CARDS_TO_CHOOSE, engine.GetPlayersScores(), engine.Deck));
                     engine.Turn();
                     engine.Deal(CARDS_TO_DEAL);
                     turnCount++;
                 }
 
-                winners[engine.Winner - 1]++;
+                monteCarloWins += engine.Winner == 1 ? 1:0;
             }
+            
 
-            List<float> averageWins = new List<float>();
-            foreach (int winCount in winners)
-            {
-                float percentage = (float)winCount / numberOfIterations;
-                averageWins.Add(percentage);
-            }
-
-            return averageWins[0];
+            return monteCarloWins;
         }
 
         string ISelectionStrategy.Print()

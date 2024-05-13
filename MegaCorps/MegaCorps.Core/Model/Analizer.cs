@@ -47,19 +47,17 @@ namespace Corps.Analysis
             SelectHelper selectHelper = new SelectHelper();
             int turnCount = 0;
             List<string> scores = new List<string>();
-            string probs = "";
             for (int i = 0; i < numberOfIterations; i++)
             {
                 _engine.Reset();
                 _engine.Deal(MAX_CARDS);
                 while (!_engine.Win)
                 {
-                    Dictionary<string,List<List<int>>> tmp = selectHelper.SelectCards(_engine.GetPlayersHands(), _selectionStrategyList, CARDS_TO_CHOOSE, _engine.GetPlayersScores(), _engine.Deck);
-                    probs += tmp.Keys.First() + "|-|";
-                    _engine.SelectCards(tmp.Values.First());
+                    List<List<int>> tmp = selectHelper.SelectCards(_engine.GetPlayersHands(), _selectionStrategyList, CARDS_TO_CHOOSE, _engine.GetPlayersScores(), _engine.Deck);
+                    _engine.SelectCards(tmp);
                     _engine.Turn();
-                    _engine.Deal(CARDS_TO_DEAL); 
-                    
+                    _engine.Deal(CARDS_TO_DEAL);
+
                     turnCount++;
                 }
                 _engine.Players.Select(x => x.Score).ToList().ForEach(x => scores.Add(Convert.ToString(x)));
@@ -76,7 +74,7 @@ namespace Corps.Analysis
 
             _winners = Enumerable.Repeat(0, NumberOfPlayers).ToList();
 
-            return new AnalizerResult(averageTurnCount, averageWins,scores,probs);
+            return new AnalizerResult(averageTurnCount, averageWins, scores, string.Join("%|-|", (_selectionStrategyList.Where(x => x is MonteCarloSelectStrategy).First() as MonteCarloSelectStrategy).ChosenProbability.Select(x=>(x/1000)*100)));
         }
     }
 
@@ -89,7 +87,7 @@ namespace Corps.Analysis
         public List<float> averageWins;
         public List<string> scores;
         public string MCProbability;
-        public AnalizerResult(float averageTurnCount, List<float> averageWins,List<string> scores, string probabilities)
+        public AnalizerResult(float averageTurnCount, List<float> averageWins, List<string> scores, string probabilities)
         {
             this.averageTurnCount = averageTurnCount;
             this.averageWins = averageWins;
