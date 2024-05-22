@@ -1,5 +1,4 @@
-﻿using Corps.Analysis;
-using MegaCorps.Core.Model.Cards;
+﻿using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.GameUtils;
 using System;
 using System.Collections.Generic;
