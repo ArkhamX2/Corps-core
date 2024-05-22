@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegaCorps", "MegaCorps\MegaCorps.csproj", "{43BAF4FA-C760-4DD6-A0A4-8DA8A495807D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegaCorps.Core", "MegaCorps.Core\MegaCorps.Core.csproj", "{8D41C7AA-354E-47B4-8EC8-5F84B8628449}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corps.Analysis", "Corps.Analysis\Corps.Analysis.csproj", "{7E4F2817-4C62-4079-9F3A-11BD4D46FD48}"
@@ -15,10 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{43BAF4FA-C760-4DD6-A0A4-8DA8A495807D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43BAF4FA-C760-4DD6-A0A4-8DA8A495807D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43BAF4FA-C760-4DD6-A0A4-8DA8A495807D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43BAF4FA-C760-4DD6-A0A4-8DA8A495807D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8D41C7AA-354E-47B4-8EC8-5F84B8628449}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8D41C7AA-354E-47B4-8EC8-5F84B8628449}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D41C7AA-354E-47B4-8EC8-5F84B8628449}.Release|Any CPU.ActiveCfg = Release|Any CPU

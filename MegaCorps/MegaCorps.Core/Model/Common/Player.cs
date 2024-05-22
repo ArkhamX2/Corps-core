@@ -12,40 +12,70 @@ namespace MegaCorps.Core.Model
     /// <summary>
     /// Класс игрока
     /// </summary>
-    public class Player : GameUser
+    public class Player
     {
+        private int _id;
         private int _score;
         private PlayerHand _hand;
-        private List<AttackCard> _targeted;
-        private Queue<GameCard> _selected;
 
+        /// <summary>
+        /// Уникальный идентификатор
+        /// </summary>
+        public int Id { get => _id; set => _id = value; }
         /// <summary>
         /// Количество очков
         /// </summary>
-        public new int Score { get => _score; set => _score = value; }
+        public int Score { get => _score; set => _score = value; }
         /// <summary>
         /// "Рука" игрока
         /// </summary>
         public PlayerHand Hand { get => _hand; set => _hand = value; }
+
+        public Player(int id){ Id = id; Score = 1; Hand = new PlayerHand(); }
+
+        /// <summary>
+        /// Сыграть руку
+        /// </summary>
+        public void PlayHand()
+        {
+            int scoreDelta = Hand.Play();
+            Score += scoreDelta;
+            Score = Score <= 1 ? 1 : Score;
+        }
+        
+    }
+    /// <summary>
+    /// Класс "руки" игрока
+    /// </summary>
+    public class PlayerHand
+    {
+        private List<GameCard> _cards;
+        private List<AttackCard> _targeted;
+
+        /// <summary>
+        /// Содержание руки игрока
+        /// </summary>
+        public List<GameCard> Cards { get => _cards; set => _cards = value; }
 
         /// <summary>
         /// Направленные на игрока атаки
         /// </summary>
         public List<AttackCard> Targeted { get => _targeted; set => _targeted = value; }
 
-        /// <summary>
-        /// Очередь выбранных карт
-        /// </summary>
-        public Queue<GameCard> Selected { get => _selected; set => _selected = value; }
+        public PlayerHand() { Cards = new List<GameCard>(); }
 
-        public Player(int id) : base(id) { Score = 1; Hand = new PlayerHand(); Selected = new Queue<GameCard>(); Targeted = new List<AttackCard>(); }
+        public PlayerHand(List<GameCard> cards)
+        {
+            this._cards = cards;
+            this._targeted = new List<AttackCard>();
+        }
 
         /// <summary>
         /// Метод для реализации текущей руки. Отбиваем направленные атаки, используем выбранные карты
         /// </summary>
-        public void PlayHand()
+        public int Play()
         {
-            List<GameCard> defenceCards = Hand.Cards.Where((card) => card is DefenceCard && card.State == CardState.Used).ToList();
+            List<GameCard> defenceCards = Cards.Where((card) => card is DefenceCard && card.State == CardState.Used).ToList();
 
             List<AttackType> defenceTypes = new List<AttackType>();
 
@@ -66,7 +96,7 @@ namespace MegaCorps.Core.Model
                 }
             }
 
-            List<GameCard> develeopmentCards = Hand.Cards.Where((card) => card is DeveloperCard && card.State == CardState.Used).ToList();
+            List<GameCard> develeopmentCards = Cards.Where((card) => card is DeveloperCard && card.State == CardState.Used).ToList();
 
             int devPoints = 0;
 
@@ -75,27 +105,8 @@ namespace MegaCorps.Core.Model
                 devPoints += devCard.DevelopmentPoint;
             }
 
-            Score += devPoints - damage;
-
-            Score = Score <= 1 ? 1 : Score;
+            return devPoints - damage;
 
         }
-    }
-    /// <summary>
-    /// Класс "руки" игрока
-    /// </summary>
-    public class PlayerHand
-    {
-        private List<GameCard> _cards;
-
-        public List<GameCard> Cards { get => _cards; set => _cards = value; }
-
-        public PlayerHand() { Cards = new List<GameCard>(); }
-
-        public PlayerHand(List<GameCard> cards)
-        {
-            this._cards = cards;
-        }
-
     }
 }

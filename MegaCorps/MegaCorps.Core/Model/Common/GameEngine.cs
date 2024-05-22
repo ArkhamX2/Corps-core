@@ -38,7 +38,7 @@ namespace MegaCorps.Core.Model
         /// <summary>
         /// Количество игроков
         /// </summary>
-        public int NumberOfPlayers { get; }
+        private int NumberOfPlayers { get; }
 
         private int _winner;
 
@@ -142,15 +142,15 @@ namespace MegaCorps.Core.Model
                     switch (currentCard.Direction)
                     {
                         case CardDirection.Left:
-                            Players[i == Players.Count() - 1 ? 0 : i + 1].Targeted.Add(currentCard);
+                            Players[i == Players.Count() - 1 ? 0 : i + 1].Hand.Targeted.Add(currentCard);
                             break;
                         case CardDirection.Right:
-                            Players[i == 0 ? Players.Count() - 1 : i - 1].Targeted.Add(currentCard);
+                            Players[i == 0 ? Players.Count() - 1 : i - 1].Hand.Targeted.Add(currentCard);
                             break;
                         case CardDirection.All:
                             foreach (Player player in Players)
                             {
-                                player.Targeted.Add(currentCard);
+                                player.Hand.Targeted.Add(currentCard);
                             }
                             break;
                         case CardDirection.Allbutnotme:
@@ -158,7 +158,7 @@ namespace MegaCorps.Core.Model
                             {
                                 if (k != i)
                                 {
-                                    Players[k].Targeted.Add(currentCard);
+                                    Players[k].Hand.Targeted.Add(currentCard);
                                 }
                             }
                             break;
@@ -176,8 +176,7 @@ namespace MegaCorps.Core.Model
             {
                 Deck.PlayedCards.AddRange(Players[i].Hand.Cards.Where((card) => card.State == CardState.Used));
                 Players[i].Hand.Cards.RemoveAll((card) => card.State == CardState.Used);
-                Players[i].Targeted.Clear();
-                Players[i].Selected.Clear();
+                Players[i].Hand.Targeted.Clear();
             }
             Win = Players.Any(player => player.Score >= 10);
             Winner = Players.FindIndex(player => player.Score == Players.Max((item) => item.Score)) + 1;
