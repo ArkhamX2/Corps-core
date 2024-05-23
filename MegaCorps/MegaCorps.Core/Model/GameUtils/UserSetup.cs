@@ -19,6 +19,16 @@ namespace MegaCorps.Core.Model.GameUtils
                 UserList.Add(new Player(i));
             }
             return UserList;
-        }       
+        }
+
+        internal static List<Player> CreateUserList(List<string> usernameList)
+        {
+            var UserList = new List<Player>();
+            for (int i = 0; i < usernameList.Count(); i++)
+            {
+                UserList.Add(new Player(i, usernameList[i]));
+            }
+            return UserList;
+        }
     }
 }

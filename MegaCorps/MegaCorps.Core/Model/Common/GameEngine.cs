@@ -47,11 +47,11 @@ namespace MegaCorps.Core.Model
 
         private List<Player> _players;
 
-        public GameEngine()
+        public GameEngine(List<string> usernameList)
         {
             Deck = DeckBuilder.GetDeck();
             Deck.Shuffle();
-            Players = UserSetup.CreateUserList(4);
+            Players = UserSetup.CreateUserList(usernameList);
             _win = false;
         }
 

@@ -16,6 +16,7 @@ namespace MegaCorps.Core.Model
     {
         private int _id;
         private int _score;
+        private string _name;
         private PlayerHand _hand;
 
         /// <summary>
@@ -30,8 +31,15 @@ namespace MegaCorps.Core.Model
         /// "Рука" игрока
         /// </summary>
         public PlayerHand Hand { get => _hand; set => _hand = value; }
+        public string Name { get => _name; set => _name = value; }
+        public bool IsReady { get; set; }
 
         public Player(int id){ Id = id; Score = 1; Hand = new PlayerHand(); }
+
+        public Player(int id, string username) : this(id)
+        {
+            Name = username;
+        }
 
         /// <summary>
         /// Сыграть руку
