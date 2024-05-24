@@ -36,7 +36,7 @@ namespace Corps.Server.Hubs
         {
             _lobbies[lobbyId].LobbyMemberList.Add(new LobbyMember(username));
             await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId + "Player");
-            await Clients.Group(lobbyId + "Player").SendAsync("JoinSuccess", _lobbies[lobbyId]);
+            await Clients.Group(lobbyId + "Player").SendAsync("JoinSuccess");
             await Clients.Group(lobbyId + "Host").SendAsync("PlayerJoined", _lobbies[lobbyId]);
         }
 
@@ -61,7 +61,7 @@ namespace Corps.Server.Hubs
                 //TODO: Обработка ошибки отсутствия участника лобб
             }
                 
-            await Clients.Group(lobbyId + "Player").SendAsync("ReadySuccess", _lobbies[lobbyId]);
+            await Clients.Group(lobbyId + "Player").SendAsync("ReadySuccess");
             await Clients.Group(lobbyId + "Host").SendAsync("LobbyMemberReady", _lobbies[lobbyId]);
         }
 
