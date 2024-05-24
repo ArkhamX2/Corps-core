@@ -4,10 +4,10 @@ namespace Corps.Server.Hubs
 {
     public class Lobby
     {
-        public List<LobbyMember> PlayerList{ get; set; }
+        public List<LobbyMember> LobbyMemberList{ get; set; }
         public LobbyState State{ get; set; }
         public Lobby() {
-            PlayerList = new List<LobbyMember>();
+            LobbyMemberList = new List<LobbyMember>();
             State = LobbyState.Waiting;
         }
     }

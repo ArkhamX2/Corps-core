@@ -42,7 +42,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
                 // если запрос направлен хабу
                 var path = context.HttpContext.Request.Path;
-                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chat"))
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/game"))
                 {
                     // получаем токен из строки запроса
                     context.Token = accessToken;
@@ -51,6 +51,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             }
         };
     });
+
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 app.MapPost("/login", (GameHost loginModel) =>
@@ -80,14 +83,7 @@ app.MapPost("/login", (GameHost loginModel) =>
     return Results.Json(response);
 });
 
-
 app.MapHub<GameHub>("/game");
-
-
-
-
-
-
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
