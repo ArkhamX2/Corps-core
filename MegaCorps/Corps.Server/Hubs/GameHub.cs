@@ -13,16 +13,16 @@ namespace Corps.Server.Hubs
         Dictionary<int, Lobby> _lobbies = new Dictionary<int, Lobby>();
         Dictionary<int, GameEngine> _games = new Dictionary<int, GameEngine>();
 
+        //TODO: Настроить авторизацию
         /// <summary>
         /// Хост создаёт лобби
         /// </summary>
         /// <returns></returns>
-        [Authorize]
         public async Task CreateLobby()
         {
             //TODO: Генерировать код лобби и отвязаться от просто индекса, заменив его уникальным кодом из 6 знаков (1 млн кодов)
             _lobbies[_lobbies.Count] = new Lobby();
-            await Groups.AddToGroupAsync(Context.ConnectionId, (_lobbies.Count() - 1) + "Host");
+            await Groups.AddToGroupAsync(Context.ConnectionId, (_lobbies.Count() - 1) + "Host");  
             await Clients.Group((_lobbies.Count() - 1) + "Host").SendAsync("CreateSuccess", _lobbies.Count - 1, _lobbies[_lobbies.Count - 1]);
         }
 
@@ -65,12 +65,12 @@ namespace Corps.Server.Hubs
             await Clients.Group(lobbyId + "Host").SendAsync("LobbyMemberReady", _lobbies[lobbyId]);
         }
 
+        //TODO: Навесить авторизацию
         /// <summary>
         /// Хост даёт команду о начале игры. Инициализируем и отправляем клиентам соответствующие сообщения
         /// </summary>
         /// <param name="lobbyId">идентификатор лобби</param>
         /// <returns></returns>
-        [Authorize]
         public async Task StartGame(int lobbyId)
         {
             //TODO: Обработка ошибки отсутствия лобби с таким идентификатором
