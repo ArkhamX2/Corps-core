@@ -1,6 +1,7 @@
 ﻿using MegaCorps.Core.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using System.Collections.Concurrent;
 
 
 namespace Corps.Server.Hubs
@@ -10,8 +11,8 @@ namespace Corps.Server.Hubs
     /// </summary>
     public class GameHub : Hub
     {
-        Dictionary<int, Lobby> _lobbies = new Dictionary<int, Lobby>();
-        Dictionary<int, GameEngine> _games = new Dictionary<int, GameEngine>();
+        private static ConcurrentDictionary<int, Lobby> _lobbies = new ConcurrentDictionary<int, Lobby>();
+        private static ConcurrentDictionary<int, GameEngine> _games = new ConcurrentDictionary<int, GameEngine>();
 
         //TODO: Настроить авторизацию
         /// <summary>
@@ -20,10 +21,24 @@ namespace Corps.Server.Hubs
         /// <returns></returns>
         public async Task CreateLobby()
         {
+
             //TODO: Генерировать код лобби и отвязаться от просто индекса, заменив его уникальным кодом из 6 знаков (1 млн кодов)
             _lobbies[_lobbies.Count] = new Lobby();
-            await Groups.AddToGroupAsync(Context.ConnectionId, (_lobbies.Count() - 1) + "Host");  
+            await Groups.AddToGroupAsync(Context.ConnectionId, (_lobbies.Count() - 1) + "Host");
             await Clients.Group((_lobbies.Count() - 1) + "Host").SendAsync("CreateSuccess", _lobbies.Count - 1, _lobbies[_lobbies.Count - 1]);
+
+            Console.WriteLine("Create");
+            foreach (var item in _lobbies.Keys)
+            {
+                if (_lobbies.TryGetValue(item, out Lobby lobby))
+                {
+                    foreach (LobbyMember member in lobby.LobbyMemberList)
+                    {
+                        Console.Write(member.Username + " ");
+                    }
+                }
+            }
+            Console.WriteLine();
         }
 
         /// <summary>
@@ -35,9 +50,25 @@ namespace Corps.Server.Hubs
         public async Task JoinLobby(int lobbyId, string username)
         {
             _lobbies[lobbyId].LobbyMemberList.Add(new LobbyMember(username));
+
             await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId + "Player");
             await Clients.Group(lobbyId + "Player").SendAsync("JoinSuccess");
             await Clients.Group(lobbyId + "Host").SendAsync("PlayerJoined", _lobbies[lobbyId]);
+
+            Console.WriteLine("Join");
+            foreach (var item in _lobbies.Keys)
+            {
+                Console.WriteLine($"Lobby{item}");
+                if (_lobbies.TryGetValue(item, out Lobby lobby))
+                {
+                    foreach (LobbyMember member in lobby.LobbyMemberList)
+                    {
+                        Console.Write(member.Username + " ");
+                    }
+                }
+            }
+            Console.WriteLine();
+
         }
 
         /// <summary>
@@ -52,7 +83,7 @@ namespace Corps.Server.Hubs
             //TODO: Идентификация участника лобби не по никнейму, а по айди - добавить в LobbyMemberID и выдавать его при подключении
             int foundPlayerIndex = _lobbies[lobbyId].LobbyMemberList.FindIndex(x => x.Username == username);
 
-            if(foundPlayerIndex != -1)
+            if (foundPlayerIndex != -1)
             {
                 _lobbies[lobbyId].LobbyMemberList[foundPlayerIndex].IsReady = true;
             }
@@ -60,7 +91,7 @@ namespace Corps.Server.Hubs
             {
                 //TODO: Обработка ошибки отсутствия участника лобб
             }
-                
+
             await Clients.Group(lobbyId + "Player").SendAsync("ReadySuccess");
             await Clients.Group(lobbyId + "Host").SendAsync("LobbyMemberReady", _lobbies[lobbyId]);
         }
@@ -77,7 +108,7 @@ namespace Corps.Server.Hubs
             _lobbies[lobbyId].State = LobbyState.Started;
             _games[lobbyId] = new GameEngine(_lobbies[lobbyId].LobbyMemberList.Select(x => x.Username).ToList());
             _games[lobbyId].Deal(6);
-            foreach(Player player in _games[lobbyId].Players)
+            foreach (Player player in _games[lobbyId].Players)
             {
                 await Clients.Group(lobbyId + "Player").SendAsync("GameStarted", player.Hand);
             }
@@ -95,7 +126,7 @@ namespace Corps.Server.Hubs
         {
             //TODO: Обработка ошибки отсутствия лобби, игрока и карты с такими идентификаторами
             int foundCardIndex = _games[lobbyId].Players[playerId].Hand.Cards.FindIndex(x => x.Id == selectedCardId);
-            if(foundCardIndex != -1)
+            if (foundCardIndex != -1)
             {
                 _games[lobbyId].Players[playerId].Hand.Cards[foundCardIndex].State = MegaCorps.Core.Model.Enums.CardState.Used;
             }
@@ -161,6 +192,6 @@ namespace Corps.Server.Hubs
 
         //TODO: реконнект.
         //Есть вариант  всё пихнуть в метод JoinLobby и если у лобби статус Started перекидывать в игру.
-       
+
     }
 }
