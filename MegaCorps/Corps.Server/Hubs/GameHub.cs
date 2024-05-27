@@ -52,7 +52,7 @@ namespace Corps.Server.Hubs
             _lobbies[lobbyId].LobbyMemberList.Add(new LobbyMember(username));
 
             await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId + "Player");
-            await Clients.Group(lobbyId + "Player").SendAsync("JoinSuccess");
+            await Clients.Group(lobbyId + "Player").SendAsync("JoinSuccess", _lobbies[lobbyId]);
             await Clients.Group(lobbyId + "Host").SendAsync("PlayerJoined", _lobbies[lobbyId]);
 
             Console.WriteLine("Join");
