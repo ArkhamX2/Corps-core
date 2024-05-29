@@ -14,6 +14,24 @@ namespace Corps.Server.Data
             var canConnect = Database.CanConnect();
             var isCreated = Database.EnsureCreated();
 
+            if (!isCreated)
+            {
+                Database.OpenConnection();
+            }
+
+            return canConnect || isCreated;
+        }
+
+        public async Task<bool> TryInitializeAsync()
+        {
+            var canConnect = await Database.CanConnectAsync();
+            var isCreated = await Database.EnsureCreatedAsync();
+
+            if (!isCreated)
+            {
+                await Database.OpenConnectionAsync();
+            }
+
             return canConnect || isCreated;
         }
 

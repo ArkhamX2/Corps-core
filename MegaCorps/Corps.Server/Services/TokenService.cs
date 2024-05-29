@@ -12,7 +12,6 @@ namespace Corps.Server.Services
         private const string ClaimLabelUserId = ClaimTypes.NameIdentifier;
         private const string ClaimLabelUserName = ClaimTypes.Name;
         private const string ClaimLabelUserEmail = ClaimTypes.Email;
-        private const string ClaimLabelUserRole = ClaimTypes.Role;
 
         private TokenConfiguration Configuration { get; } = configuration.TokenConfiguration;
 
