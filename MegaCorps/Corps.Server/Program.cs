@@ -56,19 +56,19 @@ internal class Program
             options.TokenValidationParameters = configuration.TokenConfiguration.GetValidationParameters();
             options.Events = new JwtBearerEvents
             {
-                    OnMessageReceived = context =>
-                    {
-                       var accessToken = context.Request.Query["access_token"];
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
 
-                        // ���� ������ ��������� ����
-                        var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/game"))
-                        {
-                           // �������� ����� �� ������ �������
-                            context.Token = accessToken;
-                        }
-                       return Task.CompletedTask;
+                    // ���� ������ ��������� ����
+                    var path = context.HttpContext.Request.Path;
+                    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/game"))
+                    {
+                        // �������� ����� �� ������ �������
+                        context.Token = accessToken;
                     }
+                    return Task.CompletedTask;
+                }
             };
 
         });
@@ -99,13 +99,24 @@ internal class Program
         RegisterIdentityServices(services, configuration);
         RegisterSecurityServices(services, configuration);
 
-
         var application = builder.Build();
+
         application.MapHub<GameHub>("/game");
         application.UseAuthentication();
         application.UseAuthorization();
         application.MapControllers();
-        application.UseCors();
+        if (application.Environment.IsDevelopment())
+        {
+            application.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
+                .AllowCredentials()); // allow credentials
+        }
+        else
+        {
+            application.UseCors();
+        }
 
         InitializeDataSources(application);
 
@@ -120,4 +131,4 @@ internal class Program
 
 
 
-   
+
