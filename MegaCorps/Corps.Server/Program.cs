@@ -91,7 +91,13 @@ internal class Program
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        var services = builder.Services;
+        var configuration = new DataConfigurationManager(builder.Configuration);
 
+        RegisterCoreServices(services);
+        RegisterDataSources(services, configuration);
+        RegisterIdentityServices(services, configuration);
+        RegisterSecurityServices(services, configuration);
 
 
         var application = builder.Build();
@@ -105,7 +111,6 @@ internal class Program
 
         application.Run();
 
-
     }
 
 
@@ -115,3 +120,4 @@ internal class Program
 
 
 
+   
