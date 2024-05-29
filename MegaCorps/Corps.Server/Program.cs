@@ -15,6 +15,7 @@ using Corps.Server.Data;
 using Microsoft.Extensions.Configuration;
 using Corps.Server.Configuration;
 using Microsoft.AspNetCore.Identity;
+using Corps.Server.Services;
 
 internal class Program
 {
@@ -25,7 +26,9 @@ internal class Program
 #endif
 
     private static void RegisterCoreServices(IServiceCollection services)
-    {       
+    {
+        services.AddSignalR();
+        services.AddScoped<TokenService>();
         services.AddTransient<ConfigurationManager>();
         services.AddControllers();
     }
@@ -93,12 +96,7 @@ internal class Program
     }
 
     private static void Main(string[] args)
-    {
-        var hosts = new List<GameHost>
-        {
-        new GameHost("tom@gmail.com", "12345"),
-        new GameHost("bob@gmail.com", "55555")
-        };
+    {       
         var builder = WebApplication.CreateBuilder(args);
         var services = builder.Services;
         var configuration = new DataConfigurationManager(builder.Configuration);
@@ -110,6 +108,7 @@ internal class Program
         RegisterSecurityServices(services, configuration);
 
         var application = builder.Build();
+        application.MapHub<GameHub>("/game");
         application.UseAuthentication();
         application.UseAuthorization();
         application.MapControllers();
