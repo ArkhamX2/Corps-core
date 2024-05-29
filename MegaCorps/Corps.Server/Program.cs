@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Corps.Server.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Corps.Server.Services;
 
 internal class Program
 {
@@ -98,6 +99,12 @@ internal class Program
     private static void Main(string[] args)
     {       
         var builder = WebApplication.CreateBuilder(args);
+
+        var hosts = new List<GameHost>
+        {
+        new GameHost("tom@gmail.com", "12345"),
+        new GameHost("bob@gmail.com", "55555")
+        };
 
         // Add services to the container.
         builder.Services.AddRazorPages();
