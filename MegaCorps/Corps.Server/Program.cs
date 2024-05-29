@@ -142,12 +142,7 @@ internal class Program
         });
 
         builder.Services.AddControllers();
-        builder.Services.AddSignalR(hubOptions =>
-        {
-            hubOptions.EnableDetailedErrors = true;
-            hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
-            hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
-        });
+        builder.Services.AddSignalR();
         builder.Services.AddEndpointsApiExplorer();
 
         var app = builder.Build();
