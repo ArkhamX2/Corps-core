@@ -15,7 +15,7 @@ using Corps.Server.Data;
 using Microsoft.Extensions.Configuration;
 using Corps.Server.Configuration;
 using Microsoft.AspNetCore.Identity;
-using Corps.Server.Services;
+using Microsoft.AspNetCore.SignalR;
 
 internal class Program
 {
@@ -73,11 +73,11 @@ internal class Program
                     {
                        var accessToken = context.Request.Query["access_token"];
 
-                        // если запрос направлен хабу
+                        // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/game"))
                         {
-                           // получаем токен из строки запроса
+                           // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                             context.Token = accessToken;
                         }
                        return Task.CompletedTask;
@@ -98,22 +98,111 @@ internal class Program
     private static void Main(string[] args)
     {       
         var builder = WebApplication.CreateBuilder(args);
-        var services = builder.Services;
-        var configuration = new DataConfigurationManager(builder.Configuration);
-        
 
-        RegisterCoreServices(services);
-        RegisterDataSources(services, configuration);
-        RegisterIdentityServices(services, configuration);
-        RegisterSecurityServices(services, configuration);
+        // Add services to the container.
+        builder.Services.AddRazorPages();
+        builder.Services.AddAuthorization();
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = AuthOptions.ISSUER,
+                ValidateAudience = true,
+                ValidAudience = AuthOptions.AUDIENCE,
+                ValidateLifetime = true,
+                IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                ValidateIssuerSigningKey = true
+            };
 
-        var application = builder.Build();
-        application.MapHub<GameHub>("/game");
-        application.UseAuthentication();
-        application.UseAuthorization();
-        application.MapControllers();
-        application.UseCors();
-        application.Run();
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+
+                    // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+                    var path = context.HttpContext.Request.Path;
+                    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/game"))
+                    {
+                        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                        context.Token = accessToken;
+                    }
+                    return Task.CompletedTask;
+                }
+            };
+        });
+
+        builder.Services.AddControllers();
+        builder.Services.AddSignalR(hubOptions =>
+        {
+            hubOptions.EnableDetailedErrors = true;
+            hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
+            hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
+        });
+        builder.Services.AddEndpointsApiExplorer();
+
+        var app = builder.Build();
+        app.MapPost("/login", (GameHost loginModel) =>
+    {
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+        GameHost? host = hosts.FirstOrDefault(p => p.Name == loginModel.Name && p.Password == loginModel.Password);
+        // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ 401
+        if (host is null) return Results.Unauthorized();
+
+        var claims = new List<Claim> { new Claim(ClaimTypes.Name, host.Name) };
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ JWT-пїЅпїЅпїЅпїЅпїЅ
+        var jwt = new JwtSecurityToken(
+                issuer: AuthOptions.ISSUER,
+                audience: AuthOptions.AUDIENCE,
+                claims: claims,
+                expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)),
+                signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+        var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+        var response = new
+        {
+            access_token = encodedJwt,
+            username = host.Name
+        };
+
+        return Results.Json(response);
+    });
+
+        app.MapHub<GameHub>("/game");
+
+        // Configure the HTTP request pipeline.
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseExceptionHandler("/Error");
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
+        }
+        else
+        {
+            app.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
+                .AllowCredentials()); // allow credentials
+        }
+
+
+        app.UseAuthentication();   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ middleware пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+        app.UseAuthorization();   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ middleware пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+
+        app.UseRouting();
+
+        app.UseAuthorization();
+
+        app.MapRazorPages();
+
+        app.Run();
 
     }
 
@@ -148,11 +237,11 @@ internal class Program
     //        {
     //            var accessToken = context.Request.Query["access_token"];
 
-    //            // если запрос направлен хабу
+    //            // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
     //            var path = context.HttpContext.Request.Path;
     //            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/game"))
     //            {
-    //                // получаем токен из строки запроса
+    //                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     //                context.Token = accessToken;
     //            }
     //            return Task.CompletedTask;
@@ -167,13 +256,13 @@ internal class Program
 //var app = builder.Build();
 //    app.MapPost("/login", (GameHost loginModel) =>
 //{
-//    // находим пользователя 
+//    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
 //    GameHost? host = hosts.FirstOrDefault(p => p.Name == loginModel.Name && p.Password == loginModel.Password);
-//    // если пользователь не найден, отправляем статусный код 401
+//    // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ 401
 //    if (host is null) return Results.Unauthorized();
 
 //    var claims = new List<Claim> { new Claim(ClaimTypes.Name, host.Name) };
-//    // создаем JWT-токен
+//    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ JWT-пїЅпїЅпїЅпїЅпїЅ
 //    var jwt = new JwtSecurityToken(
 //            issuer: AuthOptions.ISSUER,
 //            audience: AuthOptions.AUDIENCE,
@@ -182,7 +271,7 @@ internal class Program
 //            signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
 //    var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-//    // формируем ответ
+//    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 //    var response = new
 //    {
 //        access_token = encodedJwt,
@@ -211,8 +300,8 @@ internal class Program
 //}
 
 
-//app.UseAuthentication();   // добавление middleware аутентификации 
-//app.UseAuthorization();   // добавление middleware авторизации 
+//app.UseAuthentication();   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ middleware пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+//app.UseAuthorization();   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ middleware пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
 
 //app.UseHttpsRedirection();
 //app.UseStaticFiles();
