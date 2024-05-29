@@ -1,21 +1,11 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Corps.Server.JWT;
-using System;
-using Corps.Server.Utils;
-using Corps.Server.Hubs;
-using Microsoft.Extensions.Options;
-using Corps.Server.Configuration.Repository;
-using Corps.Server.Data.Factory;
 using Corps.Server.Data;
-using Microsoft.Extensions.Configuration;
 using Corps.Server.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Corps.Server.Services;
+using Corps.Server.Configuration.Repository;
+using Corps.Server.Data.Initialization;
 
 internal class Program
 {
@@ -27,23 +17,17 @@ internal class Program
 
     private static void RegisterCoreServices(IServiceCollection services)
     {
-        services.AddSignalR();
         services.AddScoped<TokenService>();
-        services.AddTransient<ConfigurationManager>();
+        services.AddTransient<DataConfigurationManager>();
         services.AddControllers();
     }
     private static void RegisterDataSources(IServiceCollection services, DataConfigurationManager dataConfiguration)
     {
         var identityDataConfiguration = dataConfiguration.DataConfiguration.GetIdentityContextConfiguration(IsDebugMode);
 
-        services.AddSingleton<IContextFactory<IdentityContext>>(new IdentityContextFactory(identityDataConfiguration));
+        services.AddScoped(provider => new IdentityContext(identityDataConfiguration));
 
-        services.AddScoped(provider =>
-        {
-            var factory = provider.GetService<IContextFactory<IdentityContext>>();
-
-            return factory!.CreateDataContext();
-        });
+        services.AddScoped<IdentityInitializationScript>();
     }
     private static void RegisterIdentityServices(IServiceCollection services, DataConfigurationManager configuration)
     {
@@ -94,9 +78,15 @@ internal class Program
             });
         });
     }
+    private static async void InitializeDataSources(WebApplication application)
+    {
+        using var scope = application.Services.CreateScope();
+
+        await scope.ServiceProvider.GetRequiredService<IdentityInitializationScript>().Run();
+    }
 
     private static void Main(string[] args)
-    {       
+    {
         var builder = WebApplication.CreateBuilder(args);
         var services = builder.Services;
         var configuration = new DataConfigurationManager(builder.Configuration);
@@ -108,11 +98,13 @@ internal class Program
         RegisterSecurityServices(services, configuration);
 
         var application = builder.Build();
-        application.MapHub<GameHub>("/game");
         application.UseAuthentication();
         application.UseAuthorization();
         application.MapControllers();
         application.UseCors();
+
+        InitializeDataSources(application);
+
         application.Run();
 
     }
