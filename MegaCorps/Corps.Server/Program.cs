@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Corps.Server.Services;
 using Corps.Server.Configuration.Repository;
 using Corps.Server.Data.Initialization;
+using Corps.Server.Hubs;
 
 internal class Program
 {
@@ -17,6 +18,7 @@ internal class Program
 
     private static void RegisterCoreServices(IServiceCollection services)
     {
+        services.AddSignalR();
         services.AddScoped<TokenService>();
         services.AddTransient<DataConfigurationManager>();
         services.AddControllers();
@@ -98,6 +100,7 @@ internal class Program
         RegisterSecurityServices(services, configuration);
 
         var application = builder.Build();
+        application.MapHub<GameHub>("/game");
         application.UseAuthentication();
         application.UseAuthorization();
         application.MapControllers();
