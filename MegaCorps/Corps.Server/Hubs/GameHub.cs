@@ -23,6 +23,7 @@ namespace Corps.Server.Hubs
         /// <returns></returns>
         public async Task CreateLobby(string hostname)
         {
+            //TODO:
             //TODO: Генерировать код лобби и отвязаться от просто индекса, заменив его уникальным кодом из 6 знаков (1 млн кодов)
             _lobbies[_lobbies.Count] = new Lobby(_lobbies.Count,hostname);
             Lobby created = _lobbies[_lobbies.Count - 1];
@@ -100,6 +101,7 @@ namespace Corps.Server.Hubs
         /// <returns></returns>
         public async Task StartGame(int lobbyId)
         {
+            //TODO: Обработка готовности всех игроков перед началом игры
             //TODO: Обработка ошибки отсутствия лобби с таким идентификатором
             _lobbies[lobbyId].State = LobbyState.Started;
             _games[lobbyId] = new GameEngine(_lobbies[lobbyId].LobbyMemberList.Select(x => x.Username).ToList());
