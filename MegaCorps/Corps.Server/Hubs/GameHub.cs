@@ -103,8 +103,9 @@ namespace Corps.Server.Hubs
         {
             //TODO: Обработка готовности всех игроков перед началом игры
             //TODO: Обработка ошибки отсутствия лобби с таким идентификатором
+            foreach(var player in _lobbies[lobbyId].lobbyMembers)
             _lobbies[lobbyId].State = LobbyState.Started;
-            _games[lobbyId] = new GameEngine(_lobbies[lobbyId].LobbyMemberList.Select(x => x.Username).ToList());
+            _games[lobbyId] = new GameEngine(_lobbies[lobbyId].lobbyMembers.Select(x => x.Username).ToList());
             _games[lobbyId].Deal(6);
             foreach (Player player in _games[lobbyId].Players)
             {
@@ -179,13 +180,19 @@ namespace Corps.Server.Hubs
         /// <returns></returns>
         public async Task GameChangesShown(int lobbyId)
         {
-            //TODO: Обработка ошибки отсутствия лобби с таким идентификатором
-            //Выдаём новые карты игрокам
-            foreach (Player player in _games[lobbyId].Players)
+
+            if(_lobbies.Values.Where(x=>x.Id==lobbyId).Count()>0)
             {
-                await Clients.Group(lobbyId + "Player").SendAsync("GameChangesShown", player.Hand);
+                foreach (Player player in _games[lobbyId].Players)
+                {
+                    await Clients.Group(lobbyId + "Player").SendAsync("GameChangesShown", player.Hand);
+                }
+                await Clients.Group(lobbyId + "Host").SendAsync("GameChangesShown", _games[lobbyId]);
             }
-            await Clients.Group(lobbyId + "Host").SendAsync("GameChangesShown", _games[lobbyId]);
+            else
+            {
+               await Clients.Caller.SendAsync($"lobby {lobbyId} doesnt exist ");
+            }
         }
 
 
@@ -201,8 +208,8 @@ namespace Corps.Server.Hubs
             {
                 Console.WriteLine(item);
                 if (_lobbies.TryGetValue(item, out Lobby lobby))
-                {
-                    foreach (LobbyMember member in lobby.LobbyMemberList)
+                {                   
+                    foreach (LobbyMember member in lobby.lobbyMembers)
                     {
                         Console.Write(member.Username + " " + member.IsReady + "|");
                     }
