@@ -16,11 +16,12 @@ namespace Corps.Server.Hubs
         private static ConcurrentDictionary<int, Lobby> _lobbies = new ConcurrentDictionary<int, Lobby>();
         private static ConcurrentDictionary<int, GameEngine> _games = new ConcurrentDictionary<int, GameEngine>();
 
-        //TODO: Настроить авторизацию
+
         /// <summary>
         /// Хост создаёт лобби
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         public async Task CreateLobby(string hostname)
         {
             //TODO:
@@ -70,7 +71,6 @@ namespace Corps.Server.Hubs
         public async Task LobbyMemberReady(int lobbyId, int playerId)
         {
             //TODO: Обработка ошибки отсутствия лобби с таким идентификатором
-            //TODO: Идентификация участника лобби не по никнейму, а по айди - добавить в LobbyMemberID и выдавать его при подключении
             IEnumerable<Lobby> found = _lobbies.Values.Where(x => x.Id == lobbyId);
             if (found.Count() > 0)
             {
@@ -93,12 +93,12 @@ namespace Corps.Server.Hubs
             Log_Lobby(nameof(LobbyMemberReady));
         }
 
-        //TODO: Навесить авторизацию
         /// <summary>
         /// Хост даёт команду о начале игры. Инициализируем и отправляем клиентам соответствующие сообщения
         /// </summary>
         /// <param name="lobbyId">идентификатор лобби</param>
         /// <returns></returns>
+        [Authorize]
         public async Task StartGame(int lobbyId)
         {
             //TODO: Обработка готовности всех игроков перед началом игры
