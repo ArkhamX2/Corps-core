@@ -15,9 +15,13 @@ namespace Corps.Server.Hubs
         public LobbyState State{ get; set; }
         public Lobby(int id) {
             Id = id;
-            Code = GenerateUniqueSequence(id, CODE_LENGTH);
             lobbyMembers = new List<LobbyMember>();
             State = LobbyState.Waiting;
+            Code = GenerateUniqueSequence(id, CODE_LENGTH);
+        }
+        public Lobby(int id,string source):this(id)
+        {
+            Code = GenerateUniqueSequence(source + DateTime.Now,CODE_LENGTH);
         }
 
         public int Join(string username)

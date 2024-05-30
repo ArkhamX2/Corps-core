@@ -21,10 +21,10 @@ namespace Corps.Server.Hubs
         /// Хост создаёт лобби
         /// </summary>
         /// <returns></returns>
-        public async Task CreateLobby()
+        public async Task CreateLobby(string hostname)
         {
             //TODO: Генерировать код лобби и отвязаться от просто индекса, заменив его уникальным кодом из 6 знаков (1 млн кодов)
-            _lobbies[_lobbies.Count] = new Lobby(_lobbies.Count);
+            _lobbies[_lobbies.Count] = new Lobby(_lobbies.Count,hostname);
             Lobby created = _lobbies[_lobbies.Count - 1];
             while (_lobbies.Values.SkipLast(1).Any(x => x.Code == created.Code))
             {
