@@ -106,7 +106,7 @@ namespace Corps.Server.Hubs
             _games[lobbyId].Deal(6);
             foreach (Player player in _games[lobbyId].Players)
             {
-                await Clients.Group(lobbyId + "Player").SendAsync("GameStarted", player.Hand);
+                await Clients.Group(lobbyId + "Player").SendAsync($"GameStarted + {player.Id}", player.Hand);
             }
             await Clients.Group(lobbyId + "Host").SendAsync("GameStarted", _games[lobbyId]);
             Log_Lobby(nameof(StartGame));
