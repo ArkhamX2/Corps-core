@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,9 +9,13 @@ namespace MegaCorps.Core.Model.Enums
 {
     public enum CardDirection
     {
-        Left, 
+        [EnumMember(Value = "left")]
+        Left,
+        [EnumMember(Value = "right")]
         Right,
+        [EnumMember(Value = "all")]
         All,
+        [EnumMember(Value = "allbutnotme")]
         Allbutnotme
     }
 }
