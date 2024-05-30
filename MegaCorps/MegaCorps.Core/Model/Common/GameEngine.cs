@@ -52,6 +52,7 @@ namespace MegaCorps.Core.Model
             Deck = DeckBuilder.GetDeck();
             Deck.Shuffle();
             Players = UserSetup.CreateUserList(usernameList);
+            NumberOfPlayers = Players.Count;
             _win = false;
         }
 
@@ -86,7 +87,7 @@ namespace MegaCorps.Core.Model
         public void Deal(int dealCount)
         {
             List<List<GameCard>> hands = Deck.Deal(dealCount, NumberOfPlayers);
-         
+
             if (hands.Count == 0)
             {
                 Deck = DeckBuilder.GetDeck();

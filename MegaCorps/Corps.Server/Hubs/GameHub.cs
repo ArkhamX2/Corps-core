@@ -3,6 +3,7 @@ using MegaCorps.Core.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
+using System.Collections.Frozen;
 
 
 namespace Corps.Server.Hubs
@@ -100,21 +101,14 @@ namespace Corps.Server.Hubs
         public async Task StartGame(int lobbyId)
         {
             //TODO: Обработка ошибки отсутствия лобби с таким идентификатором
-            Console.WriteLine("lobby started");
             _lobbies[lobbyId].State = LobbyState.Started;
             _games[lobbyId] = new GameEngine(_lobbies[lobbyId].LobbyMemberList.Select(x => x.Username).ToList());
             _games[lobbyId].Deal(6);
-
-            Console.WriteLine("cards dealed");
             foreach (Player player in _games[lobbyId].Players)
             {
                 await Clients.Group(lobbyId + "Player").SendAsync("GameStarted", player.Hand);
             }
-
-            Console.WriteLine("sent to players");
             await Clients.Group(lobbyId + "Host").SendAsync("GameStarted", _games[lobbyId]);
-            Console.WriteLine("sent to host");
-
             Log_Lobby(nameof(StartGame));
         }
 
