@@ -19,4 +19,11 @@
     <ProjectReference Include="..\MegaCorps.Core\MegaCorps.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resource\Image\Background\Menu\" />
+    <Folder Include="Resource\Image\Background\Board\" />
+    <Folder Include="Resource\Image\Card\" />
+    <Folder Include="Resource\Image\UserIcon\" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,8 @@
+{
+  [
+    { "card_direction": "left" },
+    { "card_direction": "right" },
+    { "card_direction": "all" },
+    { "card_direction": "allbutnotme" }
+  ]
+}
