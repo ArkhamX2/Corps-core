@@ -79,7 +79,6 @@ namespace Corps.Server.Services
                 string json = r.ReadToEnd();
                 infos = DataSerializer.Deserialize<List<CardInfo>>(json);
             }
-
         }
 
         public async Task SendImagesToClients(List<Image> images,IClientProxy group)
