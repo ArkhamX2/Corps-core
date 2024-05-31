@@ -11,6 +11,8 @@ using Corps.Server.Utils.JSON;
 using Microsoft.AspNetCore.Identity.Data;
 using System.Security.Principal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace Corps.Server.Controllers
@@ -99,6 +101,29 @@ namespace Corps.Server.Controllers
             {
                 host = request.login,
                 Token = tokenService.CreateNewToken(identityUser)
+            }));
+        }
+        [Authorize]
+        [HttpPost("token")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            if (User.Identity is null || !User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+
+            var user = await identityContext.Users
+                .FirstOrDefaultAsync(user => user.UserName == User.Identity.Name);
+
+            if (user is null|| String.IsNullOrWhiteSpace(user.Email))
+            {
+                return Unauthorized();
+            }
+
+            return Ok(DataSerializer.Serialize(new SecurityResponse
+            {
+                host = user.Email,
+                Token = tokenService.CreateNewToken(user)
             }));
         }
 
