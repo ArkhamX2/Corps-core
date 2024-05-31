@@ -157,7 +157,7 @@ namespace Corps.Server.Hubs
                 int foundCardIndex = game.Players[playerId].Hand.Cards.FindIndex(x => x.Id == selectedCardId);
                 if (foundCardIndex == -1) throw new Exception("Не найдена карта с таким идентификатором");
 
-                game.Players[playerId].Hand.Cards[foundCardIndex].State = CardState.Used;
+                game.Players[playerId].Hand.Cards[foundCardIndex].State = game.Players[playerId].Hand.Cards[foundCardIndex].State == CardState.Used ? CardState.Unused : CardState.Used;
                 await Clients.Group(lobbyId + "Host").SendAsync("CardSelected", playerId, selectedCardId);
             }
             catch (Exception ex)
@@ -184,7 +184,7 @@ namespace Corps.Server.Hubs
                 if (_games.ContainsKey(lobbyId)) throw new Exception("Не найдена игра с таким идентификатором");
                 GameEngine game = _games[lobbyId];
                 if (!(playerId > 0 && playerId < game.Players.Count)) throw new Exception("Не найден игрок с таким идентификатором");
-                if(game.Players[playerId].IsReady == true)
+                if (game.Players[playerId].IsReady == true)
                 {
                     game.Players[playerId].IsReady = false;
                 }
