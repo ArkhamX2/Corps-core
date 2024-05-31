@@ -2,6 +2,7 @@
 using MegaCorps.Core.Model;
 using MegaCorps.Core.Model.Enums;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Razor.Infrastructure;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
@@ -110,7 +111,7 @@ namespace Corps.Server.Hubs
         {
             try
             {
-                if (_lobbies.ContainsKey(lobbyId)) throw new Exception("Не найдено лобби с таким идентификатором");
+                if (!_lobbies.ContainsKey(lobbyId)) throw new Exception("Не найдено лобби с таким идентификатором");
 
                 Lobby lobby = _lobbies[lobbyId];
 
@@ -132,6 +133,7 @@ namespace Corps.Server.Hubs
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
@@ -149,7 +151,7 @@ namespace Corps.Server.Hubs
             {
                 if (!_games.ContainsKey(lobbyId)) throw new Exception("Не найдено лобби с таким идентификатором");
                 GameEngine game = _games[lobbyId];
-                if (!(playerId > 0 && playerId < game.Players.Count)) throw new Exception("Не найден игрок с таким идентификатором");
+                if (!(playerId >= 0 && playerId < game.Players.Count)) throw new Exception("Не найден игрок с таким идентификатором");
                 int foundCardIndex = game.Players[playerId].Hand.Cards.FindIndex(x => x.Id == selectedCardId);
                 if (foundCardIndex == -1) throw new Exception("Не найдена карта с таким идентификатором");
 
@@ -158,6 +160,7 @@ namespace Corps.Server.Hubs
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
