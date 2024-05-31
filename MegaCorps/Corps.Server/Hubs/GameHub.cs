@@ -65,8 +65,7 @@ namespace Corps.Server.Hubs
 
                 await Groups.AddToGroupAsync(Context.ConnectionId, joinTo.Id + "Player");
                 await Clients.Group(joinTo.Id + "Player").SendAsync("JoinSuccess", joinTo, playerId);
-                foreach (var lobbyMembers in joinTo.lobbyMembers)
-                    await Clients.Group(joinTo.Id + "Player").SendAsync("PlayerJoined", joinTo);
+                await Clients.Group(joinTo.Id + "Player").SendAsync("PlayerJoined", joinTo);
                 await Clients.Group(joinTo.Id + "Host").SendAsync("PlayerJoined", joinTo);
 
                 Log_Lobby(nameof(JoinLobby));
@@ -93,8 +92,7 @@ namespace Corps.Server.Hubs
                 joinTo.PlayerReadyChange(playerId);
 
                 await Clients.Group(lobbyId + "Player").SendAsync("ReadySuccess");
-                foreach (var lobbyMembers in joinTo.lobbyMembers)
-                    await Clients.Group(joinTo.Id + "Player").SendAsync("LobbyMemberReady", joinTo);
+                await Clients.Group(lobbyId + "Player").SendAsync("LobbyMemberReady", joinTo);
                 await Clients.Group(lobbyId + "Host").SendAsync("LobbyMemberReady", _lobbies[lobbyId]);
 
                 Log_Lobby(nameof(LobbyMemberReady));
