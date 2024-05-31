@@ -84,7 +84,6 @@ namespace Corps.Server.Hubs
         {
             try
             {
-                //TODO: Обработка ошибки отсутствия лобби с таким идентификатором
                 if (!_lobbies.ContainsKey(lobbyId)) throw new Exception("Не найдено лобби с таким идентификатором");
 
                 Lobby joinTo = _lobbies[lobbyId];
@@ -127,7 +126,7 @@ namespace Corps.Server.Hubs
 
                 foreach (Player player in game.Players)
                     await Clients.Group(lobbyId + "Player").SendAsync($"GameStarted{player.Id}", player.Hand.Cards);
-                await Clients.Group(lobbyId + "Host").SendAsync("GameStarted", game);
+                await Clients.Group(lobbyId + "Host").SendAsync("GameStarted", game.Players);
 
                 Log_Lobby(nameof(StartGame));
             }
@@ -177,28 +176,19 @@ namespace Corps.Server.Hubs
         {
             try
             {
-                if (_lobbies.ContainsKey(lobbyId)) throw new Exception("Не найдено лобби с таким идентификатором");
+                if (_games.ContainsKey(lobbyId)) throw new Exception("Не найдена игра с таким идентификатором");
                 GameEngine game = _games[lobbyId];
                 if (!(playerId > 0 && playerId < game.Players.Count)) throw new Exception("Не найден игрок с таким идентификатором");
 
-                _games[lobbyId].Players[playerId].IsReady = true;
+                game.Players[playerId].IsReady = true;
 
-                if (_games[lobbyId].Players.All(x => x.IsReady))
+                if (game.Players.All(x => x.IsReady))
                 {
-                    await Clients.Group(lobbyId + "Host").SendAsync("AllPlayerIsReady");
-                    await Clients.Group(lobbyId + "Player").SendAsync("AllPlayerIsReady");
+                    await Clients.Group(lobbyId + "Host").SendAsync("AllPlayerReady");
+                    await Clients.Group(lobbyId + "Player").SendAsync("AllPlayerReady");
 
-                    _games[lobbyId].Turn();
-                    if (_games[lobbyId].Win)
-                    {
-                        await Clients.Group(lobbyId + "Host").SendAsync("WinnerFound", _games[lobbyId].Winner);
-                        await Clients.Group(lobbyId + "Player").SendAsync("WinnerFound", _games[lobbyId].Winner);
-                        return;
-                    }
-                    _games[lobbyId].Deal(3);
-                    return;
                 }
-                await Clients.Group(lobbyId + "Host").SendAsync("GamePlayerIsReady", playerId);
+                else await Clients.Group(lobbyId + "Host").SendAsync("GamePlayerIsReady", playerId);
             }
             catch (Exception ex)
             {
@@ -217,13 +207,22 @@ namespace Corps.Server.Hubs
         {
             try
             {
-                if (_lobbies.ContainsKey(lobbyId)) throw new Exception("Не найдено лобби с таким идентификатором");
-
-                foreach (Player player in _games[lobbyId].Players)
+                if (_games.ContainsKey(lobbyId)) throw new Exception("Не найдена игра с таким идентификатором");
+                GameEngine game = _games[lobbyId];
+                game.Turn();
+                if (game.Win)
                 {
-                    await Clients.Group(lobbyId + "Player").SendAsync("GameChangesShown", player.Hand);
+                    await Clients.Group(lobbyId + "Host").SendAsync("WinnerFound", game.Winner);
+                    await Clients.Group(lobbyId + "Player").SendAsync("WinnerFound", game.Winner);
+                    return;
                 }
-                await Clients.Group(lobbyId + "Host").SendAsync("GameChangesShown", _games[lobbyId]);
+                game.Deal(3);
+
+                foreach (Player player in game.Players)
+                {
+                    await Clients.Group(lobbyId + "Player").SendAsync("GameChangesShown", player.Hand.Cards);
+                }
+                await Clients.Group(lobbyId + "Host").SendAsync("GameChangesShown", game.Players);
 
             }
             catch (Exception ex)
@@ -232,8 +231,7 @@ namespace Corps.Server.Hubs
             }
         }
 
-        //TODO: реконнект.
-        //Есть вариант  всё пихнуть в метод JoinLobby и если у лобби статус Started перекидывать в игру.
+        //TODO: реконнект. Есть вариант  всё пихнуть в метод JoinLobby и если у лобби статус Started перекидывать в игру.
 
         private static void Log_Lobby(string callerMethod)
         {

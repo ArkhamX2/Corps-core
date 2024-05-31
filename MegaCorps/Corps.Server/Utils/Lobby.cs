@@ -57,7 +57,6 @@ namespace Corps.Server.Hubs
                 byte[] hashBytes = md5.ComputeHash(inputBytes);
 
                 StringBuilder sb = new StringBuilder();
-                //TODO: Сделать код реально 6-тизначным
                 for (int i = 0; i < length; i++) 
                 {
                     sb.Append(hashBytes[i].ToString("X2"));
