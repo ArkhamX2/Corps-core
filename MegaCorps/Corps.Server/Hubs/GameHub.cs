@@ -90,7 +90,7 @@ namespace Corps.Server.Hubs
                 if (!_lobbies.ContainsKey(lobbyId)) throw new Exception("Не найдено лобби с таким идентификатором");
 
                 Lobby joinTo = _lobbies[lobbyId];
-                joinTo.PlayerReady(playerId);
+                joinTo.PlayerReadyChange(playerId);
 
                 await Clients.Group(lobbyId + "Player").SendAsync("ReadySuccess");
                 foreach (var lobbyMembers in joinTo.lobbyMembers)

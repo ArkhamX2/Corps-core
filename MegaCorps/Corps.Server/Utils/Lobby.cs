@@ -36,12 +36,16 @@ namespace Corps.Server.Hubs
             lobbyMembers.RemoveAll(x => x.Id == playerId);
         }
 
-        public void PlayerReady(int playerId)
+        public void PlayerReadyChange(int playerId)
         {
             int foundPlayerIndex = lobbyMembers.FindIndex(x => x.Id == playerId);
             if (foundPlayerIndex != -1)
             {
-                lobbyMembers[foundPlayerIndex].IsReady = true;
+                if(lobbyMembers[foundPlayerIndex].IsReady == true)
+                {
+                    lobbyMembers[foundPlayerIndex].IsReady = false;
+                }
+                else lobbyMembers[foundPlayerIndex].IsReady = true;
             }
             else
             {
