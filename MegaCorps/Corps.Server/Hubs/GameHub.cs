@@ -179,7 +179,7 @@ namespace Corps.Server.Hubs
         /// <param name="lobbyId">идентификатор лобби</param>
         /// <param name="playerId">идентификатор игрока</param>
         /// <returns></returns>
-        public async Task PlayerReadyChange(int lobbyId, int playerId)
+        public async Task PlayerReady(int lobbyId, int playerId)
         {
             try
             {
