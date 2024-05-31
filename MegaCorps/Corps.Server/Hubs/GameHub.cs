@@ -175,15 +175,21 @@ namespace Corps.Server.Hubs
         /// <param name="lobbyId">идентификатор лобби</param>
         /// <param name="playerId">идентификатор игрока</param>
         /// <returns></returns>
-        public async Task PlayerReady(int lobbyId, int playerId)
+        public async Task PlayerReadyChange(int lobbyId, int playerId)
         {
             try
             {
                 if (_games.ContainsKey(lobbyId)) throw new Exception("Не найдена игра с таким идентификатором");
                 GameEngine game = _games[lobbyId];
                 if (!(playerId > 0 && playerId < game.Players.Count)) throw new Exception("Не найден игрок с таким идентификатором");
-
-                game.Players[playerId].IsReady = true;
+                if(game.Players[playerId].IsReady == true)
+                {
+                    game.Players[playerId].IsReady = false;
+                }
+                else
+                {
+                    game.Players[playerId].IsReady = true;
+                }
 
                 if (game.Players.All(x => x.IsReady))
                 {
