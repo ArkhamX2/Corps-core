@@ -112,14 +112,14 @@ namespace Corps.Server.Services
 
                 foreach (var imagePath in imageFiles)
                 {
-                    MapData map = new MapData
-                    {
-                        BackgroundImage = LoadImage(imagePath),
-                        IconImage = LoadIconImage(imagePath), // Логика для загрузки иконки изображения
-                        Text = Path.GetFileNameWithoutExtension(imagePath)
-                    };
+                    //MapData map = new MapData
+                    //{
+                    //    BackgroundImage = LoadImage(imagePath),
+                    //    IconImage = LoadIconImage(imagePath), // Логика для загрузки иконки изображения
+                    //    Text = Path.GetFileNameWithoutExtension(imagePath)
+                    //};
 
-                    mapList.Add(map);
+                    //mapList.Add(map);
                 }
             }
             else
@@ -127,7 +127,7 @@ namespace Corps.Server.Services
                 Console.WriteLine("Папка не найдена.");
             }
 
-            return mapList;
+            return "mapList";
         }
 
         // Метод для объединения массивов байтов

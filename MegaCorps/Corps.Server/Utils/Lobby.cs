@@ -9,7 +9,7 @@ namespace Corps.Server.Hubs
     {
         public int Id { get; set; }
         public string Code{ get; set; }
-        public static readonly int CODE_LENGTH = 6;
+        public static readonly int CODE_LENGTH = 3;
         public List<LobbyMember> lobbyMembers { get; private set; }
         
         public LobbyState State{ get; set; }
