@@ -42,6 +42,7 @@ namespace Corps.Server.Hubs
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await Clients.Caller.SendAsync("HandleException", "Произошла ошибка при создании лобби");
             }
         }
@@ -72,6 +73,7 @@ namespace Corps.Server.Hubs
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
@@ -99,6 +101,7 @@ namespace Corps.Server.Hubs
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
@@ -135,7 +138,7 @@ namespace Corps.Server.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.Message);
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
@@ -157,12 +160,15 @@ namespace Corps.Server.Hubs
                 int foundCardIndex = game.Players[playerId].Hand.Cards.FindIndex(x => x.Id == selectedCardId);
                 if (foundCardIndex == -1) throw new Exception("Не найдена карта с таким идентификатором");
 
-                game.Players[playerId].Hand.Cards[foundCardIndex].State = game.Players[playerId].Hand.Cards[foundCardIndex].State == CardState.Used ? CardState.Unused : CardState.Used;
+                game.Players[playerId].Hand.Cards[foundCardIndex].State = 
+                    game.Players[playerId].Hand.Cards[foundCardIndex].State == CardState.Used ? 
+                    CardState.Unused 
+                    : CardState.Used;
                 await Clients.Group(lobbyId + "Host").SendAsync("CardSelected", playerId, selectedCardId);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.Message);
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
@@ -181,28 +187,21 @@ namespace Corps.Server.Hubs
         {
             try
             {
-                if (_games.ContainsKey(lobbyId)) throw new Exception("Не найдена игра с таким идентификатором");
+                if (!_games.ContainsKey(lobbyId)) throw new Exception("Не найдена игра с таким идентификатором");
                 GameEngine game = _games[lobbyId];
                 if (!(playerId > 0 && playerId < game.Players.Count)) throw new Exception("Не найден игрок с таким идентификатором");
-                if (game.Players[playerId].IsReady == true)
-                {
-                    game.Players[playerId].IsReady = false;
-                }
-                else
-                {
-                    game.Players[playerId].IsReady = true;
-                }
+                game.Players[playerId].IsReady = !game.Players[playerId].IsReady;
 
                 if (game.Players.All(x => x.IsReady))
                 {
                     await Clients.Group(lobbyId + "Host").SendAsync("AllPlayerReady");
                     await Clients.Group(lobbyId + "Player").SendAsync("AllPlayerReady");
-
                 }
                 else await Clients.Group(lobbyId + "Host").SendAsync("GamePlayerIsReady", playerId);
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
@@ -218,7 +217,7 @@ namespace Corps.Server.Hubs
         {
             try
             {
-                if (_games.ContainsKey(lobbyId)) throw new Exception("Не найдена игра с таким идентификатором");
+                if (!_games.ContainsKey(lobbyId)) throw new Exception("Не найдена игра с таким идентификатором");
                 GameEngine game = _games[lobbyId];
                 game.Turn();
                 if (game.Win)
@@ -238,11 +237,13 @@ namespace Corps.Server.Hubs
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
 
         //TODO: реконнект. Есть вариант  всё пихнуть в метод JoinLobby и если у лобби статус Started перекидывать в игру.
+        //TODO: Логгирование ошибок. Вместо CW записывать в ILogger
 
         private static void Log_Lobby(string callerMethod)
         {
