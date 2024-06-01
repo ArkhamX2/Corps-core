@@ -116,16 +116,15 @@ namespace MegaCorps.Core.Model
             return devPoints - damage;
 
         }
-        public List<GameCard> SCard(int selectedCardid)
+        public List<GameCard> SCard(int selectedCardId)
         {
             List<GameCard> cards = new List<GameCard>();
-            GameCard selectcard = Cards.FirstOrDefault(card => card.Id==selectedCardid);
-            cards.Add(selectcard);
+            GameCard selectcard = Cards.FirstOrDefault(card => card.Id==selectedCardId);
             selectcard.State=CardState.Used;
+            cards.Add(selectcard);
             CardQueue.Add(selectcard);
             if (!(Cards.Where(card => card.State==CardState.Used).Count()>3))
             {
-                CardQueue.Add(selectcard);
                 CardQueue[0].State=CardState.Unused;
                 cards.Add(CardQueue[0]);
                 CardQueue.RemoveAt(0);
