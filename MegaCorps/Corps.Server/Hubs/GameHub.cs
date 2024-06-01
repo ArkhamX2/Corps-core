@@ -1,5 +1,6 @@
 ﻿using Corps.Server.CorpsException;
 using MegaCorps.Core.Model;
+using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Razor.Infrastructure;
@@ -160,11 +161,17 @@ namespace Corps.Server.Hubs
                 int foundCardIndex = game.Players[playerId].Hand.Cards.FindIndex(x => x.Id == selectedCardId);
                 if (foundCardIndex == -1) throw new Exception("Не найдена карта с таким идентификатором");
 
-                game.Players[playerId].Hand.Cards[foundCardIndex].State = 
-                    game.Players[playerId].Hand.Cards[foundCardIndex].State == CardState.Used ? 
-                    CardState.Unused 
-                    : CardState.Used;
-                await Clients.Group(lobbyId + "Host").SendAsync("CardSelected", playerId, selectedCardId);
+                List<GameCard> Cards=new List<GameCard>();
+                if(game.Players[playerId].Hand.Cards[foundCardIndex].State == CardState.Used)
+                {
+                    game.Players[playerId].Hand.Cards[foundCardIndex].State = CardState.Unused;
+                    Cards.Add(game.Players[playerId].Hand.Cards[foundCardIndex]);
+                }
+                else
+                {
+                    Cards=game.Players[playerId].Hand.SCard(selectedCardId);
+                }
+                await Clients.Group(lobbyId + "Host").SendAsync("CardSelected", playerId, Cards);
             }
             catch (Exception ex)
             {
@@ -262,5 +269,7 @@ namespace Corps.Server.Hubs
                 Console.WriteLine();
             }
         }
+  
+
     }
 }
