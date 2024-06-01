@@ -93,7 +93,7 @@ namespace MegaCorps.Core.Model
                 defenceTypes.AddRange(current.AttackTypes);
             }
 
-            //Карта защиты кроет карту атаки (сбрасывать тогда) ИЛИ как сейчас - если 2 трояна, а защита от трояна одна, то она защищает от обоих
+            //TODO:Карта защиты кроет карту атаки (сбрасывать тогда) ИЛИ как сейчас - если 2 трояна, а защита от трояна одна, то она защищает от обоих
             int damage = 0;
 
             foreach (AttackCard attack in Targeted)

@@ -55,6 +55,7 @@ namespace Corps.Analysis
                 {
                     List<List<int>> tmp = selectHelper.SelectCards(_engine.GetPlayersHands(), _selectionStrategyList, CARDS_TO_CHOOSE, _engine.GetPlayersScores(), _engine.Deck);
                     _engine.SelectCards(tmp);
+                    _engine.TargetCards();
                     _engine.Turn();
                     _engine.Deal(CARDS_TO_DEAL);
 

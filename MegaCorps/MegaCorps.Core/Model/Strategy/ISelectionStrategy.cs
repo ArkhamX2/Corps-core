@@ -86,7 +86,8 @@ namespace MegaCorps.Core.Model
                 engine = new GameEngine(new List<int>(scores), cardsCopy, DeckBuilder.CopyDeck(deck));
                 List<List<int>> tmpSelected = selectHelper.SelectCards(engine.GetPlayersHands(), selectionStrategies, CARDS_TO_CHOOSE, engine.GetPlayersScores(), engine.Deck);
                 tmpSelected[0] = currentChoose;
-                engine.SelectCards(tmpSelected); 
+                engine.SelectCards(tmpSelected);
+                engine.TargetCards();
                 engine.Turn();
                 engine.Deal(CARDS_TO_DEAL); 
                 turnCount++;
@@ -94,6 +95,7 @@ namespace MegaCorps.Core.Model
                 while (!engine.Win)
                 {
                     engine.SelectCards(selectHelper.SelectCards(engine.GetPlayersHands(), selectionStrategies, CARDS_TO_CHOOSE, engine.GetPlayersScores(), engine.Deck));
+                    engine.TargetCards();
                     engine.Turn();
                     engine.Deal(CARDS_TO_DEAL);
                     turnCount++;

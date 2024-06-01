@@ -211,7 +211,8 @@ namespace Corps.Server.Hubs
 
                 if (game.Players.All(x => x.IsReady))
                 {
-                    await Clients.Group(lobbyId + "Host").SendAsync("AllPlayerReady");
+                    game.TargetCards();
+                    await Clients.Group(lobbyId + "Host").SendAsync("AllPlayerReady", game.Players);
                     await Clients.Group(lobbyId + "Player").SendAsync("AllPlayerReady");
                 }
                 else await Clients.Group(lobbyId + "Host").SendAsync("GamePlayerIsReady", playerId);

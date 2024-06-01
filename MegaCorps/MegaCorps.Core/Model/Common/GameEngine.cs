@@ -127,11 +127,7 @@ namespace MegaCorps.Core.Model
 
             return hands;
         }
-
-        /// <summary>
-        /// Совершить 1 ход
-        /// </summary>
-        public void Turn()
+        public void TargetCards()
         {
             List<List<GameCard>> all = GetPlayersHands();
             for (int i = 0; i < all.Count(); i++)
@@ -166,8 +162,22 @@ namespace MegaCorps.Core.Model
                         default:
                             break;
                     }
+                    Players.ForEach(player => {
+                        if (player.Hand.Cards.Select(x => x.Id).Contains(currentCard.Id))
+                        {
+                            player.Hand.Cards.Remove(currentCard);
+                        }
+                    });
                 }
+
             }
+        }
+
+        /// <summary>
+        /// Совершить 1 ход
+        /// </summary>
+        public void Turn()
+        {
             foreach (Player player in Players)
             {
                 player.PlayHand();
@@ -183,6 +193,8 @@ namespace MegaCorps.Core.Model
             Winner = Players.FindIndex(player => player.Score == Players.Max((item) => item.Score)) + 1;
 
         }
+
+       
 
         /// <summary>
         /// Выбрать карты в соответствии с списком индексов

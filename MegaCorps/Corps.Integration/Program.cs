@@ -46,5 +46,15 @@ GameEngine gameEngine = new GameEngine(4);
 List<CardDTO> dTOs = imageService.GetCardDTOs(gameEngine.Deck.UnplayedCards);
 
 dTOs.ForEach(cardDTO => {
-    Console.WriteLine(string.Join(" ",new List<string>() {Convert.ToString(cardDTO.Id),string.Join("|",new List<string> { cardDTO.Info.Title, cardDTO.Info.Description, cardDTO.Info.Direction, Convert.ToString(cardDTO.Info.Power) },cardDTO.Background.Length, cardDTO.Icon.Length) }));
+    Console.WriteLine(string.Join(" ",
+        new List<string>() {
+            Convert.ToString(cardDTO.Id),
+            string.Join("|",new List<string> { 
+                cardDTO.Info.Title, 
+                cardDTO.Info.Description, 
+                cardDTO.Info.Direction, 
+                Convert.ToString(cardDTO.Info.Power) 
+            }),
+            Convert.ToString(cardDTO.Background.Length),
+            Convert.ToString(cardDTO.Icon.Length) }));
 });

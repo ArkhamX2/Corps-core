@@ -201,6 +201,7 @@ namespace Corps.Server.Services
                 }
                 else if (x is DefenceCard)
                 {
+                    //TODO: Отправляет список типов атак от которых защищает
                     DefenceCardDescriptionInfo defenceCardDescriptionInfo = 
                     defenceInfos.Where(
                         y => y.AttackTypeList.Select(z => z.AttackType).
@@ -217,6 +218,7 @@ namespace Corps.Server.Services
                         {
                             Title = defenceCardDescriptionInfo.Title,
                             Description = defenceCardDescriptionInfo.Description,
+                            
                         },
                     });
                 }
