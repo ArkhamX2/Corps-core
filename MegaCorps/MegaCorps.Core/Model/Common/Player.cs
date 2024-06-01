@@ -69,7 +69,7 @@ namespace MegaCorps.Core.Model
         /// Направленные на игрока атаки
         /// </summary>
         public List<AttackCard> Targeted { get => _targeted; set => _targeted = value; }
-        public List<GameCard> CardQueue { get; private set; } = new List<GameCard>();
+        public List<GameCard> SelectedCardQueue { get; private set; } = new List<GameCard>();
         public PlayerHand() { Cards = new List<GameCard>(); }
 
         public PlayerHand(List<GameCard> cards)
@@ -116,20 +116,17 @@ namespace MegaCorps.Core.Model
             return devPoints - damage;
 
         }
-        public List<GameCard> SCard(int selectedCardId)
+        public int PushCardToSelectedQueue(int selectedCardId)
         {
-            List<GameCard> cards = new List<GameCard>();
             GameCard selectcard = Cards.FirstOrDefault(card => card.Id==selectedCardId);
-            selectcard.State=CardState.Used;
-            cards.Add(selectcard);
-            CardQueue.Add(selectcard);
-            if (CardQueue.Count > 3)
+            int unSelectId = -1;
+            SelectedCardQueue.Add(selectcard);
+            if (SelectedCardQueue.Count > 3)
             {
-                CardQueue[0].State=CardState.Unused;
-                cards.Add(CardQueue[0]);
-                CardQueue.RemoveAt(0);
+                unSelectId = SelectedCardQueue[0].Id;
+                SelectedCardQueue.RemoveAt(0);
             }            
-            return cards;
+            return unSelectId;
         }
     }
 }

@@ -165,13 +165,23 @@ namespace Corps.Server.Hubs
                 if(game.Players[playerId].Hand.Cards[foundCardIndex].State == CardState.Used)
                 {
                     game.Players[playerId].Hand.Cards[foundCardIndex].State = CardState.Unused;
+                    game.Players[playerId].Hand.SelectedCardQueue.Remove(game.Players[playerId].Hand.Cards.FirstOrDefault(card => card.Id == selectedCardId));
                     Cards.Add(game.Players[playerId].Hand.Cards[foundCardIndex]);
                 }
                 else
                 {
-                    Cards=game.Players[playerId].Hand.SCard(selectedCardId);
+                    game.Players[playerId].Hand.Cards[foundCardIndex].State=CardState.Used;
+                    Cards.Add(game.Players[playerId].Hand.Cards[foundCardIndex]);
+                    int unSelectedId = game.Players[playerId].Hand.PushCardToSelectedQueue(selectedCardId);
+                    if (unSelectedId != -1)
+                    {
+                        var foundUnselectCardIndex = game.Players[playerId].Hand.Cards.FindIndex(x => x.Id == unSelectedId);
+                        game.Players[playerId].Hand.Cards[foundUnselectCardIndex].State = CardState.Unused;
+                        Cards.Add(game.Players[playerId].Hand.Cards[foundUnselectCardIndex]);
+                    }
                 }
                 await Clients.Group(lobbyId + "Host").SendAsync("CardSelected", playerId, Cards);
+                await Clients.Group(lobbyId + "Player").SendAsync($"CardSelected{playerId}", Cards);
             }
             catch (Exception ex)
             {
