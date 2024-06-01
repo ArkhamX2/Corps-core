@@ -7,7 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegaCorps.Core", "MegaCorps
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corps.Analysis", "Corps.Analysis\Corps.Analysis.csproj", "{7E4F2817-4C62-4079-9F3A-11BD4D46FD48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corps.Server", "Corps.Server\Corps.Server.csproj", "{60FF379D-D256-4372-86E4-BD58BC67D5B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corps.Server", "Corps.Server\Corps.Server.csproj", "{60FF379D-D256-4372-86E4-BD58BC67D5B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corps.Integration", "Corps.Integration\Corps.Integration.csproj", "{227B57F3-DFCE-4080-9DE2-56B63C3CA647}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{60FF379D-D256-4372-86E4-BD58BC67D5B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60FF379D-D256-4372-86E4-BD58BC67D5B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60FF379D-D256-4372-86E4-BD58BC67D5B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{227B57F3-DFCE-4080-9DE2-56B63C3CA647}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{227B57F3-DFCE-4080-9DE2-56B63C3CA647}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{227B57F3-DFCE-4080-9DE2-56B63C3CA647}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{227B57F3-DFCE-4080-9DE2-56B63C3CA647}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

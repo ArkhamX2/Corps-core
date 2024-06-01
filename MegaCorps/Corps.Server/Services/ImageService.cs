@@ -5,10 +5,12 @@ using MegaCorps.Core.Model.Enums;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.FileProviders.Physical;
 using Newtonsoft.Json;
+using System;
 using System.Text;
 using static System.Net.Mime.MediaTypeNames;
 public class Image
 {
+    public string Name { get; set; }
     public ImageType Type { get; set; }
     public byte[] ImageData { get; set; }
 }
@@ -19,131 +21,227 @@ public enum ImageType
     Board,
     CardBackground,
     CardIcon,
+    UserIcon,
 }
 
-public class CardImage
+public class CardDTO
 {
-    public CardImage(AttackCard attackCard)
-    {
-        Id = attackCard.Id;
-    }
-
-    public CardImage(DefenceCard defenceCard)
-    {
-        Id = defenceCard.Id;
-    }
-
-    public CardImage(DeveloperCard developerCard)
-    {
-        Id = developerCard.Id;
-    }
-
     public int Id { get; set; }
-    public Image Background { get; set; }
-    public Image Icon { get; set; }
-    public CardDirectionDTO Direction { get; set; }
-    public CardInfo Info { get; set; }
+    public byte[] Background { get; set; }
+    public byte[] Icon { get; set; }
+    public CardInfoDTO Info { get; set; }
 }
 
-public class CardInfo
+public class CardInfoDTO
+{
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public string? Direction { get; set; }
+    public int? Power { get; set; }
+}
+
+public class AttackCardDescriptionInfo
 {
     [JsonProperty("attack_type")]
-    public AttackType AttackType{ get; set; }
+    public AttackType AttackType { get; set; }
     public string Title { get; set; }
-    public string Description{ get; set; }
+    public string Description { get; set; }
+}
+public class DefenceCardDescriptionInfo
+{
+    [JsonProperty("attack_types")]
+    public List<AttackTypeDTO> AttackTypeList { get; set; }
+    public string Title { get; set; }
+    public string Description { get; set; }
 }
 
-public class CardDirectionDTO
+public class AttackTypeDTO
+{
+    [JsonProperty("attack_type")]
+    public AttackType AttackType { get; set; }
+}
+public class DeveloperCardDescriptionInfo
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public string Description { get; set; }
+}
+
+public class CardDirectionInfo
 {
     [JsonProperty("card_direction")]
     public CardDirection Direction { get; set; }
+    public string Title { get; set; }
+}
+
+public class ImageComparer : IComparer<Image>
+{
+    public int Compare(Image x, Image y)
+    {
+        if (x == null || y == null)
+        {
+            return 0;
+        }
+
+        return x.Name.CompareTo(y.Name);
+    }
+}
+public class AttackTypeComparer : IEqualityComparer<AttackType>
+{
+    public bool Equals(AttackType x, AttackType y)
+    {
+        return x == y;
+    }
+
+    public int GetHashCode(AttackType obj)
+    {
+        return obj.ToString().GetHashCode() ^ obj.ToString().GetHashCode();
+    }
 }
 
 namespace Corps.Server.Services
 {
     public class ImageService
     {
-        Dictionary<(AttackType,CardDirection),CardInfo> attackTypes = new Dictionary<(AttackType, CardDirection), CardInfo>();
-        List<CardDirectionDTO> directions = new List<CardDirectionDTO>();
-        List<CardInfo> infos = new List<CardInfo>();
+        private List<Image> backgroundImages = new List<Image>();
+        private List<Image> userImages = new List<Image>();
+        public List<Image> BackgroundImages { get => backgroundImages; set => backgroundImages = value; }
+        public List<Image> UserImages { get => userImages; set => userImages = value; }
 
-        public ImageService()
+        public ImageService(string directionPath = "..\\Resource\\Text\\Card\\Direction\\directions.json",
+            string descriptionPath = "..\\Resource\\Text\\Card\\Description",
+            string imagePath = "..\\Resource\\Image")
         {
-            using (StreamReader r = new StreamReader("..\\Resource\\Text\\Card\\Direction\\directions.json"))
-            {
-                string json = r.ReadToEnd();
-                directions = DataSerializer.Deserialize<List<CardDirectionDTO>>(json);
-            }
-            using (StreamReader r = new StreamReader("..\\Resource\\Text\\Card\\Description\\descriptions.json"))
-            {
-                string json = r.ReadToEnd();
-                infos = DataSerializer.Deserialize<List<CardInfo>>(json);
-            }
+            GetTextData(directionPath, descriptionPath);
+            GetImageData(imagePath);
         }
 
-        public async Task SendImagesToClients(List<Image> images,IClientProxy group)
+        private void GetTextData(string directionPath, string descriptionPath)
         {
-            await group.SendAsync("ReceiveImages", images.Select(bg => bg.ImageData).ToList());
+            using (StreamReader r = new StreamReader(directionPath))
+            {
+                string json = r.ReadToEnd();
+                directions = DataSerializer.Deserialize<List<CardDirectionInfo>>(json);
+            }
+            using (StreamReader r = new StreamReader(descriptionPath + "\\attack_descriptions.json"))
+            {
+                string json = r.ReadToEnd();
+                attackInfos = DataSerializer.Deserialize<List<AttackCardDescriptionInfo>>(json);
+            }
+            using (StreamReader r = new StreamReader(descriptionPath + "\\defence_descriptions.json"))
+            {
+                string json = r.ReadToEnd();
+                defenceInfos = DataSerializer.Deserialize<List<DefenceCardDescriptionInfo>>(json);
+            }
+            using (StreamReader r = new StreamReader(descriptionPath + "\\developer_descriptions.json"))
+            {
+                string json = r.ReadToEnd();
+                developerInfos = new Queue<DeveloperCardDescriptionInfo>(DataSerializer.Deserialize<List<DeveloperCardDescriptionInfo>>(json));
+            }
         }
-        public async Task SendCardsToClients(List<GameCard> cards, IClientProxy group)
+
+        private void GetImageData(string folderPath)
         {
-            List<CardImage> images = new List<CardImage>();
-            cards.ForEach(x => {
-                if(x is AttackCard)
-                {
-                    images.Add(new CardImage((x as AttackCard)!));
-                }
-                else if (x is DefenceCard)
-                {
-                    images.Add(new CardImage((x as DefenceCard)!));
-                }
-                else if (x is DeveloperCard)
-                {
-                    images.Add(new CardImage((x as DeveloperCard)!));
-                }
-            });
-            await group.SendAsync("ReceiveCards", images);
+            BackgroundImages.AddRange(GetImagesFromFolder(folderPath + "\\Background\\Board", ImageType.Board));
+            BackgroundImages.AddRange(GetImagesFromFolder(folderPath + "\\Background\\Menu", ImageType.Menu));
+            UserImages.AddRange(GetImagesFromFolder(folderPath + "\\UserIcon", ImageType.UserIcon));
+            cardBackgroundImages.AddRange(GetImagesFromFolder(folderPath + "\\Card\\Background", ImageType.CardBackground));
+            cardIconImages.AddRange(GetImagesFromFolder(folderPath + "\\Card\\Icon", ImageType.CardIcon));
         }
-        private string GetCardDataFromFolder(string folderPath)
+
+        private List<Image> GetImagesFromFolder(string folderPath, ImageType type)
         {
             if (Directory.Exists(folderPath))
             {
-                string[] imageFiles = Directory.GetFiles(folderPath, "*.jpg");
-
-                foreach (var imagePath in imageFiles)
+                return Directory.GetFiles(folderPath, "*.png").ToList().Select(imagePath => new Image
                 {
-                    //MapData map = new MapData
-                    //{
-                    //    BackgroundImage = LoadImage(imagePath),
-                    //    IconImage = LoadIconImage(imagePath), // Логика для загрузки иконки изображения
-                    //    Text = Path.GetFileNameWithoutExtension(imagePath)
-                    //};
-
-                    //mapList.Add(map);
-                }
+                    Name = imagePath.Split('\\').Last().Split('.').First(),
+                    ImageData = File.ReadAllBytes(imagePath),
+                    Type = type
+                }).ToList();
             }
-            else
-            {
-                Console.WriteLine("Папка не найдена.");
-            }
-
-            return "mapList";
+            throw new Exception("Указанный путь не найден");
         }
-
-        // Метод для объединения массивов байтов
-        private static byte[] ConcatenateByteArrays(params byte[][] arrays)
+        public async Task SendImagesToClients(List<Image> images, IClientProxy group)
         {
-            int totalLength = arrays.Sum(arr => arr.Length);
-            byte[] result = new byte[totalLength];
-            int offset = 0;
-
-            foreach (byte[] arr in arrays)
-            {
-                Buffer.BlockCopy(arr, 0, result, offset, arr.Length);
-                offset += arr.Length;
-            }
-
-            return result;
+            await group.SendAsync("ReceiveImages", images.Select(bg => bg.ImageData).ToList());
         }
+
+        public List<CardDirectionInfo> directions = new List<CardDirectionInfo>();
+        public List<AttackCardDescriptionInfo> attackInfos = new List<AttackCardDescriptionInfo>();
+        public List<DefenceCardDescriptionInfo> defenceInfos = new List<DefenceCardDescriptionInfo>();
+        public Queue<DeveloperCardDescriptionInfo> developerInfos = new Queue<DeveloperCardDescriptionInfo>();
+        public List<Image> cardBackgroundImages = new List<Image>();
+        public List<Image> cardIconImages = new List<Image>();
+        public List<CardDTO> GetCardDTOs(List<GameCard> cards)
+        {
+            byte[] attackBackgroundImageData = cardBackgroundImages.Where(x => x.Name.Contains("attack")).First().ImageData;
+            byte[] defenceBackgroundImageData = cardBackgroundImages.Where(x => x.Name.Contains("defence")).First().ImageData;
+            byte[] developerBackgroundImageData = cardBackgroundImages.Where(x => x.Name.Contains("developer")).First().ImageData;
+            Queue<byte[]> developerIconImageDataQueue = new Queue<byte[]>(cardIconImages.Where(x => x.Name.Contains("developer")).ToList().OrderBy(x => x, new ImageComparer()).Select(x => x.ImageData));
+            List<CardDTO> DTO = new List<CardDTO>();
+            cards.ForEach(x =>
+            {
+                if (x is AttackCard)
+                {
+                    DTO.Add(
+                    new CardDTO()
+                    {
+                        Id = x.Id,
+                        Background = attackBackgroundImageData,
+                        Icon = cardIconImages.Where(x => x.Name.Contains("attack")).First().ImageData,
+                        Info = new CardInfoDTO()
+                        {
+                            Title = attackInfos.Where(y => y.AttackType == (x as AttackCard).AttackType).First().Title,
+                            Description = attackInfos.Where(y => y.AttackType == (x as AttackCard).AttackType).First().Description,
+                            Direction = directions.Where(y => y.Direction == (x as AttackCard).Direction).First().Title,
+                            Power = (x as AttackCard).Damage,
+                        },
+                    });
+                }
+                else if (x is DefenceCard)
+                {
+                    DefenceCardDescriptionInfo defenceCardDescriptionInfo = 
+                    defenceInfos.Where(
+                        y => y.AttackTypeList.Select(z => z.AttackType).
+                        SequenceEqual((x as DefenceCard).AttackTypes, new AttackTypeComparer())
+                        ).First();
+
+                    DTO.Add(
+                    new CardDTO()
+                    {
+                        Id = x.Id,
+                        Background = defenceBackgroundImageData,
+                        Icon = cardIconImages.Where(x => x.Name.Contains("defence")).First().ImageData,
+                        Info = new CardInfoDTO()
+                        {
+                            Title = defenceCardDescriptionInfo.Title,
+                            Description = defenceCardDescriptionInfo.Description,
+                        },
+                    });
+                }
+                else if (x is DeveloperCard)
+                {
+                    DeveloperCardDescriptionInfo developerInfo = developerInfos.Dequeue();
+                    byte[] developerIconImageData = developerIconImageDataQueue.Dequeue();
+                    developerInfos.Enqueue(developerInfo);
+                    developerIconImageDataQueue.Enqueue(developerIconImageData);
+                    DTO.Add(
+                    new CardDTO()
+                    {
+                        Id = x.Id,
+                        Background = developerBackgroundImageData,
+                        Icon = developerIconImageData,
+                        Info = new CardInfoDTO()
+                        {
+                            Title = developerInfo.Title,
+                            Description = developerInfo.Description,
+                        },
+                    });
+                }
+            });
+            return DTO;
+        }
+
     }
 }

@@ -26,4 +26,12 @@
     <Folder Include="Resource\Image\UserIcon\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Resource\Text\Card\Description\defence_descriptions.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

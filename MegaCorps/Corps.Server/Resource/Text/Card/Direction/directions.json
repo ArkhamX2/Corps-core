@@ -1,8 +1,18 @@
-{
-  [
-    { "card_direction": "left" },
-    { "card_direction": "right" },
-    { "card_direction": "all" },
-    { "card_direction": "allbutnotme" }
-  ]
-}
+[
+  {
+    "card_direction": "left",
+    "title": "Левый сосед"
+  },
+  {
+    "card_direction": "right",
+    "title": "Правый сосед"
+  },
+  {
+    "card_direction": "all",
+    "title": "Все игроки(включая себя)"
+  },
+  {
+    "card_direction": "allbutnotme",
+    "title": "Все игроки(кроме себя)"
+  }
+]
