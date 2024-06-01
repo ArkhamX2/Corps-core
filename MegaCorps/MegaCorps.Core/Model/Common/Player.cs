@@ -123,7 +123,7 @@ namespace MegaCorps.Core.Model
             selectcard.State=CardState.Used;
             cards.Add(selectcard);
             CardQueue.Add(selectcard);
-            if (!(Cards.Where(card => card.State==CardState.Used).Count()>3))
+            if (CardQueue.Count > 3)
             {
                 CardQueue[0].State=CardState.Unused;
                 cards.Add(CardQueue[0]);
