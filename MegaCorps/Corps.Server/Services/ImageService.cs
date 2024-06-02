@@ -27,6 +27,7 @@ public enum ImageType
 public class CardDTO
 {
     public int Id { get; set; }
+    public string Type { get; set; }
     public byte[] Background { get; set; }
     public byte[] Icon { get; set; }
     public CardInfoDTO Info { get; set; }
@@ -188,6 +189,7 @@ namespace Corps.Server.Services
                     new CardDTO()
                     {
                         Id = x.Id,
+                        Type = "attack",
                         Background = attackBackgroundImageData,
                         Icon = cardIconImages.Where(x => x.Name.Contains("attack")).First().ImageData,
                         Info = new CardInfoDTO()
@@ -212,6 +214,7 @@ namespace Corps.Server.Services
                     new CardDTO()
                     {
                         Id = x.Id,
+                        Type = "defence",
                         Background = defenceBackgroundImageData,
                         Icon = cardIconImages.Where(x => x.Name.Contains("defence")).First().ImageData,
                         Info = new CardInfoDTO()
@@ -232,6 +235,7 @@ namespace Corps.Server.Services
                     new CardDTO()
                     {
                         Id = x.Id,
+                        Type = "developer",
                         Background = developerBackgroundImageData,
                         Icon = developerIconImageData,
                         Info = new CardInfoDTO()

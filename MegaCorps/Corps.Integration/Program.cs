@@ -49,6 +49,7 @@ dTOs.ForEach(cardDTO => {
     Console.WriteLine(string.Join(" ",
         new List<string>() {
             Convert.ToString(cardDTO.Id),
+            cardDTO.Type,
             string.Join("|",new List<string> { 
                 cardDTO.Info.Title, 
                 cardDTO.Info.Description, 
