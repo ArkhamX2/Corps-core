@@ -22,18 +22,21 @@ namespace Corps.Server.Controllers
     public class JWTController(
         IdentityContext identityContext,
         TokenService tokenService,
-        UserManager<IdentityUser> userManager
+        UserManager<IdentityUser> userManager,
+        ILogger<JWTController> logger
         ) : ControllerBase
     {
         private IdentityContext identityContext = identityContext;
         private  TokenService tokenService = tokenService;
         private  UserManager<IdentityUser> userManager = userManager;
+        private  ILogger<JWTController> logger = logger;
 
         [HttpPost("login")]
         public async Task<ActionResult<SecurityResponse>> Login([FromBody] SecurityRequest request)
         {
             if (!ModelState.IsValid)
             {
+                logger.LogError("model isnt valid");
                 return BadRequest(request);
             }
 
@@ -41,15 +44,17 @@ namespace Corps.Server.Controllers
 
             if (identityUser is null)
             {
+                logger.LogError("User didnt exist");
                 return Unauthorized();
             }
 
             if (!await userManager.CheckPasswordAsync(identityUser, request.password))
             {
+                logger.LogError("Wrong Password");
                 return Unauthorized();
             }
 
-                       
+            logger.LogInformation("login success");         
             return Ok(DataSerializer.Serialize(new SecurityResponse
             {
                 host = request.login,
@@ -96,7 +101,7 @@ namespace Corps.Server.Controllers
             {
                 throw new Exception("Internal error! Please try again.");
             }
-                     
+            logger.LogInformation("register success");
             return Ok(DataSerializer.Serialize(new SecurityResponse
             {
                 host = request.login,

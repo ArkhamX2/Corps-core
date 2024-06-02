@@ -15,10 +15,11 @@ namespace Corps.Server.Hubs
     /// <summary>
     /// Хаб лобби и игры
     /// </summary>
-    public class GameHub : Hub
+    public class GameHub(ILogger<GameHub> logger) : Hub
     {
         private static ConcurrentDictionary<int, Lobby> _lobbies = new ConcurrentDictionary<int, Lobby>();
         private static ConcurrentDictionary<int, GameEngine> _games = new ConcurrentDictionary<int, GameEngine>();
+        private ILogger<GameHub> logger = logger;
 
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace Corps.Server.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                logger.LogError(ex.Message);
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
@@ -102,7 +103,7 @@ namespace Corps.Server.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                logger.LogError(ex.Message);
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
@@ -139,7 +140,7 @@ namespace Corps.Server.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                logger.LogError(ex.Message);
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
@@ -185,7 +186,7 @@ namespace Corps.Server.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                logger.LogError(ex.Message);
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
@@ -219,7 +220,7 @@ namespace Corps.Server.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                logger.LogError(ex.Message);
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
@@ -255,7 +256,7 @@ namespace Corps.Server.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                logger.LogError(ex.Message);
                 await Clients.Caller.SendAsync("HandleException", ex.Message);
             }
         }
