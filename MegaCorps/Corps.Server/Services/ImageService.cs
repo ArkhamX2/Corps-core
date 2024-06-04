@@ -109,9 +109,9 @@ namespace Corps.Server.Services
         public List<Image> BackgroundImages { get => backgroundImages; set => backgroundImages = value; }
         public List<Image> UserImages { get => userImages; set => userImages = value; }
 
-        public const string directionPath = "..\\Resource\\Text\\Card\\Direction\\directions.json";
-        public const string descriptionPath = "..\\Resource\\Text\\Card\\Description";
-        public const string imagePath = "..\\Resource\\Image";
+        public string directionPath = "..\\Resource\\Text\\Card\\Direction\\directions.json";
+        public string descriptionPath = "..\\Resource\\Text\\Card\\Description";
+        public string imagePath = "..\\Resource\\Image";
 
 
         public ImageService()
@@ -119,6 +119,15 @@ namespace Corps.Server.Services
             GetTextData(directionPath, descriptionPath);
             GetImageData(imagePath);
         }
+        public ImageService(string DirectionPath, string DescriptionPath, string ImagePath)
+        {
+            directionPath=DirectionPath;
+            descriptionPath=DescriptionPath; 
+            imagePath=ImagePath;
+            GetTextData(directionPath, descriptionPath);
+            GetImageData(imagePath);
+        }
+
 
         private void GetTextData(string directionPath, string descriptionPath)
         {
