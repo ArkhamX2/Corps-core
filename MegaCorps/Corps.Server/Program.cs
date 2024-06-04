@@ -21,6 +21,7 @@ internal class Program
     {
         services.AddSignalR();
         services.AddScoped<TokenService>();
+        services.AddScoped<ImageService>();
         services.AddTransient<DataConfigurationManager>();
         services.AddControllers();
     }
