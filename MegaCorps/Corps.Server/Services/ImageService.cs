@@ -109,9 +109,9 @@ namespace Corps.Server.Services
         public List<Image> BackgroundImages { get => backgroundImages; set => backgroundImages = value; }
         public List<Image> UserImages { get => userImages; set => userImages = value; }
 
-        public string directionPath = "..\\Resource\\Text\\Card\\Direction\\directions.json";
-        public string descriptionPath = "..\\Resource\\Text\\Card\\Description";
-        public string imagePath = "..\\Resource\\Image";
+        public string directionPath = ".\\Resource\\Text\\Card\\Direction\\directions.json";
+        public string descriptionPath = ".\\Resource\\Text\\Card\\Description";
+        public string imagePath = ".\\Resource\\Image";
 
 
         public ImageService()
