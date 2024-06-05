@@ -188,10 +188,10 @@ namespace Corps.Server.Services
         public List<Image> cardIconImages = new List<Image>();
         public List<CardDTO> GetCardDTOs(List<GameCard> cards)
         {
-            byte[] attackBackgroundImageData = cardBackgroundImages.Where(x => x.Name.Contains("attack")).First().ImageData;
-            byte[] defenceBackgroundImageData = cardBackgroundImages.Where(x => x.Name.Contains("defence")).First().ImageData;
-            byte[] developerBackgroundImageData = cardBackgroundImages.Where(x => x.Name.Contains("developer")).First().ImageData;
-            Queue<byte[]> developerIconImageDataQueue = new Queue<byte[]>(cardIconImages.Where(x => x.Name.Contains("developer")).ToList().OrderBy(x => x, new ImageComparer()).Select(x => x.ImageData));
+            string attackBackgroundImageData = cardBackgroundImages.Where(x => x.Name.Contains("attack")).First().ImageData;
+            string defenceBackgroundImageData = cardBackgroundImages.Where(x => x.Name.Contains("defence")).First().ImageData;
+            string developerBackgroundImageData = cardBackgroundImages.Where(x => x.Name.Contains("developer")).First().ImageData;
+            Queue<string> developerIconImageDataQueue = new Queue<string>(cardIconImages.Where(x => x.Name.Contains("developer")).ToList().OrderBy(x => x, new ImageComparer()).Select(x => x.ImageData));
             List<CardDTO> DTO = new List<CardDTO>();
             cards.ForEach(x =>
             {
@@ -240,7 +240,7 @@ namespace Corps.Server.Services
                 else if (x is DeveloperCard)
                 {
                     DeveloperCardDescriptionInfo developerInfo = developerInfos.Dequeue();
-                    byte[] developerIconImageData = developerIconImageDataQueue.Dequeue();
+                    string developerIconImageData = developerIconImageDataQueue.Dequeue();
                     developerInfos.Enqueue(developerInfo);
                     developerIconImageDataQueue.Enqueue(developerIconImageData);
                     DTO.Add(
