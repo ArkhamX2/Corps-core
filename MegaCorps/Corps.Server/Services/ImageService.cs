@@ -12,7 +12,7 @@ public class Image
 {
     public string Name { get; set; }
     public ImageType Type { get; set; }
-    public byte[] ImageData { get; set; }
+    public string ImageData { get; set; }
 }
 
 public enum ImageType
@@ -28,8 +28,8 @@ public class CardDTO
 {
     public int Id { get; set; }
     public string Type { get; set; }
-    public byte[] Background { get; set; }
-    public byte[] Icon { get; set; }
+    public string Background { get; set; }
+    public string Icon { get; set; }
     public CardInfoDTO Info { get; set; }
 }
 
@@ -169,7 +169,7 @@ namespace Corps.Server.Services
                 return Directory.GetFiles(folderPath, "*.png").ToList().Select(imagePath => new Image
                 {
                     Name = imagePath.Split('\\').Last().Split('.').First(),
-                    ImageData = File.ReadAllBytes(imagePath),
+                    ImageData = Convert.ToBase64String(File.ReadAllBytes(imagePath)),
                     Type = type
                 }).ToList();
             }

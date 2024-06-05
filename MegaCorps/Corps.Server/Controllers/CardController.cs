@@ -19,20 +19,20 @@ namespace Corps.Server.Controllers
         }
 
         [HttpGet("card")]
-        public IActionResult GetCards()
+        public async Task<IActionResult> GetCards()
         {
             var cards = _imageService.GetCardDTOs(DeckBuilder.GetDeck().UnplayedCards);
             return Ok(cards);
         }
 
         [HttpGet("background")]
-        public IActionResult GetBackground()
+        public async Task<IActionResult> GetBackground()
         {
             return Ok(_imageService.BackgroundImages);
         }
 
         [HttpGet("user")]
-        public IActionResult GetUser()
+        public async Task<IActionResult> GetUser()
         {
             return Ok(_imageService.UserImages);
         }
