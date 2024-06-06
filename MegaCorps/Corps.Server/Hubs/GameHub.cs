@@ -56,7 +56,7 @@ namespace Corps.Server.Hubs
         /// <param name="lobbyCode">идентификатор лобби</param>
         /// <param name="username">имя участника лобби</param>
         /// <returns></returns>
-        public async Task JoinLobby(string lobbyCode, string username)
+        public async Task JoinLobby(string lobbyCode, string username, int avatarId)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace Corps.Server.Hubs
                 if (found.Count() < 0) throw new Exception("Не найдено лобби с таким идентификатором");
 
                 Lobby joinTo = found.First();
-                int playerId = joinTo.Join(username);
+                int playerId = joinTo.Join(username,avatarId);
 
                 await Groups.AddToGroupAsync(Context.ConnectionId, joinTo.Id + "Player");
                 await Clients.Group(joinTo.Id + "Player").SendAsync("JoinSuccess", joinTo, playerId);

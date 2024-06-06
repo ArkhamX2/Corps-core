@@ -10,6 +10,7 @@ using System.Text;
 using static System.Net.Mime.MediaTypeNames;
 public class Image
 {
+    public int Id{ get; set; }
     public string Name { get; set; }
     public ImageType Type { get; set; }
     public string ImageData { get; set; }
@@ -43,6 +44,7 @@ public class CardInfoDTO
 
 public class AttackCardDescriptionInfo
 {
+    public int Id { get; set; }
     [JsonProperty("attack_type")]
     public AttackType AttackType { get; set; }
     public string Title { get; set; }
@@ -50,6 +52,7 @@ public class AttackCardDescriptionInfo
 }
 public class DefenceCardDescriptionInfo
 {
+    public int Id { get; set; }
     [JsonProperty("attack_types")]
     public List<AttackTypeDTO> AttackTypeList { get; set; }
     public string Title { get; set; }
@@ -168,6 +171,7 @@ namespace Corps.Server.Services
             {
                 return Directory.GetFiles(folderPath, "*.png").ToList().Select(imagePath => new Image
                 {
+                    Id = int.Parse(imagePath.Split('\\').Last().Split('.').First().Split('_').First()),
                     Name = imagePath.Split('\\').Last().Split('.').First(),
                     ImageData = Convert.ToBase64String(File.ReadAllBytes(imagePath)),
                     Type = type

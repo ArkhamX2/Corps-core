@@ -24,9 +24,9 @@ namespace Corps.Server.Hubs
             Code = GenerateUniqueSequence(source + DateTime.Now,CODE_LENGTH);
         }
 
-        public int Join(string username)
+        public int Join(string username, int avatarId)
         {
-            LobbyMember member = new LobbyMember(lobbyMembers.Count, username);
+            LobbyMember member = new LobbyMember(lobbyMembers.Count, username, avatarId);
             lobbyMembers.Add(member);
             return member.Id;
         }
@@ -72,14 +72,16 @@ namespace Corps.Server.Hubs
 
     public class LobbyMember
     {
-        public LobbyMember(int id,string username)
+        public LobbyMember(int id,string username, int avatarId)
         {
             Id = id;
             Username = username;
+            AvatarId = avatarId;
         }
 
         public int Id { get; set; }
         public string Username { get; set; }
+        public int AvatarId { get; set; }
         public bool IsReady { get; set; }
     }
 
