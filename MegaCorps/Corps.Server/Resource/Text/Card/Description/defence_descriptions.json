@@ -1,9 +1,7 @@
 [
   {
     "id" : 201,
-    "attack_types": [
-      { "attack_type": "trojan" },
-      { "attack_type": "worm" }
+    "attack_types": [ "trojan","worm" 
     ],
     "title": "Антивирус",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"
@@ -11,53 +9,43 @@
   {
     "id": 201,
     "attack_types": [
-      { "attack_type": "worm" },
-      { "attack_type": "DoS" }
+      "worm",
+      "DoS" 
     ],
     "title": "Антивирус2",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"
   },
   {
     "id": 201,
-    "attack_types": [
-      { "attack_type": "Dos" },
-      { "attack_type": "scripting" }
+    "attack_types": ["Dos" ,"scripting" 
     ],
     "title": "Антивирус3",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"
   },
   {
     "id": 201,
-    "attack_types": [
-      { "attack_type": "scripting" },
-      { "attack_type": "botnet" }
+    "attack_types": ["scripting" ,"botnet"
     ],
     "title": "Антивирус4",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"
   },
   {
     "id": 201,
-    "attack_types": [
-      { "attack_type": "botnet" },
-      { "attack_type": "fishing" }
+    "attack_types": ["botnet" , "fishing" 
     ],
     "title": "Антивирус5",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"
   },
   {
     "id": 201,
-    "attack_types": [
-      { "attack_type": "fishing" },
-      { "attack_type": "spy" }
+    "attack_types": ["fishing","spy" 
     ],
     "title": "Антивирус6",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"
   },
   {
     "id": 201,
-    "attack_types": [
-      { "attack_type": "spy" },
-      { "attack_type": "trojan" }
+    "attack_types": [ "spy" , "trojan" 
     ],
     "title": "Антивирус7",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"

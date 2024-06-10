@@ -1,4 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using Corps.Server.DTO;
 using Corps.Server.Services;
 using MegaCorps.Core.Model;
 

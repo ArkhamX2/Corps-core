@@ -1,4 +1,5 @@
 ﻿using MegaCorps.Core.Model.Enums;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;

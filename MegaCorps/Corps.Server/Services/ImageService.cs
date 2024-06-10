@@ -1,4 +1,5 @@
-﻿using Corps.Server.Hubs;
+﻿using Corps.Server.DTO;
+using Corps.Server.Hubs;
 using Corps.Server.Utils.JSON;
 using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.Enums;
@@ -8,109 +9,6 @@ using Newtonsoft.Json;
 using System;
 using System.Text;
 using static System.Net.Mime.MediaTypeNames;
-public class Image
-{
-    public int Id { get; set; }
-    public required string Name { get; set; }
-    public ImageType Type { get; set; }
-    public required string ImageData { get; set; }
-}
-
-public enum ImageType
-{
-    Menu,
-    Board,
-    CardBackground,
-    CardIcon,
-    UserIcon,
-}
-
-public class CardDTO
-{
-    public int Id { get; set; }
-    public int BackgroundImageId { get; set; }
-    public int IconImageId { get; set; }
-    public required string Type { get; set; }
-    public required string Background { get; set; }
-    public required string Icon { get; set; }
-    public required CardInfoDTO Info { get; set; }
-}
-
-public class CardInfoDTO
-{
-    public required string Title { get; set; }
-    public required string Description { get; set; }
-    public string? AttackTypes { get; set; }
-    public string? Direction { get; set; }
-    public int? Power { get; set; }
-}
-
-public class AttackCardDescriptionInfo
-{
-    public int Id { get; set; }
-    [JsonProperty("attack_type")]
-    public AttackType AttackType { get; set; }
-    [JsonProperty("attack_type_name")]
-    public required string AttackTypeName { get; set; }
-    public required string Title { get; set; }
-    public required string Description { get; set; }
-}
-public class DefenceCardDescriptionInfo
-{
-    public int Id { get; set; }
-    [JsonProperty("attack_types")]
-    public required List<AttackTypeDTO> AttackTypeList { get; set; }
-    public required string Title { get; set; }
-    public required string Description { get; set; }
-}
-
-public class AttackTypeDTO
-{
-    public AttackTypeDTO(AttackType attackType)
-    {
-        AttackType = attackType;
-    }
-
-    [JsonProperty("attack_type")]
-    public AttackType AttackType { get; set; }
-}
-public class DeveloperCardDescriptionInfo
-{
-    public int Id { get; set; }
-    public required string Title { get; set; }
-    public required string Description { get; set; }
-}
-
-public class CardDirectionInfo
-{
-    [JsonProperty("card_direction")]
-    public CardDirection Direction { get; set; }
-    public required string Title { get; set; }
-}
-public class CardDescriptionComparer : IComparer<DeveloperCardDescriptionInfo>
-{
-    public int Compare(DeveloperCardDescriptionInfo x, DeveloperCardDescriptionInfo y)
-    {
-        if (x == null || y == null)
-        {
-            return 0;
-        }
-
-        return x.Id.CompareTo(y.Id);
-    }
-}
-public class AttackTypeComparer : IEqualityComparer<AttackType>
-{
-    public bool Equals(AttackType x, AttackType y)
-    {
-        return x == y;
-    }
-
-    public int GetHashCode(AttackType obj)
-    {
-        return obj.ToString().GetHashCode() ^ obj.ToString().GetHashCode();
-    }
-}
 
 namespace Corps.Server.Services
 {
@@ -235,7 +133,7 @@ namespace Corps.Server.Services
                 {
                     DefenceCardDescriptionInfo info =
                     defenceInfos.Where(
-                        y => y.AttackTypeList.Select(z => z.AttackType).
+                        y => y.AttackTypeList.Select(z => z).
                         SequenceEqual((x as DefenceCard)!.AttackTypes, new AttackTypeComparer())
                         ).First();
 
@@ -254,7 +152,7 @@ namespace Corps.Server.Services
                             Description = info.Description,
                             AttackTypes = string.Join("---",
                                         attackInfos.Select(x => x.AttackType)
-                                                    .Where(y => info.AttackTypeList!.Contains(new AttackTypeDTO(y)))
+                                                    .Where(y => info.AttackTypeList!.Contains(y))
                                                     .Select(z => attackInfos.Find(r => r.AttackType == z)!.AttackTypeName))
                         },
                     });
