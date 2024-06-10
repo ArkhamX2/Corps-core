@@ -2,6 +2,7 @@
 using Corps.Server.DTO;
 using Corps.Server.Services;
 using MegaCorps.Core.Model;
+using MegaCorps.Core.Model.GameUtils;
 
 ImageService imageService = new ImageService(
     "..\\..\\..\\..\\Corps.Server\\Resource\\Text\\Card\\Direction\\directions.json",
@@ -42,7 +43,8 @@ imageService.UserImages.ForEach(image =>
     Console.WriteLine(string.Join(" ", new List<string>() { image.Name, image.Type.ToString() }));
 });
 
-GameEngine gameEngine = new GameEngine(4);
+Deck deck = DeckBuilder.GetDeckFromResources(imageService.attackInfos,imageService.defenceInfos,imageService.developerInfos,imageService.directions);
+GameEngine gameEngine = new GameEngine(deck,new List<string> { "1","2","3","4" });
 
 List<CardDTO> dTOs = await imageService.GetCardDTOs(gameEngine.Deck.UnplayedCards);
 

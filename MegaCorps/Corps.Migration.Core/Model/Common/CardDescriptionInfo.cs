@@ -17,6 +17,8 @@ namespace MegaCorps.Core.Model.Common
         public AttackType AttackType { get; set; }
         [JsonProperty("attack_type_name")]
         public required string AttackTypeName { get; set; }
+        [JsonProperty("direction_list")]
+        public List<CardDirection> DirectionList { get; set; }
     }
     public class DefenceCardDescriptionInfo : CardDescriptionInfo
     {
@@ -30,6 +32,7 @@ namespace MegaCorps.Core.Model.Common
 
     public class CardDirectionInfo
     {
+        public int Amount { get; set; }
         [JsonProperty("card_direction")]
         public CardDirection Direction { get; set; }
         public required string Title { get; set; }

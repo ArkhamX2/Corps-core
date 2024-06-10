@@ -1,17 +1,21 @@
 [
   {
     "card_direction": "left",
+    "amount": 6,
     "title": "Левый сосед"
   },
   {
     "card_direction": "right",
+    "amount": 6,
     "title": "Правый сосед"
   },
   {
+    "amount": 1,
     "card_direction": "all",
     "title": "Все игроки(включая себя)"
   },
   {
+    "amount": 1,
     "card_direction": "allbutnotme",
     "title": "Все игроки(кроме себя)"
   }

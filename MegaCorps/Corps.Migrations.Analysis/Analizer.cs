@@ -1,4 +1,5 @@
-﻿using MegaCorps.Core.Model;
+﻿using Corps.Server.Services;
+using MegaCorps.Core.Model;
 using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.GameUtils;
 using System;
@@ -37,6 +38,7 @@ namespace Corps.Analysis
         /// </summary>
         public int NumberOfPlayers { get => _numberOfPlayers; set => _numberOfPlayers = value; }
 
+
         /// <summary>
         /// Запуск анализа набора игр
         /// </summary>
@@ -45,11 +47,16 @@ namespace Corps.Analysis
         public AnalizerResult Run(int numberOfIterations)
         {
             SelectHelper selectHelper = new SelectHelper();
+            ImageService imageService = new ImageService(
+                                        "..\\..\\..\\..\\Corps.Server\\Resource\\Text\\Card\\Direction\\directions.json",
+                                        "..\\..\\..\\..\\Corps.Server\\Resource\\Text\\Card\\Description",
+                                        "..\\..\\..\\..\\Corps.Server\\Resource\\Image"
+                                        );
             int turnCount = 0;
             List<string> scores = new List<string>();
             for (int i = 0; i < numberOfIterations; i++)
             {
-                _engine.Reset();
+                _engine.Reset(DeckBuilder.GetDeckFromResources(imageService.attackInfos, imageService.defenceInfos, imageService.developerInfos, imageService.directions));
                 _engine.Deal(MAX_CARDS);
                 while (!_engine.Win)
                 {
@@ -75,7 +82,7 @@ namespace Corps.Analysis
 
             _winners = Enumerable.Repeat(0, NumberOfPlayers).ToList();
 
-            return new AnalizerResult(averageTurnCount, averageWins, scores, string.Join("%|-|", (_selectionStrategyList.Where(x => x is MonteCarloSelectStrategy).First() as MonteCarloSelectStrategy)!.ChosenProbability.Select(x=>(x/1000)*100)));
+            return new AnalizerResult(averageTurnCount, averageWins, scores, string.Join("%|-|", (_selectionStrategyList.Where(x => x is MonteCarloSelectStrategy).First() as MonteCarloSelectStrategy)!.ChosenProbability.Select(x => (x / 1000) * 100)));
         }
     }
 

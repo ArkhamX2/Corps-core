@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Corps.Migration.Core\Corps.Core.csproj" />
+    <ProjectReference Include="..\Corps.Server\Corps.Server.csproj" />
   </ItemGroup>
 
 </Project>

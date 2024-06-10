@@ -76,40 +76,74 @@ namespace MegaCorps.Core.Model.GameUtils
         /// Сформировать колоду с нуля
         /// </summary>
         /// <returns></returns>
-        public static Deck GetDeckFromResources(List<AttackCardDescriptionInfo> attackInfos, List<DefenceCardDescriptionInfo> defenceInfos, Queue<DeveloperCardDescriptionInfo> developerInfos)
+        public static Deck GetDeckFromResources(List<AttackCardDescriptionInfo> attackInfos, List<DefenceCardDescriptionInfo> defenceInfos, Queue<DeveloperCardDescriptionInfo> developerInfos, List<CardDirectionInfo> directionList)
         {
             var deck = new List<GameCard>();
 
-            for (int i = 0; i < MAX_DECK_SIZE; i++)
+            int attackAmount = attackInfos.Select(x => x.Amount).Sum();
+            int defenceAmount = defenceInfos.Select(x => x.Amount).Sum();
+            int developerAmount = developerInfos.Select(x => x.Amount).Sum();
+            List<CardDirection> directions = new List<CardDirection>();
+            directionList.ForEach(x => directions.AddRange(Enumerable.Range(1, x.Amount).Select(y=>x.Direction).ToList()));
+
+            int id = 0;
+            attackInfos.ForEach(x =>
             {
-                if (i < MAX_ATTACK_CARDS_COUNT)
+                int counter = 0;
+                while (counter < x.Amount - 1)
                 {
                     deck.Add(new AttackCard(
-                        i,
-                        directionList[i % directionList.Count()],
-                        i >= MAX_ATTACK_CARDS_COUNT * 0.75 ? 2 : 1,
-                        attackTypes[i % attackTypes.Count()]));
+                        id,
+                        x.DirectionList[counter%x.DirectionList.Count],
+                        1,
+                        x.AttackType
+                        ));
+                    counter++;
+                    id++;
                 }
-                else if (i < MAX_ATTACK_CARDS_COUNT + MAX_DEFENCE_CARDS_COUNT)
+                deck.Add(new AttackCard(
+                        id,
+                        x.DirectionList[counter % x.DirectionList.Count],
+                        2,
+                        x.AttackType
+                        ));
+                id++;
+            });
+
+            defenceInfos.ForEach(x =>
+            {
+                int counter = 0;
+                while (counter < x.Amount)
                 {
                     deck.Add(new DefenceCard(
-                        i,
-                        new List<AttackType> { attackTypes[
-                            i % attackTypes.Count() > 0 ?
-                                i % attackTypes.Count() - 1 :
-                                attackTypes.Count() - 1
-                            ],
-                            attackTypes[i % attackTypes.Count()] }));
-                }
-                else
-                {
-                    deck.Add(new DeveloperCard(
-                        i,
-                        i - MAX_ATTACK_CARDS_COUNT - MAX_DEFENCE_CARDS_COUNT >= (MAX_DECK_SIZE - MAX_ATTACK_CARDS_COUNT - MAX_DEFENCE_CARDS_COUNT) * 0.75 ? 2 : 1
+                        id,
+                        x.AttackTypeList
                         ));
+                    counter++;
+                    id++;
                 }
-            }
+                
+            });
 
+            int queueCounter = 0;
+            while(queueCounter < (developerAmount * 2/3))
+            {
+                deck.Add(new DeveloperCard(
+                    id,
+                    1
+                    ));
+                id++;
+                queueCounter++;
+            }
+            while (queueCounter < developerAmount)
+            {
+                deck.Add(new DeveloperCard(
+                    id,
+                    2
+                    ));
+                id++;
+                queueCounter++;
+            }
             return new Deck(deck);
         }
 

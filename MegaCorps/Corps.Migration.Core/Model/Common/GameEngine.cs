@@ -126,6 +126,17 @@ namespace MegaCorps.Core.Model
         }
 
         /// <summary>
+        /// Привести движок к начальному состоянию
+        /// </summary>
+        public void Reset(Deck deck)
+        {
+            Deck = deck;
+            Deck.Shuffle();
+            Players = UserSetup.CreateUserList(NumberOfPlayers);
+            _win = false;
+        }
+
+        /// <summary>
         /// Получить руки всех игроков
         /// </summary>
         /// <returns></returns>
@@ -234,5 +245,6 @@ namespace MegaCorps.Core.Model
             }
             return scores;
         }
+
     }
 }
