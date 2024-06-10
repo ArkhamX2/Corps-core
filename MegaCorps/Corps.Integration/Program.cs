@@ -54,6 +54,8 @@ dTOs.ForEach(cardDTO => {
                 cardDTO.Info.Title, 
                 cardDTO.Info.Description, 
                 cardDTO.Info.Direction, 
+                Convert.ToString(cardDTO.IconImageId),
+                Convert.ToString(cardDTO.BackgroundImageId),
                 Convert.ToString(cardDTO.Info.Power) 
             }),
             Convert.ToString(cardDTO.Background.Length),
