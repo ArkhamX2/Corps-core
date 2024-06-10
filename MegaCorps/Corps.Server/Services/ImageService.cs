@@ -2,6 +2,7 @@
 using Corps.Server.Hubs;
 using Corps.Server.Utils.JSON;
 using MegaCorps.Core.Model.Cards;
+using MegaCorps.Core.Model.Common;
 using MegaCorps.Core.Model.Enums;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.FileProviders.Physical;

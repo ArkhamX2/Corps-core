@@ -53,6 +53,7 @@
     <Compile Include="Model\Cards\DeveloperCard.cs" />
     <Compile Include="Model\Cards\EventCard.cs" />
     <Compile Include="Model\Cards\GameCard.cs" />
+    <Compile Include="Model\Common\CardDescriptionInfo.cs" />
     <Compile Include="Model\Common\Deck.cs" />
     <Compile Include="Model\Enums\AttackType.cs" />
     <Compile Include="Model\Enums\CardDirection.cs" />

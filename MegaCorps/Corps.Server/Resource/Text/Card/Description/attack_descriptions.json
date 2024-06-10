@@ -1,6 +1,7 @@
 [
   {
     "id": 101,
+    "amount": 5,
     "attack_type": "trojan",
     "attack_type_name" : "Троян",
     "title": "На вашем компьютере обнаружен троян!",
@@ -8,6 +9,7 @@
   },
   {
     "id": 107,
+    "amount": 5,
     "attack_type": "worm",
     "attack_type_name": "Сетевой червь",
     "title": "Был обнаружен сетевой червь!",
@@ -15,6 +17,7 @@
   },
   {
     "id": 105,
+    "amount": 5,
     "attack_type": "DoS",
     "attack_type_name": "DoS-атака",
     "title": "DoS-атака!",
@@ -22,6 +25,7 @@
   },
   {
     "id": 104,
+    "amount": 5,
     "attack_type": "scripting",
     "attack_type_name": "Межсайтовый скриптинг",
     "title": "Межсайтовый скриптинг!",
@@ -29,6 +33,7 @@
   },
   {
     "id": 102,
+    "amount": 5,
     "attack_type": "botnet",
     "attack_type_name": "Брутфорс атака",
     "title": "Брутфорс-атака!!!",
@@ -36,6 +41,7 @@
   },
   {
     "id": 103,
+    "amount": 5,
     "attack_type": "fishing",
     "attack_type_name": "Фишинговая ссылка",
     "title": "Вы перешли по фишинговой ссылке!",
@@ -43,6 +49,7 @@
   },
   {
     "id": 106,
+    "amount": 5,
     "attack_type": "spy",
     "attack_type_name": "Программа-шпион",
     "title": "На вашем компьютере обнаружена программа-шпион!",

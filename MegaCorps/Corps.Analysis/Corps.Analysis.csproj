@@ -51,9 +51,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MegaCorps.Core\MegaCorps.Core.csproj">
-      <Project>{8D41C7AA-354E-47B4-8EC8-5F84B8628449}</Project>
-      <Name>MegaCorps.Core</Name>
+    <ProjectReference Include="..\Corps.Migration.Core\Corps.Migration.Core.csproj">
+      <Project>{399f704c-37f3-4282-8341-50accfcb2ba6}</Project>
+      <Name>Corps.Migration.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

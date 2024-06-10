@@ -16,7 +16,7 @@ namespace MegaCorps.Core.Model
     public class GameEngine
     {
         
-        private Deck _deck;
+        private Deck _deck = new();
         /// <summary>
         /// Колода
         /// </summary>
@@ -40,12 +40,12 @@ namespace MegaCorps.Core.Model
         /// </summary>
         private int NumberOfPlayers { get; }
 
-        private int _winner;
+        private int _winner = new();
 
 
-        private bool _win;
+        private bool _win = new();
 
-        private List<Player> _players;
+        private List<Player> _players = new();
 
         public GameEngine(Deck deck, List<string> usernameList)
         {
@@ -88,6 +88,10 @@ namespace MegaCorps.Core.Model
                 player.Hand = new PlayerHand(cards[i]);
             }
             _win = false;
+        }
+
+        public GameEngine()
+        {
         }
 
         /// <summary>
@@ -145,7 +149,7 @@ namespace MegaCorps.Core.Model
                 List<GameCard> playerUsedAttacks = all[i].Where((card) => card.State == CardState.Used && card is AttackCard).ToList();
                 for (int j = 0; j < playerUsedAttacks.Count(); j++)
                 {
-                    AttackCard currentCard = playerUsedAttacks[j] as AttackCard;
+                    AttackCard currentCard = (playerUsedAttacks[j] as AttackCard)!;
                     switch (currentCard.Direction)
                     {
                         case CardDirection.Left:

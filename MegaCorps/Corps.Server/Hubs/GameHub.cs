@@ -1,21 +1,20 @@
-﻿using Corps.Server.CorpsException;
+﻿
+
+using Corps.Server.Services;
 using MegaCorps.Core.Model;
 using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.Enums;
+using MegaCorps.Core.Model.GameUtils;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Razor.Infrastructure;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
-using System.Collections.Frozen;
-using System.Numerics;
-
 
 namespace Corps.Server.Hubs
 {
     /// <summary>
     /// Хаб лобби и игры
     /// </summary>
-    public class GameHub(ILogger<GameHub> logger) : Hub
+    public class GameHub(ILogger<GameHub> logger,ImageService imageService) : Hub
     {
         private static ConcurrentDictionary<int, Lobby> _lobbies = new ConcurrentDictionary<int, Lobby>();
         private static ConcurrentDictionary<int, GameEngine> _games = new ConcurrentDictionary<int, GameEngine>();
@@ -128,7 +127,8 @@ namespace Corps.Server.Hubs
                 foreach (var player in lobby.lobbyMembers)
                     lobby.State = LobbyState.Started;
 
-                _games[lobbyId] = new GameEngine(lobby.lobbyMembers.Select(x => x.Username).ToList());
+                Deck deck = DeckBuilder.GetDeckFromResources(imageService.attackInfos, imageService.defenceInfos, imageService.developerInfos);
+                _games[lobbyId] = new GameEngine(deck,lobby.lobbyMembers.Select(x => x.Username).ToList());
                 GameEngine game = _games[lobbyId];
                 game.Deal(6);
 
@@ -166,7 +166,7 @@ namespace Corps.Server.Hubs
                 if(game.Players[playerId].Hand.Cards[foundCardIndex].State == CardState.Used)
                 {
                     game.Players[playerId].Hand.Cards[foundCardIndex].State = CardState.Unused;
-                    game.Players[playerId].Hand.SelectedCardQueue.Remove(game.Players[playerId].Hand.Cards.FirstOrDefault(card => card.Id == selectedCardId));
+                    game.Players[playerId].Hand.SelectedCardQueue.Remove(game.Players[playerId].Hand.Cards.FirstOrDefault(card => card.Id == selectedCardId)!);
                     Cards.Add(game.Players[playerId].Hand.Cards[foundCardIndex]);
                 }
                 else

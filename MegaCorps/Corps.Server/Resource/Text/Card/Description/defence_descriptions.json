@@ -1,51 +1,70 @@
 [
   {
-    "id" : 201,
-    "attack_types": [ "trojan","worm" 
+    "id": 201,
+    "amount": 5,
+    "attack_types": [
+      "trojan",
+      "worm"
     ],
     "title": "Антивирус",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"
   },
   {
     "id": 201,
+    "amount": 5,
     "attack_types": [
       "worm",
-      "DoS" 
+      "DoS"
     ],
     "title": "Антивирус2",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"
   },
   {
     "id": 201,
-    "attack_types": ["Dos" ,"scripting" 
+    "amount": 5,
+    "attack_types": [
+      "Dos",
+      "scripting"
     ],
     "title": "Антивирус3",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"
   },
   {
     "id": 201,
-    "attack_types": ["scripting" ,"botnet"
+    "amount": 5,
+    "attack_types": [
+      "scripting",
+      "botnet"
     ],
     "title": "Антивирус4",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"
   },
   {
     "id": 201,
-    "attack_types": ["botnet" , "fishing" 
+    "amount": 5,
+    "attack_types": [
+      "botnet",
+      "fishing"
     ],
     "title": "Антивирус5",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"
   },
   {
     "id": 201,
-    "attack_types": ["fishing","spy" 
+    "amount": 5,
+    "attack_types": [
+      "fishing",
+      "spy"
     ],
     "title": "Антивирус6",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"
   },
   {
     "id": 201,
-    "attack_types": [ "spy" , "trojan" 
+    "amount": 5,
+    "attack_types": [
+      "spy",
+      "trojan"
     ],
     "title": "Антивирус7",
     "description": "С помощью использования антивирусной защиты Вы не получаете вреда от кибератаки"

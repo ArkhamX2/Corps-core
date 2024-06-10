@@ -1,4 +1,5 @@
-﻿using MegaCorps.Core.Model.Enums;
+﻿using MegaCorps.Core.Model.Common;
+using MegaCorps.Core.Model.Enums;
 
 public class CardDescriptionComparer : IComparer<CardDescriptionInfo>
 {

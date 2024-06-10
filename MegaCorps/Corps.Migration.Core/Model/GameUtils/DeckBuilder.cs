@@ -76,7 +76,7 @@ namespace MegaCorps.Core.Model.GameUtils
         /// Сформировать колоду с нуля
         /// </summary>
         /// <returns></returns>
-        public static Deck GetDeckFromResources(List<AttackCardDescriptionInfo> attackInfos, List<DefenceCardDescriptionInfo> defenceInfos, List<DeveloperCardDescriptionInfo> developerInfos)
+        public static Deck GetDeckFromResources(List<AttackCardDescriptionInfo> attackInfos, List<DefenceCardDescriptionInfo> defenceInfos, Queue<DeveloperCardDescriptionInfo> developerInfos)
         {
             var deck = new List<GameCard>();
 
@@ -121,15 +121,15 @@ namespace MegaCorps.Core.Model.GameUtils
             {
                 if (card is AttackCard)
                 {
-                    unplayed.Add(new AttackCard(card as AttackCard));
+                    unplayed.Add(new AttackCard((card as AttackCard)!));
                 }
                 if (card is DefenceCard)
                 {
-                    unplayed.Add(new DefenceCard(card as DefenceCard));
+                    unplayed.Add(new DefenceCard((card as DefenceCard)!));
                 }
                 if (card is DeveloperCard)
                 {
-                    unplayed.Add(new DeveloperCard(card as DeveloperCard));
+                    unplayed.Add(new DeveloperCard((card as DeveloperCard)!));
                 }
             });
             List<GameCard> played = new List<GameCard>();
@@ -137,15 +137,15 @@ namespace MegaCorps.Core.Model.GameUtils
             {
                 if (card is AttackCard)
                 {
-                    played.Add(new AttackCard(card as AttackCard));
+                    played.Add(new AttackCard((card as AttackCard)!));
                 }
                 if (card is DefenceCard)
                 {
-                    played.Add(new DefenceCard(card as DefenceCard));
+                    played.Add(new DefenceCard((card as DefenceCard)!));
                 }
                 if (card is DeveloperCard)
                 {
-                    played.Add(new DeveloperCard(card as DeveloperCard));
+                    played.Add(new DeveloperCard((card as DeveloperCard)!));
                 }
             });
             return new Deck(unplayed, played);
