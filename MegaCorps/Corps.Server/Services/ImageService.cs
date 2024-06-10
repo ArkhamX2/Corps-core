@@ -64,6 +64,11 @@ namespace Corps.Server.Services
                 infos.Sort(new CardDescriptionComparer());
                 developerInfos = new Queue<DeveloperCardDescriptionInfo>(infos);
             }
+            using (StreamReader r = new StreamReader(descriptionPath + "\\event_descriptions.json"))
+            {
+                string json = r.ReadToEnd();
+                eventInfos = new Queue<EventCardDescriptionInfo>(DataSerializer.Deserialize<List<EventCardDescriptionInfo>>(json)!);
+            }
         }
 
         private void GetImageData(string folderPath)
@@ -100,11 +105,14 @@ namespace Corps.Server.Services
         public Queue<DeveloperCardDescriptionInfo> developerInfos = new Queue<DeveloperCardDescriptionInfo>();
         public List<Image> cardBackgroundImages = new List<Image>();
         public List<Image> cardIconImages = new List<Image>();
+        public Queue<EventCardDescriptionInfo> eventInfos = new Queue<EventCardDescriptionInfo>();
+
         public async Task<List<CardDTO>> GetCardDTOs(List<GameCard> cards)
         {
             Image attackBackground = cardBackgroundImages.Where(x => x.Name.Contains("attack")).First();
             Image defenceBackground = cardBackgroundImages.Where(x => x.Name.Contains("defence")).First();
             Image developerBackground = cardBackgroundImages.Where(x => x.Name.Contains("developer")).First();
+            Image eventBackground = cardBackgroundImages.Where(x => x.Name.Contains("event")).First();
             List<CardDTO> DTO = new List<CardDTO>();
             cards.ForEach(x =>
             {
@@ -178,6 +186,33 @@ namespace Corps.Server.Services
                             Power = (x as DeveloperCard)!.DevelopmentPoint
                         },
                     });
+                }
+                else if(x is EventCard)
+                {
+                    EventCardDescriptionInfo eventInfo = eventInfos.Dequeue();
+                    int power = 0;
+
+                    if (x is ScoreEventCard) { power = (x as ScoreEventCard)!.Power; }
+                    if(x is NeighboursEventCards) { power = (x as NeighboursEventCards)!.Power; }
+                    if (x is AllLosingCard) { power = (x as AllLosingCard)!.Power; }
+
+                    eventInfos.Enqueue(eventInfo);
+                    DTO.Add(
+                        new CardDTO()
+                        {
+                            Id = x.Id,
+                            Type = "event",
+                            BackgroundImageId = eventBackground.Id,
+                            Background = eventBackground.ImageData,
+                            Icon = cardIconImages.Find(x => x.Id == eventInfo.Id)?.ImageData ?? "",
+                            IconImageId = eventInfo.Id,
+                            Info = new CardInfoDTO()
+                            {
+                                Title = eventInfo.Title,
+                                Description = eventInfo.Description,
+                                Power = power > 0? power:null,
+                            }
+                        });
                 }
             });
             return DTO;

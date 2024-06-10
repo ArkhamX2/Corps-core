@@ -210,6 +210,53 @@ namespace MegaCorps.Core.Model
 
             for (int i = 0; i < Players.Count; i++)
             {
+                Player player = Players[i];
+                List<EventCard> events = player.Hand.Cards.Where(x => x is EventCard).Select(x=>x as EventCard).ToList()!;
+                if (events.Count > 0) {
+                    foreach (EventCard eventCard in events)
+                    {
+                        if(eventCard is ScoreEventCard)
+                        {
+                            player.Score += (eventCard as ScoreEventCard)?.Power ?? 0;
+                        }
+                        if (eventCard is NeighboursEventCards)
+                        {
+                            Players[(i + 1) % Players.Count].Score += (eventCard as NeighboursEventCards)!.Power;
+                            Players[(i - 1) % Players.Count].Score += (eventCard as NeighboursEventCards)!.Power;
+                        }
+                        if (eventCard is SwapEventCard)
+                        {
+                            int maxScore = Players.Select(x => x.Score).Max();
+                            if(maxScore == player.Score)
+                            {
+                                int minScore = Players.Select(x => x.Score).Min();
+                                Random rnd = new Random();
+                                List<Player> outsiders = Players.Where(x => x.Score == minScore).ToList();
+                                player.Score = minScore;
+                                outsiders[rnd.Next(outsiders.Count)].Score = maxScore;
+                            }
+                            else
+                            {
+                                Random rnd = new Random();
+                                List<Player> leaders = Players.Where(x => x.Score == maxScore).ToList();
+                                leaders[rnd.Next(leaders.Count)].Score = player.Score;
+                                player.Score = maxScore;
+                            }
+                        }
+                        if (eventCard is AllLosingCard)
+                        {
+                            foreach (Player playerLosing in Players)
+                            {
+                                playerLosing.Score--;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < Players.Count; i++)
+            {
+                if (Players[i].Score < 0) Players[i].Score = 0;
                 Deck.PlayedCards.AddRange(Players[i].Hand.Cards.Where((card) => card.State == CardState.Used));
                 Players[i].Hand.Cards.RemoveAll((card) => card.State == CardState.Used);
                 Players[i].Hand.Targeted.Clear();

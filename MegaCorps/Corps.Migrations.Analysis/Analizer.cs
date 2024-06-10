@@ -56,7 +56,7 @@ namespace Corps.Analysis
             List<string> scores = new List<string>();
             for (int i = 0; i < numberOfIterations; i++)
             {
-                _engine.Reset(DeckBuilder.GetDeckFromResources(imageService.attackInfos, imageService.defenceInfos, imageService.developerInfos, imageService.directions));
+                _engine.Reset(DeckBuilder.GetDeckFromResources(imageService.attackInfos, imageService.defenceInfos, imageService.developerInfos, imageService.directions, imageService.eventInfos));
                 _engine.Deal(MAX_CARDS);
                 while (!_engine.Win)
                 {

@@ -37,4 +37,9 @@ namespace MegaCorps.Core.Model.Common
         public CardDirection Direction { get; set; }
         public required string Title { get; set; }
     }
+
+    public class EventCardDescriptionInfo : CardDescriptionInfo
+    {
+
+    }
 }

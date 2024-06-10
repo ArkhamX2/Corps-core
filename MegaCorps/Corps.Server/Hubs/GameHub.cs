@@ -127,7 +127,7 @@ namespace Corps.Server.Hubs
                 foreach (var player in lobby.lobbyMembers)
                     lobby.State = LobbyState.Started;
 
-                Deck deck = DeckBuilder.GetDeckFromResources(imageService.attackInfos, imageService.defenceInfos, imageService.developerInfos, imageService.directions);
+                Deck deck = DeckBuilder.GetDeckFromResources(imageService.attackInfos, imageService.defenceInfos, imageService.developerInfos, imageService.directions, imageService.eventInfos);
                 _games[lobbyId] = new GameEngine(deck,lobby.lobbyMembers.Select(x => x.Username).ToList());
                 GameEngine game = _games[lobbyId];
                 game.Deal(6);

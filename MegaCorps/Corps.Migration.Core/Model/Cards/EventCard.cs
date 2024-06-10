@@ -38,10 +38,12 @@ namespace MegaCorps.Core.Model.Cards
         }
     }
 
-    public class DropEventCard : EventCard
+    public class AllLosingCard : EventCard
     {
-        public DropEventCard(int id) : base(id)
+        public int Power { get; set; }
+        public AllLosingCard(int id, int power) : base(id)
         {
+            Power = power;
         }
     }
 

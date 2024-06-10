@@ -41,12 +41,12 @@ namespace Corps.Analysis
             //strategiesList.Add(Shuffle(strategiesList[4]));
             //strategiesList.Add(Shuffle(strategiesList[4]));
             //strategiesList.Add(Shuffle(strategiesList[4]));
-            for (int i = 0; i < 1; i++)
-            {
-                AnalizeOneGame(strategiesList[2]);
-            }
+            //for (int i = 0; i < 1; i++)
+            //{
+            //    AnalizeOneGame(strategiesList[2]);
+            //}
             //Console.WriteLine("Конец");
-            //TestBestStrategy();
+            TestBestStrategy();
             Console.ReadKey();
             Console.ReadKey();
             Console.ReadKey();

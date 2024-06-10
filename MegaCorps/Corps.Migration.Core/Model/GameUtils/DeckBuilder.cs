@@ -1,4 +1,5 @@
-﻿using MegaCorps.Core.Model.Cards;
+﻿
+using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.Common;
 using MegaCorps.Core.Model.Enums;
 using System;
@@ -76,7 +77,7 @@ namespace MegaCorps.Core.Model.GameUtils
         /// Сформировать колоду с нуля
         /// </summary>
         /// <returns></returns>
-        public static Deck GetDeckFromResources(List<AttackCardDescriptionInfo> attackInfos, List<DefenceCardDescriptionInfo> defenceInfos, Queue<DeveloperCardDescriptionInfo> developerInfos, List<CardDirectionInfo> directionList)
+        public static Deck GetDeckFromResources(List<AttackCardDescriptionInfo> attackInfos, List<DefenceCardDescriptionInfo> defenceInfos, Queue<DeveloperCardDescriptionInfo> developerInfos, List<CardDirectionInfo> directionList, Queue<EventCardDescriptionInfo> eventInfos)
         {
             var deck = new List<GameCard>();
 
@@ -144,6 +145,33 @@ namespace MegaCorps.Core.Model.GameUtils
                 id++;
                 queueCounter++;
             }
+
+            int eventAmount = eventInfos.Select(x => x.Amount).Sum();
+
+            int eventCounter = 0;
+            while(eventCounter < developerAmount)
+            {
+                if(eventCounter%developerAmount == 0)
+                {
+                    deck.Add(new ScoreEventCard(id,2));
+                }
+                if (eventCounter % developerAmount == 1)
+                {
+                    deck.Add(new NeighboursEventCards(id, 2));
+                }
+                if (eventCounter % developerAmount == 2)
+                {
+                    deck.Add(new SwapEventCard(id));
+                }
+                if (eventCounter % developerAmount == 3)
+                {
+                    deck.Add(new AllLosingCard(id,2));
+                }
+                id++;
+                eventCounter++;
+            }
+
+
             return new Deck(deck);
         }
 

@@ -43,7 +43,7 @@ imageService.UserImages.ForEach(image =>
     Console.WriteLine(string.Join(" ", new List<string>() { image.Name, image.Type.ToString() }));
 });
 
-Deck deck = DeckBuilder.GetDeckFromResources(imageService.attackInfos,imageService.defenceInfos,imageService.developerInfos,imageService.directions);
+Deck deck = DeckBuilder.GetDeckFromResources(imageService.attackInfos,imageService.defenceInfos,imageService.developerInfos,imageService.directions, imageService.eventInfos);
 GameEngine gameEngine = new GameEngine(deck,new List<string> { "1","2","3","4" });
 
 List<CardDTO> dTOs = await imageService.GetCardDTOs(gameEngine.Deck.UnplayedCards);
