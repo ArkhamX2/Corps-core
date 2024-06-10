@@ -21,18 +21,17 @@ namespace Corps.Server.Controllers
         [HttpGet("card")]
         public async Task<IActionResult> GetCards()
         {
-            var cards = _imageService.GetCardDTOs(DeckBuilder.GetDeck().UnplayedCards);
-            return Ok(cards);
+            return Ok(await _imageService.GetCardDTOs(DeckBuilder.GetDeck().UnplayedCards));
         }
 
         [HttpGet("background")]
-        public async Task<IActionResult> GetBackground()
+        public IActionResult GetBackground()
         {
             return Ok(_imageService.BackgroundImages);
         }
 
         [HttpGet("user")]
-        public async Task<IActionResult> GetUser()
+        public IActionResult GetUser()
         {
             return Ok(_imageService.UserImages);
         }

@@ -17,7 +17,7 @@ imageService.attackInfos.ForEach(info =>
 });
 imageService.defenceInfos.ForEach(info =>
 {
-    Console.WriteLine(string.Join(" ", new List<string>() { info.Title, info.Description, Convert.ToString(info.AttackTypeList.Count )}));
+    Console.WriteLine(string.Join(" ", new List<string>() { info.Title, info.Description, Convert.ToString(info.AttackTypeList?.Count )??""}));
 });
 imageService.developerInfos.ToList().ForEach(info =>
 {
@@ -43,7 +43,7 @@ imageService.UserImages.ForEach(image =>
 
 GameEngine gameEngine = new GameEngine(4);
 
-List<CardDTO> dTOs = imageService.GetCardDTOs(gameEngine.Deck.UnplayedCards);
+List<CardDTO> dTOs = await imageService.GetCardDTOs(gameEngine.Deck.UnplayedCards);
 
 dTOs.ForEach(cardDTO => {
     Console.WriteLine(string.Join(" ",
@@ -53,10 +53,10 @@ dTOs.ForEach(cardDTO => {
             string.Join("|",new List<string> { 
                 cardDTO.Info.Title, 
                 cardDTO.Info.Description, 
-                cardDTO.Info.Direction, 
+                cardDTO.Info.Direction??"", 
                 Convert.ToString(cardDTO.IconImageId),
                 Convert.ToString(cardDTO.BackgroundImageId),
-                Convert.ToString(cardDTO.Info.Power) 
+                Convert.ToString(cardDTO.Info.Power)??"" 
             }),
             Convert.ToString(cardDTO.Background.Length),
             Convert.ToString(cardDTO.Icon.Length) }));

@@ -57,7 +57,7 @@ namespace Corps.Server.Hubs
         {
             using (MD5 md5 = MD5.Create())
             {
-                byte[] inputBytes = Encoding.UTF8.GetBytes(key.ToString());
+                byte[] inputBytes = Encoding.UTF8.GetBytes(key.ToString()!);
                 byte[] hashBytes = md5.ComputeHash(inputBytes);
 
                 StringBuilder sb = new StringBuilder();

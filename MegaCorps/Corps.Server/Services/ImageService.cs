@@ -11,9 +11,9 @@ using static System.Net.Mime.MediaTypeNames;
 public class Image
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public required string Name { get; set; }
     public ImageType Type { get; set; }
-    public string ImageData { get; set; }
+    public required string ImageData { get; set; }
 }
 
 public enum ImageType
@@ -30,17 +30,17 @@ public class CardDTO
     public int Id { get; set; }
     public int BackgroundImageId { get; set; }
     public int IconImageId { get; set; }
-    public string Type { get; set; }
-    public string Background { get; set; }
-    public string Icon { get; set; }
-    public CardInfoDTO Info { get; set; }
+    public required string Type { get; set; }
+    public required string Background { get; set; }
+    public required string Icon { get; set; }
+    public required CardInfoDTO Info { get; set; }
 }
 
 public class CardInfoDTO
 {
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public string AttackTypes { get; set; }
+    public required string Title { get; set; }
+    public required string Description { get; set; }
+    public string? AttackTypes { get; set; }
     public string? Direction { get; set; }
     public int? Power { get; set; }
 }
@@ -51,17 +51,17 @@ public class AttackCardDescriptionInfo
     [JsonProperty("attack_type")]
     public AttackType AttackType { get; set; }
     [JsonProperty("attack_type_name")]
-    public string AttackTypeName { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public required string AttackTypeName { get; set; }
+    public required string Title { get; set; }
+    public required string Description { get; set; }
 }
 public class DefenceCardDescriptionInfo
 {
     public int Id { get; set; }
     [JsonProperty("attack_types")]
-    public List<AttackTypeDTO> AttackTypeList { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public required List<AttackTypeDTO> AttackTypeList { get; set; }
+    public required string Title { get; set; }
+    public required string Description { get; set; }
 }
 
 public class AttackTypeDTO
@@ -77,15 +77,15 @@ public class AttackTypeDTO
 public class DeveloperCardDescriptionInfo
 {
     public int Id { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public required string Title { get; set; }
+    public required string Description { get; set; }
 }
 
 public class CardDirectionInfo
 {
     [JsonProperty("card_direction")]
     public CardDirection Direction { get; set; }
-    public string Title { get; set; }
+    public required string Title { get; set; }
 }
 public class CardDescriptionComparer : IComparer<DeveloperCardDescriptionInfo>
 {
@@ -97,18 +97,6 @@ public class CardDescriptionComparer : IComparer<DeveloperCardDescriptionInfo>
         }
 
         return x.Id.CompareTo(y.Id);
-    }
-}
-public class ImageComparer : IComparer<Image>
-{
-    public int Compare(Image x, Image y)
-    {
-        if (x == null || y == null)
-        {
-            return 0;
-        }
-
-        return x.Name.CompareTo(y.Name);
     }
 }
 public class AttackTypeComparer : IEqualityComparer<AttackType>
@@ -213,7 +201,7 @@ namespace Corps.Server.Services
         public Queue<DeveloperCardDescriptionInfo> developerInfos = new Queue<DeveloperCardDescriptionInfo>();
         public List<Image> cardBackgroundImages = new List<Image>();
         public List<Image> cardIconImages = new List<Image>();
-        public List<CardDTO> GetCardDTOs(List<GameCard> cards)
+        public async Task<List<CardDTO>> GetCardDTOs(List<GameCard> cards)
         {
             Image attackBackground = cardBackgroundImages.Where(x => x.Name.Contains("attack")).First();
             Image defenceBackground = cardBackgroundImages.Where(x => x.Name.Contains("defence")).First();
@@ -223,7 +211,7 @@ namespace Corps.Server.Services
             {
                 if (x is AttackCard)
                 {
-                    AttackCardDescriptionInfo info = attackInfos.Where(y => y.AttackType == (x as AttackCard).AttackType).First();
+                    AttackCardDescriptionInfo info = attackInfos.Where(y => y.AttackType == (x as AttackCard)!.AttackType).First();
 
                     DTO.Add(
                     new CardDTO()
@@ -233,13 +221,13 @@ namespace Corps.Server.Services
                         BackgroundImageId = attackBackground.Id,
                         Background = attackBackground.ImageData,
                         IconImageId = info.Id,
-                        Icon = cardIconImages.Find(x => x.Id == info.Id).ImageData,
+                        Icon = cardIconImages.Find(x => x.Id == info.Id)?.ImageData ?? "",
                         Info = new CardInfoDTO()
                         {
                             Title = info.Title,
                             Description = info.Description,
-                            Direction = directions.Where(y => y.Direction == (x as AttackCard).Direction).First().Title,
-                            Power = (x as AttackCard).Damage,
+                            Direction = directions.Where(y => y.Direction == (x as AttackCard)!.Direction).First().Title,
+                            Power = (x as AttackCard)!.Damage,
                         },
                     });
                 }
@@ -248,7 +236,7 @@ namespace Corps.Server.Services
                     DefenceCardDescriptionInfo info =
                     defenceInfos.Where(
                         y => y.AttackTypeList.Select(z => z.AttackType).
-                        SequenceEqual((x as DefenceCard).AttackTypes, new AttackTypeComparer())
+                        SequenceEqual((x as DefenceCard)!.AttackTypes, new AttackTypeComparer())
                         ).First();
 
                     DTO.Add(
@@ -259,14 +247,14 @@ namespace Corps.Server.Services
                         BackgroundImageId = defenceBackground.Id,
                         Background = defenceBackground.ImageData,
                         IconImageId = info.Id,
-                        Icon = cardIconImages.Find(x => x.Id == info.Id).ImageData,
+                        Icon = cardIconImages.Find(x => x.Id == info.Id)?.ImageData ?? "",
                         Info = new CardInfoDTO()
                         {
                             Title = info.Title,
                             Description = info.Description,
                             AttackTypes = string.Join("---",
                                         attackInfos.Select(x => x.AttackType)
-                                                    .Where(y => info.AttackTypeList.Contains(new AttackTypeDTO(y)))
+                                                    .Where(y => info.AttackTypeList!.Contains(new AttackTypeDTO(y)))
                                                     .Select(z => attackInfos.Find(r => r.AttackType == z)!.AttackTypeName))
                         },
                     });
@@ -282,13 +270,13 @@ namespace Corps.Server.Services
                         Type = "developer",
                         BackgroundImageId = developerBackground.Id,
                         Background = developerBackground.ImageData,
-                        Icon = cardIconImages.Find(x => x.Id == developerInfo.Id).ImageData,
+                        Icon = cardIconImages.Find(x => x.Id == developerInfo.Id)?.ImageData ?? "",
                         IconImageId = developerInfo.Id,
                         Info = new CardInfoDTO()
                         {
                             Title = developerInfo.Title,
                             Description = developerInfo.Description,
-                            Power = (x as DeveloperCard).DevelopmentPoint
+                            Power = (x as DeveloperCard)!.DevelopmentPoint
                         },
                     });
                 }
