@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Corps.Migration.Core\Corps.Core.csproj" />
+    <ProjectReference Include="..\Corps.Core\Corps.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

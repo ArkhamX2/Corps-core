@@ -41,7 +41,7 @@ namespace Corps.Analysis
             //strategiesList.Add(Shuffle(strategiesList[4]));
             //strategiesList.Add(Shuffle(strategiesList[4]));
             //strategiesList.Add(Shuffle(strategiesList[4]));
-            //for (int i = 0; i < 20; i++)
+            //for (int i = 0; i < 1; i++)
             //{
             //    AnalizeOneGame(strategiesList[2]);
             //}

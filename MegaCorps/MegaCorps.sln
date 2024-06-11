@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corps.Server", "Corps.Serve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corps.Integration", "Corps.Integration\Corps.Integration.csproj", "{227B57F3-DFCE-4080-9DE2-56B63C3CA647}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corps.Core", "Corps.Migration.Core\Corps.Core.csproj", "{399F704C-37F3-4282-8341-50ACCFCB2BA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corps.Analysis", "Corps.Analysis\Corps.Analysis.csproj", "{B244758B-CB01-4238-A433-7631879C752F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corps.Analysis", "Corps.Migrations.Analysis\Corps.Analysis.csproj", "{03CFD324-9BEF-4439-BDF0-C7AB3C16EE73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corps.Core", "Corps.Core\Corps.Core.csproj", "{47FDF89C-5ED8-411F-BC31-E1DD003AD7E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +25,14 @@ Global
 		{227B57F3-DFCE-4080-9DE2-56B63C3CA647}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{227B57F3-DFCE-4080-9DE2-56B63C3CA647}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{227B57F3-DFCE-4080-9DE2-56B63C3CA647}.Release|Any CPU.Build.0 = Release|Any CPU
-		{399F704C-37F3-4282-8341-50ACCFCB2BA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{399F704C-37F3-4282-8341-50ACCFCB2BA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{399F704C-37F3-4282-8341-50ACCFCB2BA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{399F704C-37F3-4282-8341-50ACCFCB2BA6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{03CFD324-9BEF-4439-BDF0-C7AB3C16EE73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{03CFD324-9BEF-4439-BDF0-C7AB3C16EE73}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{03CFD324-9BEF-4439-BDF0-C7AB3C16EE73}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{03CFD324-9BEF-4439-BDF0-C7AB3C16EE73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B244758B-CB01-4238-A433-7631879C752F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B244758B-CB01-4238-A433-7631879C752F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B244758B-CB01-4238-A433-7631879C752F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B244758B-CB01-4238-A433-7631879C752F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47FDF89C-5ED8-411F-BC31-E1DD003AD7E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47FDF89C-5ED8-411F-BC31-E1DD003AD7E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47FDF89C-5ED8-411F-BC31-E1DD003AD7E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47FDF89C-5ED8-411F-BC31-E1DD003AD7E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

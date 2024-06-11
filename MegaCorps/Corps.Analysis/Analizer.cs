@@ -1,22 +1,19 @@
-﻿using MegaCorps.Core.Model;
-using MegaCorps.Core.Model.Cards;
-using MegaCorps.Core.Model.GameUtils;
+﻿using Corps.Analysis;
+using MegaCorps.Core.Model;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Corps.Analysis
 {
-    /// <summary>
-    /// Анализатор игры
-    /// </summary>
     public class Analizer
     {
-        private const int MAX_CARDS = 6;
         private const int CARDS_TO_DEAL = 3;
         private const int CARDS_TO_CHOOSE = 3;
-        private GameEngine _engine;
+        private const int MAX_CARDS = 6;
+        private GameEngine _engine = new();
         private int _numberOfPlayers;
         private List<int> _winners;
         private List<ISelectionStrategy> _selectionStrategyList;
@@ -75,7 +72,7 @@ namespace Corps.Analysis
 
             _winners = Enumerable.Repeat(0, NumberOfPlayers).ToList();
 
-            return new AnalizerResult(averageTurnCount, averageWins, scores, string.Join("%|-|", (_selectionStrategyList.Where(x => x is MonteCarloSelectStrategy).First() as MonteCarloSelectStrategy).ChosenProbability.Select(x=>(x/1000)*100)));
+            return new AnalizerResult(averageTurnCount, averageWins, scores, string.Join("%|-|", (_selectionStrategyList.Where(x => x is MonteCarloSelectStrategy).First() as MonteCarloSelectStrategy)!.ChosenProbability.Select(x => (x / 1000) * 100)));
         }
     }
 
@@ -97,3 +94,7 @@ namespace Corps.Analysis
         }
     }
 }
+
+
+
+
