@@ -9,7 +9,7 @@ namespace Corps.Server.Hubs
     {
         public int Id { get; set; }
         public string Code{ get; set; }
-        public static readonly int CODE_LENGTH = 3;
+        public static readonly int CODE_LENGTH = 6;
         public List<LobbyMember> lobbyMembers { get; private set; }
         
         public LobbyState State{ get; set; }
@@ -61,11 +61,13 @@ namespace Corps.Server.Hubs
                 byte[] hashBytes = md5.ComputeHash(inputBytes);
 
                 StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < length; i++) 
+                int currentByte = 0;
+                while(sb.Length < length) 
                 {
-                    sb.Append(hashBytes[i].ToString("X2"));
+                    sb.Append((int)hashBytes[currentByte]);
+                    currentByte++;
                 }
-                return sb.ToString().ToUpper();
+                return sb.ToString().Substring(0,6);
             }
         }
     }
