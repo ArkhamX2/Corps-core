@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  corps.server:
+    image: ${DOCKER_REGISTRY-}corpsserver
+    build:
+      context: .
+      dockerfile: Corps.Server/Dockerfile
