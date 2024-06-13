@@ -6,3 +6,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "7017:8080"
+  client:
+    ports:
+      - "5001:5173"

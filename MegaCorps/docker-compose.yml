@@ -6,3 +6,9 @@ services:
     build:
       context: .
       dockerfile: Corps.Server/Dockerfile
+  client:
+    image: client
+    build: 
+        context: ../..
+        dockerfile: ./Corps-client/Dockerfile
+
