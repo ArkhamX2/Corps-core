@@ -207,7 +207,7 @@ namespace Corps.Server.Hubs
             {
                 if (!_games.ContainsKey(lobbyId)) throw new Exception("Не найдена игра с таким идентификатором");
                 GameEngine game = _games[lobbyId];
-                if (!(playerId > 0 && playerId < game.Players.Count)) throw new Exception("Не найден игрок с таким идентификатором");
+                if (!(playerId >= 0 && playerId < game.Players.Count)) throw new Exception("Не найден игрок с таким идентификатором");
                 game.Players[playerId].IsReady = !game.Players[playerId].IsReady;
 
                 if (game.Players.All(x => x.IsReady))
