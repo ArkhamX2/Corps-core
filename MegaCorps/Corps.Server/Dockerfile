@@ -22,4 +22,7 @@ RUN dotnet publish "./Corps.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publi
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY ["Corps.Server/Resource/Image","Resource/Image"]
+COPY ["Corps.Server/Resource/Text","Resource/Text"]
 ENTRYPOINT ["dotnet", "Corps.Server.dll"]
+

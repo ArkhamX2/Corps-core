@@ -9,6 +9,6 @@ services:
   client:
     image: client
     build: 
-        context: ../..
-        dockerfile: ./Corps-client/Dockerfile
+        context: ../../Corps-client/
+        dockerfile: Dockerfile
 
