@@ -103,6 +103,7 @@ internal class Program
         application.UseAuthentication();
         application.UseAuthorization();
         application.MapControllers();
+        application.UseStaticFiles();
         if (application.Environment.IsDevelopment())
         {
             application.UseCors(x => x
