@@ -21,7 +21,7 @@ namespace Corps.Server.Controllers
         [HttpGet("card")]
         public async Task<IActionResult> GetCards()
         {
-            return Ok(await _imageService.GetCardDTOs(DeckBuilder.GetDeck().UnplayedCards));
+            return Ok(await _imageService.GetCardDTOs(DeckBuilder.GetDeckFromResources(_imageService.attackInfos,_imageService.defenceInfos,_imageService.developerInfos,_imageService.directions,_imageService.eventInfos).UnplayedCards));
         }
 
         [HttpGet("background")]
