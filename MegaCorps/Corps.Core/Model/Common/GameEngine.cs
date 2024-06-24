@@ -247,7 +247,7 @@ namespace MegaCorps.Core.Model
                         {
                             foreach (Player playerLosing in Players)
                             {
-                                playerLosing.Score--;
+                                playerLosing.Score = playerLosing.Score >1? playerLosing.Score-1 : playerLosing.Score;
                             }
                         }
                     }
@@ -256,7 +256,7 @@ namespace MegaCorps.Core.Model
 
             for (int i = 0; i < Players.Count; i++)
             {
-                if (Players[i].Score < 0) Players[i].Score = 0;
+                if (Players[i].Score < 1) Players[i].Score = 1;
                 Deck.PlayedCards.AddRange(Players[i].Hand.Cards.Where((card) => card.State == CardState.Used));
                 Players[i].Hand.Cards.RemoveAll((card) => card.State == CardState.Used);
                 Players[i].Hand.Targeted.Clear();
