@@ -213,10 +213,13 @@ namespace Corps.Server.Hubs
                 if (game.Players.All(x => x.IsReady))
                 {
                     game.TargetCards();
+                    foreach (var player in game.Players)
+                    {
+                        player.IsReady = false;
+                    }
                     await Clients.Group(lobbyId + "Host").SendAsync("AllPlayerReady", game.Players);
-                    await Clients.Group(lobbyId + "Player").SendAsync("AllPlayerReady");
                 }
-                else await Clients.Group(lobbyId + "Host").SendAsync("GamePlayerIsReady", playerId);
+                await Clients.Group(lobbyId + "Host").SendAsync("GamePlayerIsReady", game.Players[playerId]);
             }
             catch (Exception ex)
             {
@@ -249,7 +252,7 @@ namespace Corps.Server.Hubs
 
                 foreach (Player player in game.Players)
                 {
-                    await Clients.Group(lobbyId + "Player").SendAsync("GameChangesShown", player.Hand.Cards);
+                    await Clients.Group(lobbyId + "Player").SendAsync($"GameChangesShown{player.Id}", player.Hand.Cards);
                 }
                 await Clients.Group(lobbyId + "Host").SendAsync("GameChangesShown", game.Players);
 
