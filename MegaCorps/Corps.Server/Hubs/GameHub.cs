@@ -175,7 +175,7 @@ namespace Corps.Server.Hubs
                     Cards.Add(game.Players[playerId].Hand.Cards[foundCardIndex]);
                     int unSelectedId = game.Players[playerId].Hand.PushCardToSelectedQueue(selectedCardId);
                     if (unSelectedId != -1)
-                    {
+                    {                        
                         var foundUnselectCardIndex = game.Players[playerId].Hand.Cards.FindIndex(x => x.Id == unSelectedId);
                         game.Players[playerId].Hand.Cards[foundUnselectCardIndex].State = CardState.Unused;
                         Cards.Add(game.Players[playerId].Hand.Cards[foundUnselectCardIndex]);
@@ -252,6 +252,7 @@ namespace Corps.Server.Hubs
 
                 foreach (Player player in game.Players)
                 {
+                    player.Hand.SelectedCardQueue.Clear();
                     await Clients.Group(lobbyId + "Player").SendAsync($"GameChangesShown{player.Id}", player.Hand.Cards);
                 }
                 await Clients.Group(lobbyId + "Host").SendAsync("GameChangesShown", game.Players);
