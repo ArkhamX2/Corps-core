@@ -1,16 +1,11 @@
 ﻿using MegaCorps.Core.Model.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model.Cards
 {
     /// <summary>
     /// Класс защиты
     /// </summary>
-    public class DefenceCard:GameCard
+    public class DefenceCard : GameCard
     {
         /// <summary>
         /// Типы атак, от которых защищает карта
@@ -21,6 +16,6 @@ namespace MegaCorps.Core.Model.Cards
             AttackTypes = attackTypes;
         }
 
-        public DefenceCard(DefenceCard card) : this(card.Id,card.AttackTypes){}
+        public DefenceCard(DefenceCard card) : this(card.Id, card.AttackTypes) { }
     }
 }

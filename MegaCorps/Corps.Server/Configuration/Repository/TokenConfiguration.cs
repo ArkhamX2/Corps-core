@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Corps.Server.Configuration.Repository
 {
-    public class TokenConfiguration(IConfiguration configuration): ConfigurationRepository(configuration)
+    public class TokenConfiguration(IConfiguration configuration) : ConfigurationRepository(configuration)
     {
         public string GetIssuer()
         {

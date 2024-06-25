@@ -1,6 +1,5 @@
 ﻿using Corps.Server.Services;
 using MegaCorps.Core.Model.GameUtils;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -21,7 +20,7 @@ namespace Corps.Server.Controllers
         [HttpGet("card")]
         public async Task<IActionResult> GetCards()
         {
-            return Ok(await _imageService.GetCardDTOs(DeckBuilder.GetDeckFromResources(_imageService.attackInfos,_imageService.defenceInfos,_imageService.developerInfos,_imageService.directions,_imageService.eventInfos).UnplayedCards));
+            return Ok(await _imageService.GetCardDTOs(DeckBuilder.GetDeckFromResources(_imageService.AttackInfos, _imageService.DefenceInfos, _imageService.DeveloperInfos, _imageService.Directions, _imageService.EventInfos).UnplayedCards));
         }
 
         [HttpGet("background")]

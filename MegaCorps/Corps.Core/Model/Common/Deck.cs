@@ -1,10 +1,4 @@
 ﻿using MegaCorps.Core.Model.Cards;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model
 {
@@ -13,18 +7,16 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public class Deck
     {
-        private List<GameCard> playedCards = new List<GameCard>();
-        private List<GameCard> unplayedCards = new List<GameCard>();
         /// <summary>
         /// Сброс карт
         /// </summary>
-        public List<GameCard> PlayedCards { get => playedCards; set => playedCards = value; }
+        public List<GameCard> PlayedCards { get; set; }
         /// <summary>
         /// Колода карт
         /// </summary>
-        public List<GameCard> UnplayedCards { get => unplayedCards; set => unplayedCards = value; }
+        public List<GameCard> UnplayedCards { get; set; }
 
-        public Deck(List<GameCard> cards) 
+        public Deck(List<GameCard> cards)
         {
             UnplayedCards = cards;
             PlayedCards = new List<GameCard>();
@@ -36,9 +28,7 @@ namespace MegaCorps.Core.Model
             PlayedCards = played;
         }
 
-        public Deck()
-        {
-        }
+        public Deck() { }
 
         /// <summary>
         /// Перемешать колоду
@@ -46,7 +36,7 @@ namespace MegaCorps.Core.Model
         public void Shuffle()
         {
             var r = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
-            UnplayedCards = UnplayedCards.OrderBy(x => r.Value!.Next(UnplayedCards.Count-1)).ToList();
+            UnplayedCards = UnplayedCards.OrderBy(x => r.Value!.Next(UnplayedCards.Count - 1)).ToList();
         }
 
         /// <summary>
@@ -61,7 +51,7 @@ namespace MegaCorps.Core.Model
 
             for (int i = 0; i < playersCount; i++)
             {
-                if(UnplayedCards.Count < dealCount)
+                if (UnplayedCards.Count < dealCount)
                 {
                     foreach (GameCard card in PlayedCards)
                     {

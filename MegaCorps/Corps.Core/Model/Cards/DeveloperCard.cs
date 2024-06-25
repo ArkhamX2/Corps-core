@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MegaCorps.Core.Model.Cards
+﻿namespace MegaCorps.Core.Model.Cards
 {
     /// <summary>
     /// Класс карты разработчика
@@ -20,6 +14,6 @@ namespace MegaCorps.Core.Model.Cards
             DevelopmentPoint = devPoint;
         }
 
-        public DeveloperCard(DeveloperCard card) : this(card.Id,card.DevelopmentPoint){}
+        public DeveloperCard(DeveloperCard card) : this(card.Id, card.DevelopmentPoint) { }
     }
 }

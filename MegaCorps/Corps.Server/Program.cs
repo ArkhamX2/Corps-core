@@ -1,13 +1,11 @@
 
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Corps.Server.Data;
 using Corps.Server.Configuration;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.SignalR;
-using Corps.Server.Services;
-using Corps.Server.Configuration.Repository;
+using Corps.Server.Data;
 using Corps.Server.Data.Initialization;
 using Corps.Server.Hubs;
+using Corps.Server.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 
 internal class Program
 {

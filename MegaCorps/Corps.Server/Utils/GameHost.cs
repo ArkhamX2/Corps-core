@@ -4,10 +4,10 @@
     {
         public string Name { get; set; }
         public string Password { get; set; }
-        public GameHost(string name,string password) 
+        public GameHost(string name, string password)
         {
-            Name= name;
-            Password= password;
+            Name = name;
+            Password = password;
         }
 
     }

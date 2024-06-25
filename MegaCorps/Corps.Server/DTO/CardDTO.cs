@@ -1,7 +1,4 @@
-﻿using MegaCorps.Core.Model.Enums;
-using Newtonsoft.Json;
-
-namespace Corps.Server.DTO
+﻿namespace Corps.Server.DTO
 {
 
     public class CardDTO

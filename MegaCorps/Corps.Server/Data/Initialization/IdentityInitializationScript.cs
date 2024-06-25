@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-
-namespace Corps.Server.Data.Initialization
+﻿namespace Corps.Server.Data.Initialization
 {
-    public class IdentityInitializationScript(IdentityContext context): IInitializationScript
+    public class IdentityInitializationScript(IdentityContext context) : IInitializationScript
     {
         private IdentityContext IdentityContext { get; } = context;
 
@@ -11,7 +9,7 @@ namespace Corps.Server.Data.Initialization
             if (!await IdentityContext.TryInitializeAsync())
             {
                 throw new Exception("Data initialization failed!");
-            }           
+            }
         }
     }
 }

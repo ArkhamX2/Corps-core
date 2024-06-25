@@ -1,9 +1,5 @@
 ﻿using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.GameUtils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 
 namespace MegaCorps.Core.Model
 {
@@ -65,11 +61,12 @@ namespace MegaCorps.Core.Model
             for (int i = 0; i < numberOfIterations; i++)
             {
                 cardsCopy = new List<List<GameCard>>();
-                cards.ForEach(cardList => {
+                cards.ForEach(cardList =>
+                {
                     cardsCopy.Add(new List<GameCard>());
                     cardList.ForEach(card =>
                     {
-                        if(card is AttackCard)
+                        if (card is AttackCard)
                         {
                             cardsCopy.Last().Add(new AttackCard((card as AttackCard)!));
                         }
@@ -89,7 +86,7 @@ namespace MegaCorps.Core.Model
                 engine.SelectCards(tmpSelected);
                 engine.TargetCards();
                 engine.Turn();
-                engine.Deal(CARDS_TO_DEAL); 
+                engine.Deal(CARDS_TO_DEAL);
                 turnCount++;
 
                 while (!engine.Win)
@@ -101,9 +98,9 @@ namespace MegaCorps.Core.Model
                     turnCount++;
                 }
 
-                monteCarloWins += engine.Winner == 1 ? 1:0;
+                monteCarloWins += engine.Winner == 1 ? 1 : 0;
             }
-            
+
 
             return monteCarloWins;
         }
@@ -215,7 +212,7 @@ namespace MegaCorps.Core.Model
 
             return selected;
         }
-         
+
         string ISelectionStrategy.Print()
         {
             return "AgressiveSelectStrategy";

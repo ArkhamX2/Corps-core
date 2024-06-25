@@ -2,13 +2,7 @@
 using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.Common;
 using MegaCorps.Core.Model.Enums;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model.GameUtils
 {
@@ -77,102 +71,98 @@ namespace MegaCorps.Core.Model.GameUtils
         /// Сформировать колоду с нуля
         /// </summary>
         /// <returns></returns>
-        public static Deck GetDeckFromResources(List<AttackCardDescriptionInfo> attackInfos, List<DefenceCardDescriptionInfo> defenceInfos, Queue<DeveloperCardDescriptionInfo> developerInfos, List<CardDirectionInfo> directionList, Queue<EventCardDescriptionInfo> eventInfos)
+        public static Deck GetDeckFromResources(
+            List<AttackCardDescriptionInfo> attackInfos,
+            List<DefenceCardDescriptionInfo> defenceInfos,
+            Queue<DeveloperCardDescriptionInfo> developerInfos,
+            List<CardDirectionInfo> directionList,
+            Queue<EventCardDescriptionInfo> eventInfos)
         {
             var deck = new List<GameCard>();
-
-            int attackAmount = attackInfos.Select(x => x.Amount).Sum();
-            int defenceAmount = defenceInfos.Select(x => x.Amount).Sum();
-            int developerAmount = developerInfos.Select(x => x.Amount).Sum();
-            List<CardDirection> directions = new List<CardDirection>();
-            directionList.ForEach(x => directions.AddRange(Enumerable.Range(1, x.Amount).Select(y=>x.Direction).ToList()));
-
             int id = 0;
-            attackInfos.ForEach(x =>
-            {
-                int counter = 0;
-                while (counter < x.Amount - 1)
-                {
-                    deck.Add(new AttackCard(
-                        id,
-                        x.DirectionList[counter%x.DirectionList.Count],
-                        1,
-                        x.AttackType
-                        ));
-                    counter++;
-                    id++;
-                }
-                deck.Add(new AttackCard(
-                        id,
-                        x.DirectionList[counter % x.DirectionList.Count],
-                        2,
-                        x.AttackType
-                        ));
-                id++;
-            });
+            CreateAttackCards(attackInfos, deck, ref id);
+            CreateDefenceCards(defenceInfos, deck, ref id);
+            CreateDeveloperCards(deck, developerInfos.Select(x => x.Amount).Sum(), ref id);
+            CreateEventCartds(deck, eventInfos.Select(x => x.Amount).Sum(), ref id);
 
-            defenceInfos.ForEach(x =>
-            {
-                int counter = 0;
-                while (counter < x.Amount)
-                {
-                    deck.Add(new DefenceCard(
-                        id,
-                        x.AttackTypeList
-                        ));
-                    counter++;
-                    id++;
-                }
-                
-            });
+            return new Deck(deck);
+        }
 
-            int queueCounter = 0;
-            while(queueCounter < (developerAmount * 2/3))
-            {
-                deck.Add(new DeveloperCard(
-                    id,
-                    1
-                    ));
-                id++;
-                queueCounter++;
-            }
-            while (queueCounter < developerAmount)
-            {
-                deck.Add(new DeveloperCard(
-                    id,
-                    2
-                    ));
-                id++;
-                queueCounter++;
-            }
-
-            int eventAmount = eventInfos.Select(x => x.Amount).Sum();
-
+        private static void CreateEventCartds(List<GameCard> deck, int eventAmount, ref int id)
+        {
             int eventCounter = 0;
-            while(eventCounter < developerAmount)
+            while (eventCounter < eventAmount)
             {
-                if(eventCounter%developerAmount == 0)
+                if (eventCounter % eventAmount == 0)
                 {
-                    deck.Add(new ScoreEventCard(id,2));
+                    deck.Add(new ScoreEventCard(id, 2));
                 }
-                if (eventCounter % developerAmount == 1)
+                if (eventCounter % eventAmount == 1)
                 {
                     deck.Add(new NeighboursEventCards(id, 2));
                 }
-                if (eventCounter % developerAmount == 2)
+                if (eventCounter % eventAmount == 2)
                 {
                     deck.Add(new SwapEventCard(id));
                 }
-                if (eventCounter % developerAmount == 3)
+                if (eventCounter % eventAmount == 3)
                 {
-                    deck.Add(new AllLosingCard(id,2));
+                    deck.Add(new AllLosingCard(id, 2));
                 }
                 id++;
                 eventCounter++;
             }
 
+        }
 
-            return new Deck(deck);
+        private static void CreateDeveloperCards(List<GameCard> deck, int developerAmount, ref int id)
+        {
+            int queueCounter = 0;
+            while (queueCounter < (developerAmount * 2 / 3))
+            {
+                deck.Add(new DeveloperCard(
+                    id,
+                    queueCounter < (developerAmount * 2 / 3) ? 1 : 2
+                    ));
+                id++;
+                queueCounter++;
+            }
+        }
+
+        private static void CreateDefenceCards(List<DefenceCardDescriptionInfo> defenceInfos, List<GameCard> deck, ref int id)
+        {
+            foreach (DefenceCardDescriptionInfo defence in defenceInfos)
+            {
+                int counter = 0;
+                while (counter < defence.Amount)
+                {
+                    deck.Add(new DefenceCard(
+                        id: id,
+                        defence.AttackTypeList
+                        ));
+                    counter++;
+                    id++;
+                }
+            }
+        }
+
+        private static void CreateAttackCards(List<AttackCardDescriptionInfo> attackInfos, List<GameCard> deck, ref int id)
+        {
+            foreach (AttackCardDescriptionInfo attack in attackInfos)
+            {
+                int counter = 0;
+                while (counter < attack.Amount)
+                {
+                    deck.Add(new AttackCard(
+                        id,
+                        attack.DirectionList[counter % attack.DirectionList.Count],
+                        counter == attack.Amount - 1 ? 2 : 1,
+                        attack.AttackType
+                        ));
+                    counter++;
+                    id++;
+                }
+            }
         }
 
         public static Deck CopyDeck(Deck deck)

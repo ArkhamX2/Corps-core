@@ -1,12 +1,6 @@
 ﻿using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.Enums;
 using MegaCorps.Core.Model.GameUtils;
-using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model
 {
@@ -15,24 +9,23 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public class GameEngine
     {
-        
-        private Deck _deck = new();
+
         /// <summary>
         /// Колода
         /// </summary>
-        public Deck Deck { get => _deck; set => _deck = value; }
+        public Deck Deck { get; set; } = new();
         /// <summary>
         /// Игроки
         /// </summary>
-        public List<Player> Players { get => _players; set => _players = value; }
+        public List<Player> Players { get; set; } = new();
         /// <summary>
         /// Индикатор победы
         /// </summary>
-        public bool Win { get => _win; set => _win = value; }
+        public bool Win { get; set; } = false;
         /// <summary>
         /// Индекс победителя в списке игроков
         /// </summary>
-        public int Winner { get => _winner; set => _winner = value; }
+        public int Winner { get; set; } = -1;
 
 
         /// <summary>
@@ -40,12 +33,6 @@ namespace MegaCorps.Core.Model
         /// </summary>
         private int NumberOfPlayers { get; }
 
-        private int _winner = new();
-
-
-        private bool _win = new();
-
-        private List<Player> _players = new();
 
         public GameEngine(Deck deck, List<string> usernameList)
         {
@@ -53,7 +40,6 @@ namespace MegaCorps.Core.Model
             deck.Shuffle();
             Players = UserSetup.CreateUserList(usernameList);
             NumberOfPlayers = Players.Count;
-            _win = false;
 
         }
 
@@ -63,7 +49,6 @@ namespace MegaCorps.Core.Model
             Deck.Shuffle();
             Players = UserSetup.CreateUserList(usernameList);
             NumberOfPlayers = Players.Count;
-            _win = false;
         }
 
         public GameEngine(int numberOfPlayers)
@@ -72,7 +57,6 @@ namespace MegaCorps.Core.Model
             Deck = DeckBuilder.GetDeck();
             Deck.Shuffle();
             Players = UserSetup.CreateUserList(numberOfPlayers);
-            _win = false;
         }
 
         public GameEngine(List<int> scores, List<List<GameCard>> cards, Deck deck)
@@ -87,12 +71,9 @@ namespace MegaCorps.Core.Model
                 player.Score = scores[i];
                 player.Hand = new PlayerHand(cards[i]);
             }
-            _win = false;
         }
 
-        public GameEngine()
-        {
-        }
+        public GameEngine() { }
 
         /// <summary>
         /// Раздать карты игрокам
@@ -102,12 +83,6 @@ namespace MegaCorps.Core.Model
         {
             List<List<GameCard>> hands = Deck.Deal(dealCount, NumberOfPlayers);
 
-            if (hands.Count == 0)
-            {
-                Deck = DeckBuilder.GetDeck();
-                Deck.Shuffle();
-                hands = Deck.Deal(dealCount, NumberOfPlayers);
-            }
             for (int i = 0; i < Players.Count; i++)
             {
                 Players[i].Hand.Cards.AddRange(hands[i]);
@@ -122,7 +97,7 @@ namespace MegaCorps.Core.Model
             Deck = DeckBuilder.GetDeck();
             Deck.Shuffle();
             Players = UserSetup.CreateUserList(NumberOfPlayers);
-            _win = false;
+            Win = false;
         }
 
         /// <summary>
@@ -133,34 +108,50 @@ namespace MegaCorps.Core.Model
             Deck = deck;
             Deck.Shuffle();
             Players = UserSetup.CreateUserList(NumberOfPlayers);
-            _win = false;
+            Win = false;
         }
 
         /// <summary>
         /// Получить руки всех игроков
         /// </summary>
         /// <returns></returns>
-        public List<List<GameCard>> GetPlayersHands()
-        {
-            List<List<GameCard>> hands = new List<List<GameCard>>();
+        public List<List<GameCard>> GetPlayersHands() => Players.Select(x => x.Hand.Cards).ToList();
 
-            for (int i = 0; i < Players.Count; i++)
-            {
-                hands.Add(Players[i].Hand.Cards);
-            }
-
-
-            return hands;
-        }
+        /// <summary>
+        /// Нацелить все карты атаки всех игроков
+        /// </summary>
         public void TargetCards()
         {
-            List<List<GameCard>> all = GetPlayersHands();
+            List<List<GameCard>> all = GetPlayersHands()
+                .Select(x => x
+                    .Where((card) => card.State == CardState.Used && card is AttackCard)
+                    .ToList()
+                    )
+                .ToList();
+
+            TargetExactCard(all);
+
+            RemoveTargetedCardsFromHand(all
+                .SelectMany(x => x)
+                .Select(x => x as AttackCard).ToList()!);
+        }
+        /// <summary>
+        /// Совершить 1 ход
+        /// </summary>
+        public void Turn()
+        {
+            Players.ForEach(x => x.PlayHand());
+            PlayEventCards();
+            PrepareForNextTurn();
+            CheckWin();
+        }
+        private void TargetExactCard(List<List<GameCard>> all)
+        {
             for (int i = 0; i < all.Count(); i++)
             {
-                List<GameCard> playerUsedAttacks = all[i].Where((card) => card.State == CardState.Used && card is AttackCard).ToList();
-                for (int j = 0; j < playerUsedAttacks.Count(); j++)
+                for (int j = 0; j < all[i].Count(); j++)
                 {
-                    AttackCard currentCard = (playerUsedAttacks[j] as AttackCard)!;
+                    AttackCard currentCard = (all[i][j] as AttackCard)!;
                     switch (currentCard.Direction)
                     {
                         case CardDirection.Left:
@@ -170,103 +161,95 @@ namespace MegaCorps.Core.Model
                             Players[i == 0 ? Players.Count() - 1 : i - 1].Hand.Targeted.Add(currentCard);
                             break;
                         case CardDirection.All:
-                            foreach (Player player in Players)
-                            {
-                                player.Hand.Targeted.Add(currentCard);
-                            }
+                            Players.ForEach(player => player.Hand.Targeted.Add(currentCard));
                             break;
                         case CardDirection.Allbutnotme:
-                            for (int k = 0; k < Players.Count; k++)
-                            {
-                                if (k != i)
-                                {
-                                    Players[k].Hand.Targeted.Add(currentCard);
-                                }
-                            }
+                            Players
+                                .Select((player, index) => index)
+                                .Where(index => index != i).ToList()
+                                .ForEach(index => Players[index].Hand.Targeted.Add(currentCard));
                             break;
                         default:
                             break;
                     }
-                    Players.ForEach(player => {
-                        if (player.Hand.Cards.Select(x => x.Id).Contains(currentCard.Id))
-                        {
-                            player.Hand.Cards.Remove(currentCard);
-                        }
-                    });
                 }
-
             }
         }
 
-        /// <summary>
-        /// Совершить 1 ход
-        /// </summary>
-        public void Turn()
-        {
-            foreach (Player player in Players)
-            {
-                player.PlayHand();
-            }
+        private void RemoveTargetedCardsFromHand(List<AttackCard> cardsToRemove) => Players
+            .ForEach(player => player.Hand.Cards
+                                          .RemoveAll(card => cardsToRemove
+                                                             .Contains(card)));
 
+        private void CheckWin()
+        {
+            Win = Players.Any(player => player.Score >= 10);
+            Winner = Players.FindIndex(player => player.Score == Players.Max((item) => item.Score)) + 1;
+        }
+
+        private void PrepareForNextTurn()
+        {
+            foreach (Player v in Players)
+            {
+                if (v.Score < 1) v.Score = 1;
+                Deck.PlayedCards.AddRange(v.Hand.Cards.Where((card) => card.State == CardState.Used));
+                v.Hand.Cards.RemoveAll((card) => card.State == CardState.Used);
+                v.Hand.Targeted.Clear();
+            }
+        }
+
+        private void PlayEventCards()
+        {
             for (int i = 0; i < Players.Count; i++)
             {
                 Player player = Players[i];
-                List<EventCard> events = player.Hand.Cards.Where(x => x is EventCard).Select(x=>x as EventCard).ToList()!;
-                if (events.Count > 0) {
-                    foreach (EventCard eventCard in events)
+                List<EventCard> events = player.Hand.Cards.Where(x => x is EventCard).Select(x => x as EventCard).ToList()!;
+                for (int j = 0; j < events.Count; j++)
+                {
+                    EventCard eventCard = events[j];
+                    if (eventCard is ScoreEventCard)
                     {
-                        if(eventCard is ScoreEventCard)
-                        {
-                            player.Score += (eventCard as ScoreEventCard)?.Power ?? 0;
-                        }
-                        if (eventCard is NeighboursEventCards)
-                        {
-                            Players[(i + 1) % Players.Count].Score += (eventCard as NeighboursEventCards)!.Power;
-                            Players[(i - 1) % Players.Count].Score += (eventCard as NeighboursEventCards)!.Power;
-                        }
-                        if (eventCard is SwapEventCard)
-                        {
-                            int maxScore = Players.Select(x => x.Score).Max();
-                            if(maxScore == player.Score)
-                            {
-                                int minScore = Players.Select(x => x.Score).Min();
-                                Random rnd = new Random();
-                                List<Player> outsiders = Players.Where(x => x.Score == minScore).ToList();
-                                player.Score = minScore;
-                                outsiders[rnd.Next(outsiders.Count)].Score = maxScore;
-                            }
-                            else
-                            {
-                                Random rnd = new Random();
-                                List<Player> leaders = Players.Where(x => x.Score == maxScore).ToList();
-                                leaders[rnd.Next(leaders.Count)].Score = player.Score;
-                                player.Score = maxScore;
-                            }
-                        }
-                        if (eventCard is AllLosingCard)
-                        {
-                            foreach (Player playerLosing in Players)
-                            {
-                                playerLosing.Score = playerLosing.Score >1? playerLosing.Score-1 : playerLosing.Score;
-                            }
-                        }
+                        player.Score += (eventCard as ScoreEventCard)?.Power ?? 0;
+                    }
+                    if (eventCard is NeighboursEventCards)
+                    {
+                        Players[(i + 1) % Players.Count].Score += (eventCard as NeighboursEventCards)!.Power;
+                        Players[(i - 1) % Players.Count].Score += (eventCard as NeighboursEventCards)!.Power;
+                    }
+                    if (eventCard is SwapEventCard)
+                    {
+                        int maxScore = Players.Select(x => x.Score).Max();
+                        if (maxScore == player.Score)
+                            SwapLeaderWithOutsider(player, maxScore);
+                        else
+                            SwapPlayerWithAnyLeader(player, maxScore);
+                    }
+                    if (eventCard is AllLosingCard)
+                    {
+                        Players
+                            .Where(x => x.Score > 1).ToList()
+                            .ForEach(player => player.Score -= 1);
                     }
                 }
             }
-
-            for (int i = 0; i < Players.Count; i++)
-            {
-                if (Players[i].Score < 1) Players[i].Score = 1;
-                Deck.PlayedCards.AddRange(Players[i].Hand.Cards.Where((card) => card.State == CardState.Used));
-                Players[i].Hand.Cards.RemoveAll((card) => card.State == CardState.Used);
-                Players[i].Hand.Targeted.Clear();
-            }
-            Win = Players.Any(player => player.Score >= 10);
-            Winner = Players.FindIndex(player => player.Score == Players.Max((item) => item.Score)) + 1;
-
         }
 
-       
+        private void SwapPlayerWithAnyLeader(Player player, int maxScore)
+        {
+            Random rnd = new Random();
+            List<Player> leaders = Players.Where(x => x.Score == maxScore).ToList();
+            leaders[rnd.Next(leaders.Count)].Score = player.Score;
+            player.Score = maxScore;
+        }
+
+        private void SwapLeaderWithOutsider(Player player, int maxScore)
+        {
+            int minScore = Players.Select(x => x.Score).Min();
+            Random rnd = new Random();
+            List<Player> outsiders = Players.Where(x => x.Score == minScore).ToList();
+            player.Score = minScore;
+            outsiders[rnd.Next(outsiders.Count)].Score = maxScore;
+        }
 
         /// <summary>
         /// Выбрать карты в соответствии с списком индексов

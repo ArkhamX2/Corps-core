@@ -62,7 +62,7 @@ namespace Corps.Server.Services
             {
                 claims.Add(new Claim(ClaimLabelUserEmail, user.Email));
             }
-           
+
             return claims;
         }
     }

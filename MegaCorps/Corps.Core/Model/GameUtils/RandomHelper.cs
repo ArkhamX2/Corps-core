@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MegaCorps.Core.Model
+﻿namespace MegaCorps.Core.Model
 {
     public static class RandomHelper
     {

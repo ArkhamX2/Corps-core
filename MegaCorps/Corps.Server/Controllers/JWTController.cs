@@ -1,18 +1,11 @@
-﻿
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using System;
-using Corps.Server.Data;
-using Corps.Server.Services;
-using Microsoft.AspNetCore.Identity;
+﻿using Corps.Server.Data;
 using Corps.Server.DTO;
+using Corps.Server.Services;
 using Corps.Server.Utils.JSON;
-using Microsoft.AspNetCore.Identity.Data;
-using System.Security.Principal;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Corps.Server.Controllers
@@ -27,9 +20,9 @@ namespace Corps.Server.Controllers
         ) : ControllerBase
     {
         private IdentityContext identityContext = identityContext;
-        private  TokenService tokenService = tokenService;
-        private  UserManager<IdentityUser> userManager = userManager;
-        private  ILogger<JWTController> logger = logger;
+        private TokenService tokenService = tokenService;
+        private UserManager<IdentityUser> userManager = userManager;
+        private ILogger<JWTController> logger = logger;
 
         [HttpPost("login")]
         public async Task<ActionResult<SecurityResponse>> Login([FromBody] SecurityRequest request)
@@ -54,7 +47,7 @@ namespace Corps.Server.Controllers
                 return Unauthorized();
             }
 
-            logger.LogInformation("login success");         
+            logger.LogInformation("login success");
             return Ok(DataSerializer.Serialize(new SecurityResponse
             {
                 host = request.login,
@@ -75,7 +68,7 @@ namespace Corps.Server.Controllers
             {
                 return BadRequest(request);
             }
-            
+
             var internalUser = new IdentityUser
             {
                 UserName = request.login,
@@ -94,7 +87,7 @@ namespace Corps.Server.Controllers
                 return BadRequest(ModelState);
             }
 
-            var identityUser = await identityContext.Users.FirstOrDefaultAsync(user => user.Email==request.login);
+            var identityUser = await identityContext.Users.FirstOrDefaultAsync(user => user.Email == request.login);
 
 
             if (identityUser is null)
@@ -120,7 +113,7 @@ namespace Corps.Server.Controllers
             var user = await identityContext.Users
                 .FirstOrDefaultAsync(user => user.UserName == User.Identity.Name);
 
-            if (user is null|| String.IsNullOrWhiteSpace(user.Email))
+            if (user is null || String.IsNullOrWhiteSpace(user.Email))
             {
                 return Unauthorized();
             }

@@ -1,11 +1,5 @@
 ﻿using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MegaCorps.Core.Model
 {
@@ -14,32 +8,31 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public class Player
     {
-        private int _id = new();
-        private int _score = new();
-        private string _name = string.Empty;
-        private PlayerHand _hand = new();
 
         /// <summary>
         /// Уникальный идентификатор
         /// </summary>
-        public int Id { get => _id; set => _id = value; }
+        public int Id { get; set; } = 0;
         /// <summary>
         /// Количество очков
         /// </summary>
-        public int Score { get => _score; set => _score = value; }
+        public int Score { get; set; } = 1;
         /// <summary>
         /// "Рука" игрока
         /// </summary>
-        public PlayerHand Hand { get => _hand; set => _hand = value; }
-        public string Name { get => _name; set => _name = value; }
-        public bool IsReady { get; set; }
+        public PlayerHand Hand { get; set; } = new(new());
+        /// <summary>
+        /// Псевдоним игрока
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+        /// <summary>
+        /// Флаг готовности игрока сделать ход
+        /// </summary>
+        public bool IsReady { get; set; } = false;
 
-        public Player(int id){ Id = id; Score = 1; Hand = new PlayerHand(); }
+        public Player(int id) => Id = id;
 
-        public Player(int id, string username) : this(id)
-        {
-            Name = username;
-        }
+        public Player(int id, string username) : this(id) => Name = username;
 
         /// <summary>
         /// Сыграть руку
@@ -50,81 +43,70 @@ namespace MegaCorps.Core.Model
             Score += scoreDelta;
             Score = Score <= 1 ? 1 : Score;
         }
-        
+
     }
     /// <summary>
     /// Класс "руки" игрока
     /// </summary>
     public class PlayerHand
     {
-        private List<GameCard> _cards = new();
-        private List<AttackCard> _targeted = new();
 
         /// <summary>
         /// Содержание руки игрока
         /// </summary>
-        public List<GameCard> Cards { get => _cards; set => _cards = value; }
+        public List<GameCard> Cards { get; set; } = new();
 
         /// <summary>
         /// Направленные на игрока атаки
         /// </summary>
-        public List<AttackCard> Targeted { get => _targeted; set => _targeted = value; }
-        public List<GameCard> SelectedCardQueue { get; private set; } = new List<GameCard>();
-        public PlayerHand() { Cards = new List<GameCard>(); }
+        public List<AttackCard> Targeted { get; set; } = new();
+        /// <summary>
+        /// Очередь выбранных карт
+        /// </summary>
+        public Queue<int> SelectedCardQueue { get; private set; } = new();
 
-        public PlayerHand(List<GameCard> cards)
-        {
-            this._cards = cards;
-            this._targeted = new List<AttackCard>();
-        }
+        public PlayerHand(List<GameCard> cards) => Cards = cards;
+
 
         /// <summary>
         /// Метод для реализации текущей руки. Отбиваем направленные атаки, используем выбранные карты
         /// </summary>
-        public int Play()
-        {
-            List<GameCard> defenceCards = Cards.Where((card) => card is DefenceCard && card.State == CardState.Used).ToList();
+        public int Play() => PlayDevelopers() - PlayTargeted(ExtractDefenceTypes());
 
-            List<AttackType> defenceTypes = new List<AttackType>();
 
-            foreach (GameCard card in defenceCards)
-            {
-                DefenceCard current = (card as DefenceCard)!;
-                defenceTypes.AddRange(current.AttackTypes);
-            }
+        private int PlayDevelopers() => Cards
+                .Where((card) => card is DeveloperCard && card.State == CardState.Used)
+                .Sum(card => (card as DeveloperCard)!.DevelopmentPoint);
 
-            int damage = 0;
 
-            foreach (AttackCard attack in Targeted)
-            {
-                if (!defenceTypes.Contains(attack.AttackType))
-                {
-                    damage += attack.Damage;
-                }
-            }
+        private int PlayTargeted(List<AttackType> defenceTypes) => Targeted
+                .Where(x => !defenceTypes.Contains(x.AttackType))
+                .ToList()
+                .Sum(x => x.Damage);
 
-            List<GameCard> develeopmentCards = Cards.Where((card) => card is DeveloperCard && card.State == CardState.Used).ToList();
 
-            int devPoints = 0;
+        private List<AttackType> ExtractDefenceTypes() => Cards
+                .Where((card) => card is DefenceCard && card.State == CardState.Used)
+                .Select(x => (x as DefenceCard)!.AttackTypes)
+                .SelectMany(y => y).ToList();
 
-            foreach (DeveloperCard devCard in develeopmentCards)
-            {
-                devPoints += devCard.DevelopmentPoint;
-            }
 
-            return devPoints - damage;
-
-        }
+        /// <summary>
+        /// Метод выбора карты с учётом выбранных ранее карт.
+        /// Если выбранных карт становится
+        /// </summary>
+        /// <param name="selectedCardId"></param>
+        /// <returns></returns>
         public int PushCardToSelectedQueue(int selectedCardId)
         {
-            GameCard selectcard = Cards.FirstOrDefault(card => card.Id==selectedCardId)!;
+            GameCard selectcard = Cards.FirstOrDefault(card => card.Id == selectedCardId)!;
             int unSelectId = -1;
-            SelectedCardQueue.Add(selectcard);
+            SelectedCardQueue.Enqueue(selectcard.Id);
             if (SelectedCardQueue.Count > 3)
             {
-                unSelectId = SelectedCardQueue[0].Id;
-                SelectedCardQueue.RemoveAt(0);
-            }            
+                unSelectId = SelectedCardQueue.Peek();
+                SelectedCardQueue.Dequeue();
+            }
             return unSelectId;
         }
     }

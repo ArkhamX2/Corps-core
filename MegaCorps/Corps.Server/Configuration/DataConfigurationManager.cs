@@ -1,5 +1,4 @@
 ﻿using Corps.Server.Configuration.Repository;
-using Microsoft.Extensions.Configuration;
 
 namespace Corps.Server.Configuration
 {

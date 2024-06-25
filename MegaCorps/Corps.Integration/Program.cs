@@ -11,30 +11,30 @@ ImageService imageService = new ImageService(
     );
 Console.WriteLine("Trying to read the resource files...");
 Console.WriteLine("DIRECTIONS:");
-imageService.directions.ForEach(direction => { Console.WriteLine(string.Join(" ", new List<string>() { direction.Title, direction.Direction.ToString() })); });
+imageService.Directions.ForEach(direction => { Console.WriteLine(string.Join(" ", new List<string>() { direction.Title, direction.Direction.ToString() })); });
 Console.WriteLine("INFOS:");
-imageService.attackInfos.ForEach(info =>
+imageService.AttackInfos.ForEach(info =>
 {
     Console.WriteLine(string.Join(" ", new List<string>() { info.Title, info.Description, info.AttackType.ToString() }));
 });
-imageService.defenceInfos.ForEach(info =>
+imageService.DefenceInfos.ForEach(info =>
 {
-    Console.WriteLine(string.Join(" ", new List<string>() { info.Title, info.Description, Convert.ToString(info.AttackTypeList?.Count )??""}));
+    Console.WriteLine(string.Join(" ", new List<string>() { info.Title, info.Description, Convert.ToString(info.AttackTypeList?.Count) ?? "" }));
 });
-imageService.developerInfos.ToList().ForEach(info =>
+imageService.DeveloperInfos.ToList().ForEach(info =>
 {
-    Console.WriteLine(string.Join(" ", new List<string>() { info.Title, info.Description}));
+    Console.WriteLine(string.Join(" ", new List<string>() { info.Title, info.Description }));
 });
 Console.WriteLine("IMAGES:");
 imageService.BackgroundImages.ForEach(image =>
 {
     Console.WriteLine(string.Join(" ", new List<string>() { image.Name, image.Type.ToString() }));
 });
-imageService.cardBackgroundImages.ForEach(image =>
+imageService.CardBackgroundImages.ForEach(image =>
 {
     Console.WriteLine(string.Join(" ", new List<string>() { image.Name, image.Type.ToString() }));
 });
-imageService.cardIconImages.ForEach(image =>
+imageService.CardIconImages.ForEach(image =>
 {
     Console.WriteLine(string.Join(" ", new List<string>() { image.Name, image.Type.ToString() }));
 });
@@ -43,23 +43,24 @@ imageService.UserImages.ForEach(image =>
     Console.WriteLine(string.Join(" ", new List<string>() { image.Name, image.Type.ToString() }));
 });
 
-Deck deck = DeckBuilder.GetDeckFromResources(imageService.attackInfos,imageService.defenceInfos,imageService.developerInfos,imageService.directions, imageService.eventInfos);
-GameEngine gameEngine = new GameEngine(deck,new List<string> { "1","2","3","4" });
+Deck deck = DeckBuilder.GetDeckFromResources(imageService.AttackInfos, imageService.DefenceInfos, imageService.DeveloperInfos, imageService.Directions, imageService.EventInfos);
+GameEngine gameEngine = new GameEngine(deck, new List<string> { "1", "2", "3", "4" });
 
 List<CardDTO> dTOs = await imageService.GetCardDTOs(gameEngine.Deck.UnplayedCards);
 
-dTOs.ForEach(cardDTO => {
+dTOs.ForEach(cardDTO =>
+{
     Console.WriteLine(string.Join(" ",
         new List<string>() {
             Convert.ToString(cardDTO.Id),
             cardDTO.Type,
-            string.Join("|",new List<string> { 
-                cardDTO.Info.Title, 
-                cardDTO.Info.Description, 
-                cardDTO.Info.Direction??"", 
+            string.Join("|",new List<string> {
+                cardDTO.Info.Title,
+                cardDTO.Info.Description,
+                cardDTO.Info.Direction??"",
                 Convert.ToString(cardDTO.IconImageId),
                 Convert.ToString(cardDTO.BackgroundImageId),
-                Convert.ToString(cardDTO.Info.Power)??"" 
+                Convert.ToString(cardDTO.Info.Power)??""
             }),
             Convert.ToString(cardDTO.Background.Length),
             Convert.ToString(cardDTO.Icon.Length) }));

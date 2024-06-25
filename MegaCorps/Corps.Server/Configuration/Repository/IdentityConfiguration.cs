@@ -2,7 +2,7 @@
 
 namespace Corps.Server.Configuration.Repository
 {
-    public class IdentityConfiguration(IConfiguration configuration):ConfigurationRepository(configuration)
+    public class IdentityConfiguration(IConfiguration configuration) : ConfigurationRepository(configuration)
     {
         private bool GetPasswordRequireDigit()
         {

@@ -12,7 +12,7 @@ namespace Corps.Server.Configuration.Repository
             HandleStringValue(connectionString, "Identity connection string is null or empty!");
 
             return new SQliteConfiguration(connectionString!, isDebugMode);
-            
+
         }
     }
 }

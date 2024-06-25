@@ -14,7 +14,7 @@ namespace Corps.Server.Hubs
     /// <summary>
     /// Хаб лобби и игры
     /// </summary>
-    public class GameHub(ILogger<GameHub> logger,ImageService imageService) : Hub
+    public class GameHub(ILogger<GameHub> logger, ImageService imageService) : Hub
     {
         private static ConcurrentDictionary<int, Lobby> _lobbies = new ConcurrentDictionary<int, Lobby>();
         private static ConcurrentDictionary<int, GameEngine> _games = new ConcurrentDictionary<int, GameEngine>();
@@ -63,7 +63,7 @@ namespace Corps.Server.Hubs
                 if (found.Count() < 0) throw new Exception("Не найдено лобби с таким идентификатором");
 
                 Lobby joinTo = found.First();
-                int playerId = joinTo.Join(username,avatarId);
+                int playerId = joinTo.Join(username, avatarId);
 
                 await Groups.AddToGroupAsync(Context.ConnectionId, joinTo.Id + "Player");
                 await Clients.Group(joinTo.Id + "Player").SendAsync("JoinSuccess", joinTo, playerId);
@@ -127,8 +127,8 @@ namespace Corps.Server.Hubs
                 foreach (var player in lobby.lobbyMembers)
                     lobby.State = LobbyState.Started;
 
-                Deck deck = DeckBuilder.GetDeckFromResources(imageService.attackInfos, imageService.defenceInfos, imageService.developerInfos, imageService.directions, imageService.eventInfos);
-                _games[lobbyId] = new GameEngine(deck,lobby.lobbyMembers.Select(x => x.Username).ToList());
+                Deck deck = DeckBuilder.GetDeckFromResources(imageService.AttackInfos, imageService.DefenceInfos, imageService.DeveloperInfos, imageService.Directions, imageService.EventInfos);
+                _games[lobbyId] = new GameEngine(deck, lobby.lobbyMembers.Select(x => x.Username).ToList());
                 GameEngine game = _games[lobbyId];
                 game.Deal(6);
 
@@ -162,8 +162,8 @@ namespace Corps.Server.Hubs
                 int foundCardIndex = game.Players[playerId].Hand.Cards.FindIndex(x => x.Id == selectedCardId);
                 if (foundCardIndex == -1) throw new Exception("Не найдена карта с таким идентификатором");
 
-                List<GameCard> Cards=new List<GameCard>();
-                if(game.Players[playerId].Hand.Cards[foundCardIndex].State == CardState.Used)
+                List<GameCard> Cards = new List<GameCard>();
+                if (game.Players[playerId].Hand.Cards[foundCardIndex].State == CardState.Used)
                 {
                     game.Players[playerId].Hand.Cards[foundCardIndex].State = CardState.Unused;
                     game.Players[playerId].Hand.SelectedCardQueue.Remove(game.Players[playerId].Hand.Cards.FirstOrDefault(card => card.Id == selectedCardId)!);
@@ -171,11 +171,11 @@ namespace Corps.Server.Hubs
                 }
                 else
                 {
-                    game.Players[playerId].Hand.Cards[foundCardIndex].State=CardState.Used;
+                    game.Players[playerId].Hand.Cards[foundCardIndex].State = CardState.Used;
                     Cards.Add(game.Players[playerId].Hand.Cards[foundCardIndex]);
                     int unSelectedId = game.Players[playerId].Hand.PushCardToSelectedQueue(selectedCardId);
                     if (unSelectedId != -1)
-                    {                        
+                    {
                         var foundUnselectCardIndex = game.Players[playerId].Hand.Cards.FindIndex(x => x.Id == unSelectedId);
                         game.Players[playerId].Hand.Cards[foundUnselectCardIndex].State = CardState.Unused;
                         Cards.Add(game.Players[playerId].Hand.Cards[foundUnselectCardIndex]);
@@ -285,7 +285,7 @@ namespace Corps.Server.Hubs
                 Console.WriteLine();
             }
         }
-  
+
 
     }
 }
