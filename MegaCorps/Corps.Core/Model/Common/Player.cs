@@ -63,7 +63,7 @@ namespace MegaCorps.Core.Model
         /// <summary>
         /// Очередь выбранных карт
         /// </summary>
-        public Queue<int> SelectedCardQueue { get; private set; } = new();
+        public List<int> SelectedCardQueue { get; private set; } = new();
 
         public PlayerHand(List<GameCard> cards) => Cards = cards;
 
@@ -101,11 +101,11 @@ namespace MegaCorps.Core.Model
         {
             GameCard selectcard = Cards.FirstOrDefault(card => card.Id == selectedCardId)!;
             int unSelectId = -1;
-            SelectedCardQueue.Enqueue(selectcard.Id);
+            SelectedCardQueue.Add(selectcard.Id);
             if (SelectedCardQueue.Count > 3)
             {
-                unSelectId = SelectedCardQueue.Peek();
-                SelectedCardQueue.Dequeue();
+                unSelectId = SelectedCardQueue[0];
+                SelectedCardQueue.RemoveAt(0);
             }
             return unSelectId;
         }

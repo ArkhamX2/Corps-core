@@ -166,7 +166,7 @@ namespace Corps.Server.Hubs
                 if (game.Players[playerId].Hand.Cards[foundCardIndex].State == CardState.Used)
                 {
                     game.Players[playerId].Hand.Cards[foundCardIndex].State = CardState.Unused;
-                    game.Players[playerId].Hand.SelectedCardQueue.Remove(game.Players[playerId].Hand.Cards.FirstOrDefault(card => card.Id == selectedCardId)!);
+                    game.Players[playerId].Hand.SelectedCardQueue.Remove(selectedCardId);
                     Cards.Add(game.Players[playerId].Hand.Cards[foundCardIndex]);
                 }
                 else
@@ -218,6 +218,7 @@ namespace Corps.Server.Hubs
                         player.IsReady = false;
                     }
                     await Clients.Group(lobbyId + "Host").SendAsync("AllPlayerReady", game.Players);
+                    await Clients.Group(lobbyId + "Player").SendAsync("AllPlayerReady");
                 }
                 await Clients.Group(lobbyId + "Host").SendAsync("GamePlayerIsReady", game.Players[playerId]);
             }
@@ -244,8 +245,13 @@ namespace Corps.Server.Hubs
                 game.Turn();
                 if (game.Win)
                 {
+                    await Clients.Group(lobbyId + "Host").SendAsync("GameChangesShown", game.Players);
                     await Clients.Group(lobbyId + "Host").SendAsync("WinnerFound", game.Winner);
                     await Clients.Group(lobbyId + "Player").SendAsync("WinnerFound", game.Winner);
+                    foreach (Player player in game.Players)
+                    {
+                        await LobbyMemberReady(lobbyId, player.Id);
+                    }
                     return;
                 }
                 game.Deal(3);

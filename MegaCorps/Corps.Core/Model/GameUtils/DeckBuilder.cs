@@ -83,7 +83,7 @@ namespace MegaCorps.Core.Model.GameUtils
             CreateAttackCards(attackInfos, deck, ref id);
             CreateDefenceCards(defenceInfos, deck, ref id);
             CreateDeveloperCards(deck, developerInfos.Select(x => x.Amount).Sum(), ref id);
-            CreateEventCartds(deck, eventInfos.Select(x => x.Amount).Sum(), ref id);
+            //CreateEventCartds(deck, eventInfos.Select(x => x.Amount).Sum(), ref id);
 
             return new Deck(deck);
         }
