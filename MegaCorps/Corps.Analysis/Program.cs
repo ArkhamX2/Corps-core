@@ -80,8 +80,6 @@ namespace Corps.Analysis
                         List<int> cardIds = bot.SelectCards(game.GetPlayersScores());
                         List<GameCard> selectedCards = game.Players[bot.Id].Hand.Cards.Where(card => cardIds.Contains(card.Id)).ToList();
                         selectedCards.ForEach(card => card.State = CardState.Used );
-                        cardIds.ForEach(card => game.Players[bot.Id].Hand.PushCardToSelectedQueue(card));
-
                     }
                     game.TargetCards();
                     game.Turn();

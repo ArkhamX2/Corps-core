@@ -345,7 +345,6 @@ namespace Corps.Core.Model.Common
                     foreach (var card in cards)
                     {
                         game.Players[bot.Id].Hand.Cards[game.Players[bot.Id].Hand.Cards.FindIndex(x => x.Id == card)].State = CardState.Used;
-                        game.Players[bot.Id].Hand.PushCardToSelectedQueue(card);
                     }
                 }
                 else
@@ -353,7 +352,6 @@ namespace Corps.Core.Model.Common
                     foreach (var card in selectedCardsIds)
                     {
                         game.Players[bot.Id].Hand.Cards[game.Players[bot.Id].Hand.Cards.FindIndex(x => x.Id == card)].State = CardState.Used;
-                        game.Players[bot.Id].Hand.PushCardToSelectedQueue(card);
                     }
                 }
             }
