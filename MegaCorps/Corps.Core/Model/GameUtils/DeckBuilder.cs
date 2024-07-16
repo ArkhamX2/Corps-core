@@ -118,7 +118,7 @@ namespace MegaCorps.Core.Model.GameUtils
         private static void CreateDeveloperCards(List<GameCard> deck, int developerAmount, ref int id)
         {
             int queueCounter = 0;
-            while (queueCounter < (developerAmount * 2 / 3))
+            while (queueCounter < developerAmount))
             {
                 deck.Add(new DeveloperCard(
                     id,
