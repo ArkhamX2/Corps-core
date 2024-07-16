@@ -67,5 +67,45 @@ namespace MegaCorps.Core.Model
             }
             return hands;
         }
+
+        /// <summary>
+        /// Раздать карты игрокам, исключая одного и его карты
+        /// </summary>
+        /// <param name="dealCount">Количество карт, которые необходимо раздать</param>
+        /// <param name="playersCount">Количество игроков, которым необходимо раздать карты</param>
+        /// <returns></returns>
+        public List<List<GameCard>> DealExcept(int dealCount, int playersCount, int id, PlayerHand hand)
+        {
+            foreach (var card in hand.Cards)
+            {
+                UnplayedCards.Remove(card);
+            }
+            List<List<GameCard>> hands = new List<List<GameCard>>();
+
+            for (int i = 0; i < playersCount; i++)
+            {
+                if (i == id)
+                {
+                    hands.Add(hand.Cards);
+                }
+                else
+                {
+                    if (UnplayedCards.Count < dealCount)
+                    {
+                        foreach (GameCard card in PlayedCards)
+                        {
+                            card.State = Enums.CardState.Unused;
+                        }
+                        UnplayedCards.AddRange(PlayedCards);
+                        PlayedCards.Clear();
+                        Shuffle();
+                    }
+                    List<GameCard> dealt = UnplayedCards.GetRange(0, dealCount);
+                    UnplayedCards.RemoveRange(0, dealCount);
+                    hands.Add(dealt);
+                }
+            }
+            return hands;
+        }
     }
 }

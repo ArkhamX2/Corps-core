@@ -17,9 +17,9 @@ namespace Corps.Server.Services
         public List<Image> CardIconImages { get; set; } = [];
         public Queue<EventCardDescriptionInfo> EventInfos { get; set; } = [];
 
-        public string directionPath = "./Resource/Text/Card/Direction/directions.json";
-        public string descriptionPath = "./Resource/Text/Card/Description";
-        public string imagePath = "./Resource/Image";
+        public string directionPath = ".\\Resource\\Text\\Card\\Direction\\directions.json";
+        public string descriptionPath = ".\\Resource\\Text\\Card\\Description";
+        public string imagePath = ".\\Resource\\Image";
 
 
         public ImageService()
@@ -46,7 +46,7 @@ namespace Corps.Server.Services
 
         private void GetEventDescriptions(string descriptionPath)
         {
-            using (StreamReader r = new StreamReader(descriptionPath + "/event_descriptions.json"))
+            using (StreamReader r = new StreamReader(descriptionPath + "\\event_descriptions.json"))
             {
                 string json = r.ReadToEnd();
                 EventInfos = new Queue<EventCardDescriptionInfo>(DataSerializer.Deserialize<List<EventCardDescriptionInfo>>(json)!);
@@ -55,7 +55,7 @@ namespace Corps.Server.Services
 
         private void GetDeveloperDescriptions(string descriptionPath)
         {
-            using (StreamReader r = new StreamReader(descriptionPath + "/developer_descriptions.json"))
+            using (StreamReader r = new StreamReader(descriptionPath + "\\developer_descriptions.json"))
             {
                 string json = r.ReadToEnd();
                 List<DeveloperCardDescriptionInfo> infos = DataSerializer.Deserialize<List<DeveloperCardDescriptionInfo>>(json)!;
@@ -66,7 +66,7 @@ namespace Corps.Server.Services
 
         private void GetDefenceDescriptions(string descriptionPath)
         {
-            using (StreamReader r = new StreamReader(descriptionPath + "/defence_descriptions.json"))
+            using (StreamReader r = new StreamReader(descriptionPath + "\\defence_descriptions.json"))
             {
                 string json = r.ReadToEnd();
                 DefenceInfos = DataSerializer.Deserialize<List<DefenceCardDescriptionInfo>>(json)!;
@@ -75,7 +75,7 @@ namespace Corps.Server.Services
 
         private void GetAttackDescriptions(string descriptionPath)
         {
-            using (StreamReader r = new StreamReader(descriptionPath + "/attack_descriptions.json"))
+            using (StreamReader r = new StreamReader(descriptionPath + "\\attack_descriptions.json"))
             {
                 string json = r.ReadToEnd();
                 AttackInfos = DataSerializer.Deserialize<List<AttackCardDescriptionInfo>>(json)!;
@@ -93,11 +93,11 @@ namespace Corps.Server.Services
 
         private void GetImageData(string folderPath)
         {
-            BackgroundImages.AddRange(GetImagesFromFolder(folderPath + "/Background/Board", ImageType.Board));
-            BackgroundImages.AddRange(GetImagesFromFolder(folderPath + "/Background/Menu", ImageType.Menu));
-            UserImages.AddRange(GetImagesFromFolder(folderPath + "/UserIcon", ImageType.UserIcon));
-            CardBackgroundImages.AddRange(GetImagesFromFolder(folderPath + "/Card/Background", ImageType.CardBackground));
-            CardIconImages.AddRange(GetImagesFromFolder(folderPath + "/Card/Icon", ImageType.CardIcon));
+            BackgroundImages.AddRange(GetImagesFromFolder(folderPath + "\\Background\\Board", ImageType.Board));
+            BackgroundImages.AddRange(GetImagesFromFolder(folderPath + "\\Background\\Menu", ImageType.Menu));
+            UserImages.AddRange(GetImagesFromFolder(folderPath + "\\UserIcon", ImageType.UserIcon));
+            CardBackgroundImages.AddRange(GetImagesFromFolder(folderPath + "\\Card\\Background", ImageType.CardBackground));
+            CardIconImages.AddRange(GetImagesFromFolder(folderPath + "\\Card\\Icon", ImageType.CardIcon));
         }
 
         private List<Image> GetImagesFromFolder(string folderPath, ImageType type)
@@ -106,8 +106,8 @@ namespace Corps.Server.Services
             {
                 return Directory.GetFiles(folderPath, "*.png").ToList().Select(imagePath => new Image
                 {
-                    Id = int.Parse(imagePath.Split('/').Last().Split('.').First().Split('_').First()),
-                    Name = imagePath.Split('/').Last().Split('.').First(),
+                    Id = int.Parse(imagePath.Split('\\').Last().Split('.').First().Split('_').First()),
+                    Name = imagePath.Split('\\').Last().Split('.').First(),
                     ImageData = Convert.ToBase64String(File.ReadAllBytes(imagePath)),
                     Type = type
                 }).ToList();

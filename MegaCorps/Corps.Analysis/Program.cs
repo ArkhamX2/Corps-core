@@ -1,5 +1,11 @@
-﻿using MegaCorps.Core.Model;
+﻿using Corps.Core.Model.Common;
+using Corps.Server.Hubs;
+using Corps.Server.Services;
+using MegaCorps.Core.Model;
+using MegaCorps.Core.Model.Enums;
+using MegaCorps.Core.Model.GameUtils;
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 
 namespace Corps.Analysis
 {
@@ -22,7 +28,7 @@ namespace Corps.Analysis
 
         static void Main(string[] args)
         {
-            FillStrategiesList();
+            /*FillStrategiesList();
             //Добавляем ещё несколько вариантов игр, где игроки сидят в разном порядке
             strategiesList.Add(Shuffle(strategiesList[0]));
             strategiesList.Add(Shuffle(strategiesList[1]));
@@ -43,7 +49,66 @@ namespace Corps.Analysis
             Console.ReadKey();
             Console.ReadKey();
             Console.ReadKey();
-            Console.ReadKey();
+            Console.ReadKey();*/            
+            var results =  new Dictionary<int, int>();
+            var bots = new List<Bot>() { new Bot(0, 0, "random"), new Bot(1, 0, "random"), new Bot(2, 1, "aggressive"), new Bot(3, 4, "clever"), new Bot(4, 3, "researchive"), new Bot(5, 4, "clever"), };
+            List<string> names = new List<string>();
+            foreach (var bot in bots)
+            {
+                names.Add(bot.Name);
+                results.Add(bot.Id, 0);
+            }
+            results.Add(bots.Count(), 0);
+            int n = 100;
+            for (int i = 0; i < n; i++)
+            {
+                ImageService imageService = new ImageService(
+                    "..\\..\\..\\..\\Corps.Server\\Resource\\Text\\Card\\Direction\\directions.json",
+                    "..\\..\\..\\..\\Corps.Server\\Resource\\Text\\Card\\Description",
+                    "..\\..\\..\\..\\Corps.Server\\Resource\\Image"
+                    );
+                Deck deck = DeckBuilder.GetDeckFromResources(imageService.AttackInfos, imageService.DefenceInfos, imageService.DeveloperInfos, imageService.Directions, imageService.EventInfos);
+                var turnCount = 0;                
+                GameEngine game = new GameEngine(deck, names);
+                game.Deal(6);
+                while (true)
+                {
+                    foreach (var bot in bots)
+                    {
+                        bot.SetBotHand(game.Players[bot.Id].Hand);
+                        var cards = bot.SelectCards(game.GetPlayersScores());
+                        foreach (var card in cards)
+                        {
+                            game.Players[bot.Id].Hand.Cards[game.Players[bot.Id].Hand.Cards.FindIndex(x => x.Id == card)].State = CardState.Used;
+                            game.Players[bot.Id].Hand.PushCardToSelectedQueue(card);
+                        }
+                    }
+                    game.TargetCards();
+                    game.Turn();
+                    turnCount += 1;
+                    if (game.Win)
+                    {
+                        results[bots.Count()] += turnCount;
+                        results[game.Winner - 1] += 1;
+                        break;
+                    }
+                    foreach (var bot in bots)
+                    {
+                        game.Players[bot.Id].Hand.SelectedCardQueue.Clear();
+                    }
+
+                    game.Deal(3);
+                }
+            }
+            /*foreach (var res in results)
+            {
+                Console.WriteLine(res);
+            }*/
+            foreach (var bot in bots)
+            {
+                Console.WriteLine("Strategy:" + bot.Name + "wins:" + results[bot.Id]);
+            }
+            Console.WriteLine("turnCount:" + results[bots.Count()]/n);
         }
 
         /// <summary>

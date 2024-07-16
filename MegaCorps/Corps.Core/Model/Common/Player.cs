@@ -50,7 +50,6 @@ namespace MegaCorps.Core.Model
     /// </summary>
     public class PlayerHand
     {
-
         /// <summary>
         /// Содержание руки игрока
         /// </summary>

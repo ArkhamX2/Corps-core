@@ -90,6 +90,20 @@ namespace MegaCorps.Core.Model
         }
 
         /// <summary>
+        /// Раздать карты игрокам, исключая одного и его карты
+        /// </summary>
+        /// <param name="dealCount">Количество карт, которые необходимо раздать</param>
+        public void DealExcept(int dealCount, int id, PlayerHand hand)
+        {
+            List<List<GameCard>> hands = Deck.DealExcept(dealCount, NumberOfPlayers, id, hand);
+
+            for (int i = 0; i < Players.Count; i++)
+            {
+                Players[i].Hand.Cards.AddRange(hands[i]);
+            }
+        }
+
+        /// <summary>
         /// Привести движок к начальному состоянию
         /// </summary>
         public void Reset()
@@ -193,6 +207,7 @@ namespace MegaCorps.Core.Model
             {
                 if (v.Score < 1) v.Score = 1;
                 Deck.PlayedCards.AddRange(v.Hand.Cards.Where((card) => card.State == CardState.Used));
+                Deck.PlayedCards.AddRange(v.Hand.Targeted.Where((card) => card.State == CardState.Used));
                 v.Hand.Cards.RemoveAll((card) => card.State == CardState.Used);
                 v.Hand.Targeted.Clear();
             }
