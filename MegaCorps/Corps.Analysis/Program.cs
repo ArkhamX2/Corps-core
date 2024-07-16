@@ -2,6 +2,7 @@
 using Corps.Server.Hubs;
 using Corps.Server.Services;
 using MegaCorps.Core.Model;
+using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.Enums;
 using MegaCorps.Core.Model.GameUtils;
 using System.Diagnostics;
@@ -76,12 +77,11 @@ namespace Corps.Analysis
                     foreach (var bot in bots)
                     {
                         bot.SetBotHand(game.Players[bot.Id].Hand);
-                        var cards = bot.SelectCards(game.GetPlayersScores());
-                        foreach (var card in cards)
-                        {
-                            game.Players[bot.Id].Hand.Cards[game.Players[bot.Id].Hand.Cards.FindIndex(x => x.Id == card)].State = CardState.Used;
-                            game.Players[bot.Id].Hand.PushCardToSelectedQueue(card);
-                        }
+                        List<int> cardIds = bot.SelectCards(game.GetPlayersScores());
+                        List<GameCard> selectedCards = game.Players[bot.Id].Hand.Cards.Where(card => cardIds.Contains(card.Id)).ToList();
+                        selectedCards.ForEach(card => card.State = CardState.Used );
+                        cardIds.ForEach(card => game.Players[bot.Id].Hand.PushCardToSelectedQueue(card));
+
                     }
                     game.TargetCards();
                     game.Turn();
