@@ -207,7 +207,14 @@ namespace MegaCorps.Core.Model
             {
                 if (v.Score < 1) v.Score = 1;
                 Deck.PlayedCards.AddRange(v.Hand.Cards.Where((card) => card.State == CardState.Used));
-                Deck.PlayedCards.AddRange(v.Hand.Targeted.Where((card) => card.State == CardState.Used));
+                var t = v.Hand.Targeted.Where((card) => card.State == CardState.Used);
+                foreach (var card in t)
+                {
+                    if (!Deck.PlayedCards.Contains(card))
+                    {
+                        Deck.PlayedCards.Add(card);
+                    }
+                }
                 v.Hand.Cards.RemoveAll((card) => card.State == CardState.Used);
                 v.Hand.Targeted.Clear();
             }
