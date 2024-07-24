@@ -14,6 +14,11 @@
             DevelopmentPoint = devPoint;
         }
 
+        public override DeveloperCard Copy()
+        {
+            return (DeveloperCard)Clone();
+        }
+
         public DeveloperCard(DeveloperCard card) : this(card.Id, card.DevelopmentPoint) { }
     }
 }

@@ -5,16 +5,16 @@ namespace MegaCorps.Core.Model
     /// <summary>
     /// Класс колоды
     /// </summary>
-    public class Deck
+    public class Deck : ICloneable
     {
         /// <summary>
         /// Сброс карт
         /// </summary>
-        public List<GameCard> PlayedCards { get; set; }
+        public List<GameCard> PlayedCards { get; set; } = new();
         /// <summary>
         /// Колода карт
         /// </summary>
-        public List<GameCard> UnplayedCards { get; set; }
+        public List<GameCard> UnplayedCards { get; set; } = new();
 
         public Deck(List<GameCard> cards)
         {
@@ -28,7 +28,26 @@ namespace MegaCorps.Core.Model
             PlayedCards = played;
         }
 
-        public Deck() { }
+        public Deck() 
+        {
+        }
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+        public Deck Copy()
+        {
+            Deck copy = new Deck();
+            foreach (GameCard card in PlayedCards)
+            {
+                copy.PlayedCards.Add(card.Copy());
+            }
+            foreach (GameCard card in UnplayedCards)
+            {
+                copy.UnplayedCards.Add(card.Copy());
+            }
+            return copy;
+        }
 
         /// <summary>
         /// Перемешать колоду
@@ -78,7 +97,7 @@ namespace MegaCorps.Core.Model
         {
             foreach (var card in hand.Cards)
             {
-                UnplayedCards.Remove(card);
+                UnplayedCards.Remove(UnplayedCards.Find((a) => a.Id == card.Id));
             }
             List<List<GameCard>> hands = new List<List<GameCard>>();
 
@@ -106,6 +125,31 @@ namespace MegaCorps.Core.Model
                 }
             }
             return hands;
+        }
+
+        public override string ToString()
+        {
+            string str = "{ ";
+            str += "[ ";
+            foreach (var card in PlayedCards)
+            {
+                if (card == PlayedCards.Last())
+                    str += card.ToString() + " ";
+                else
+                    str += card.ToString() + ", ";
+            }
+            str += "],";
+            str += "[ ";
+            foreach (var card in UnplayedCards)
+            {
+                if (card == UnplayedCards.Last())
+                    str += card.ToString() + " ";
+                else
+                    str += card.ToString() + ", ";
+            }
+            str += "] ";
+            str += "}";
+            return str;
         }
     }
 }

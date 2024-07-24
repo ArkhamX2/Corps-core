@@ -5,7 +5,7 @@ namespace MegaCorps.Core.Model.Cards
     /// <summary>
     /// Базовый класс карты
     /// </summary>
-    public class GameCard
+    public class GameCard : ICloneable
     {
         public int Id { get; set; }
         /// <summary>
@@ -23,7 +23,17 @@ namespace MegaCorps.Core.Model.Cards
             Id = card.Id;
             State = card.State;
         }
-
+        public GameCard()
+        {
+        }
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+        public virtual GameCard Copy()
+        {
+            return (GameCard)Clone();
+        }
         public override string ToString()
         {
             string ans = "";

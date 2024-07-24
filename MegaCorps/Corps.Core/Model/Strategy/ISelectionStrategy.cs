@@ -48,7 +48,7 @@ namespace MegaCorps.Core.Model
             List<ISelectionStrategy> selectionStrategies = new List<ISelectionStrategy>(strategies);
             selectionStrategies[0] = new RandomSelectStrategy();
 
-            int turnCount = 0;
+
             int numberOfIterations = 1000;
             int CARDS_TO_CHOOSE = 3;
             int CARDS_TO_DEAL = 3;
@@ -60,6 +60,7 @@ namespace MegaCorps.Core.Model
 
             for (int i = 0; i < numberOfIterations; i++)
             {
+                int turnCount = 0;
                 cardsCopy = new List<List<GameCard>>();
                 cards.ForEach(cardList =>
                 {
@@ -80,6 +81,7 @@ namespace MegaCorps.Core.Model
                         }
                     });
                 });
+
                 engine = new GameEngine(new List<int>(scores), cardsCopy, DeckBuilder.CopyDeck(deck));
                 List<List<int>> tmpSelected = selectHelper.SelectCards(engine.GetPlayersHands(), selectionStrategies, CARDS_TO_CHOOSE, engine.GetPlayersScores(), engine.Deck);
                 tmpSelected[0] = currentChoose;

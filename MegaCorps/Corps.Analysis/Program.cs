@@ -5,8 +5,11 @@ using MegaCorps.Core.Model;
 using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.Enums;
 using MegaCorps.Core.Model.GameUtils;
+using Newtonsoft.Json;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
+using System.Text.Json;
 
 namespace Corps.Analysis
 {
@@ -29,14 +32,14 @@ namespace Corps.Analysis
 
         static void Main(string[] args)
         {
-            /*FillStrategiesList();
+            //FillStrategiesList();
             //Добавляем ещё несколько вариантов игр, где игроки сидят в разном порядке
-            strategiesList.Add(Shuffle(strategiesList[0]));
-            strategiesList.Add(Shuffle(strategiesList[1]));
+            //strategiesList.Add(Shuffle(strategiesList[0]));
+            //strategiesList.Add(Shuffle(strategiesList[1]));
             //strategiesList.Add(Shuffle(strategiesList[3]));
             //strategiesList.Add(Shuffle(strategiesList[3]));
             //strategiesList.Add(Shuffle(strategiesList[3]));
-            strategiesList.Add(Shuffle(strategiesList[2]));
+            //strategiesList.Add(Shuffle(strategiesList[2]));
             //strategiesList.Add(Shuffle(strategiesList[4]));
             //strategiesList.Add(Shuffle(strategiesList[4]));
             //strategiesList.Add(Shuffle(strategiesList[4]));
@@ -46,67 +49,165 @@ namespace Corps.Analysis
             //    AnalizeOneGame(strategiesList[2]);
             //}
             //Console.WriteLine("Конец");
-            TestBestStrategy();
-            Console.ReadKey();
-            Console.ReadKey();
-            Console.ReadKey();
-            Console.ReadKey();*/            
-            var results =  new Dictionary<int, int>();
-            var bots = new List<Bot>() { new Bot(0, 0, "random"), new Bot(1, 0, "random"), new Bot(2, 1, "aggressive"), new Bot(3, 4, "clever"), new Bot(4, 3, "researchive"), new Bot(5, 4, "clever"), };
-            List<string> names = new List<string>();
-            foreach (var bot in bots)
+            /*for (int i = 0; i < ITERATION_COUNT; i++)
             {
-                names.Add(bot.Name);
-                results.Add(bot.Id, 0);
+                AnalizeOneGame(strategiesList[0]);
             }
-            results.Add(bots.Count(), 0);
-            int n = 100;
-            for (int i = 0; i < n; i++)
-            {
-                ImageService imageService = new ImageService(
-                    "..\\..\\..\\..\\Corps.Server\\Resource\\Text\\Card\\Direction\\directions.json",
-                    "..\\..\\..\\..\\Corps.Server\\Resource\\Text\\Card\\Description",
-                    "..\\..\\..\\..\\Corps.Server\\Resource\\Image"
-                    );
-                Deck deck = DeckBuilder.GetDeckFromResources(imageService.AttackInfos, imageService.DefenceInfos, imageService.DeveloperInfos, imageService.Directions, imageService.EventInfos);
-                var turnCount = 0;                
-                GameEngine game = new GameEngine(deck, names);
-                game.Deal(6);
-                while (true)
-                {
-                    foreach (var bot in bots)
-                    {
-                        bot.SetBotHand(game.Players[bot.Id].Hand);
-                        List<int> cardIds = bot.SelectCards(game.GetPlayersScores());
-                        List<GameCard> selectedCards = game.Players[bot.Id].Hand.Cards.Where(card => cardIds.Contains(card.Id)).ToList();
-                        selectedCards.ForEach(card => card.State = CardState.Used );
-                    }
-                    game.TargetCards();
-                    game.Turn();
-                    turnCount += 1;
-                    if (game.Win)
-                    {
-                        results[bots.Count()] += turnCount;
-                        results[game.Winner - 1] += 1;
-                        break;
-                    }
-                    foreach (var bot in bots)
-                    {
-                        game.Players[bot.Id].Hand.SelectedCardQueue.Clear();
-                    }
+            //TestBestStrategy();
+            Console.ReadKey();*/
 
-                    game.Deal(3);
+            ConcurrentDictionary<(int, PlayerHand, List<int>, Deck), (List<int>, double)> previousResults = new ConcurrentDictionary<(int, PlayerHand, List<int>, Deck), (List<int>, double)>();
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var botsSettings = new List<List<Bot>>()
+            {
+                new List<Bot> { new Bot(0, 7, "montecarloAlt", previousResults), new Bot(1, 0, "random") },
+                new List<Bot> { new Bot(0, 7, "montecarloAlt", previousResults), new Bot(1, 4, "clever") },
+                //new List<Bot> { new Bot(0, 4, "clever"), new Bot(1, 0, "random") },
+                //new List<Bot> { new Bot(0, 4, "clever"), new Bot(1, 7, "montecarloAlt"), new Bot(2, 4, "clever") },
+                //new List<Bot> { new Bot(0, 7, "montecarloAlt"), new Bot(1, 4, "clever"),  new Bot(2, 4, "clever") },
+                //new List<Bot> { new Bot(0, 4, "clever"),  new Bot(1, 4, "clever"), new Bot(2, 7, "montecarloAlt")  }
+            };
+            var tasks = 10;
+            var iterations = 1;
+            List<List<Dictionary<int, int>>> resultCollection = new List<List<Dictionary<int, int>>>();
+            foreach (var (value, i) in botsSettings.Select((value, i) => (value, i)))
+            {
+                try
+                {
+                    resultCollection.Add(Simulate(tasks, iterations, value));
+                    Console.WriteLine("----------------------------------------");
+                    Console.WriteLine($"Simulation with config {i} computed.");
+                    Console.WriteLine("----------------------------------------");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An error occurred: ", e.ToString());
                 }
             }
-            /*foreach (var res in results)
+            foreach (var (value, i) in resultCollection.Select((value, i) => (value, i)))
             {
-                Console.WriteLine(res);
-            }*/
-            foreach (var bot in bots)
-            {
-                Console.WriteLine("Strategy:" + bot.Name + "wins:" + results[bot.Id]);
+                var result = new Dictionary<int, int>();
+                foreach (var results in value.First())
+                {
+                    result.Add(results.Key, 0);
+                }
+                foreach (var results in value)
+                {
+                    foreach (var r in results)
+                    {
+                        result[r.Key] += r.Value;
+                    }
+                }
+                for (int j = 0; j < result.Count - 1; j++)
+                {
+                    Console.WriteLine("Strategy: " + botsSettings[i][j].Name + " Wins:" + result[j]);
+                }
+                Console.WriteLine("TurnCount: " + result[result.Count - 1] / iterations / tasks);
+                Console.WriteLine("----------------------------------------------------------");
             }
-            Console.WriteLine("turnCount:" + results[bots.Count()]/n);
+            stopwatch.Stop();
+            Console.WriteLine("Execution complited in " + stopwatch.ElapsedMilliseconds / 1000 + " seconds.");
+            /*List<string> resultStr = new List<string>();
+            foreach (var result in previousResults)
+            {
+                var str = "\"( ";
+                str += result.Key.Item1.ToString();
+                str += ", ";
+                str += result.Key.Item2.ToString();
+                str += ", ";
+                var tmp = "[ ";
+                foreach (var sc in result.Key.Item3)
+                {
+                    if (sc == result.Key.Item3.Last())
+                        tmp += sc.ToString() + " ";
+                    else
+                        tmp += sc.ToString() + ", ";
+                }
+                tmp += "]";
+                str += tmp;
+                str += ",";
+                str += result.Key.Item4.ToString();
+                str += " )\": ";
+                var tmp2 = "( [ ";
+                foreach (var ch in result.Value.Item1)
+                {
+                    if (ch == result.Value.Item1.Last())
+                        tmp2 += ch.ToString() + " ";
+                    else
+                        tmp2 += ch.ToString() + ", ";
+                }
+                str += tmp2;
+                str += "], ";
+                str += result.Value.Item2.ToString();
+                str += " )";
+                resultStr.Add(str);
+            }
+            foreach (var r in resultStr)
+            {
+                Console.WriteLine(r);
+            }*/
+            Console.ReadKey();
+        }
+
+        private static List<Dictionary<int, int>> Simulate(int tasks, int iterations, List<Bot> bots)
+        {
+            List<Dictionary<int, int>> resultCollection = new List<Dictionary<int, int>>();
+            var res = Parallel.For(0, tasks, iterator =>
+            {
+                var results = new Dictionary<int, int>();
+                List<string> names = new List<string>();
+                foreach (var bot in bots)
+                {
+                    names.Add(bot.Name);
+                    results.Add(bot.Id, 0);
+                }
+                results.Add(bots.Count(), 0);
+                int n = iterations;
+                for (int i = 0; i < n; i++)
+                {
+                    ImageService imageService = new ImageService(
+                        "..\\..\\..\\..\\Corps.Server\\Resource\\Text\\Card\\Direction\\directions.json",
+                        "..\\..\\..\\..\\Corps.Server\\Resource\\Text\\Card\\Description",
+                        "..\\..\\..\\..\\Corps.Server\\Resource\\Image"
+                        );
+                    Deck deck = DeckBuilder.GetDeckFromResources(imageService.AttackInfos, imageService.DefenceInfos, imageService.DeveloperInfos, imageService.Directions, imageService.EventInfos);
+                    Deck defaultDeck = deck.Copy();
+                    var turnCount = 0;
+                    GameEngine game = new GameEngine(deck, names);
+                    game.Deal(6);
+                    while (true)
+                    {
+                        foreach (var bot in bots)
+                        {
+                            List<int> cardIds;
+                            if (bot.StrategyId == 7)
+                                cardIds = bot.SelectCards(game.GetPlayersScores(), game.Players[bot.Id].Hand.Copy(), defaultDeck.Copy());
+                            else
+                                cardIds = bot.SelectCards(game.GetPlayersScores(), game.Players[bot.Id].Hand.Copy(), null);
+                            //List<GameCard> selectedCards = game.Players[bot.Id].Hand.Cards.Where(card => cardIds.Contains(card.Id)).ToList();
+                            game.Players[bot.Id].Hand.Cards.Where(card => cardIds.Contains(card.Id)).ToList().ForEach(card => card.State = CardState.Used);
+                        }
+                        game.TargetCards();
+                        game.Turn();
+                        turnCount += 1;
+                        if (game.Win)
+                        {
+                            results[bots.Count()] += turnCount;
+                            results[game.Winner - 1] += 1;
+                            Console.WriteLine("Task: " + iterator + " Finished: " + Math.Round(((double)i + 1) / ((double)n) * 100, 2) + "%");
+                            break;
+                        }
+
+                        game.Deal(3);
+                        defaultDeck.PlayedCards = deck.PlayedCards;
+                    }
+                }
+                Console.WriteLine("Ready: " + iterator);
+                resultCollection.Add(results);
+            });
+            return resultCollection;
         }
 
         /// <summary>
@@ -114,16 +215,35 @@ namespace Corps.Analysis
         /// </summary>
         private static void FillStrategiesList()
         {
-            //strategiesList.Add(new List<ISelectionStrategy> {
-            //    possibleStrategy[MONTE_CARLO],
-            //    possibleStrategy[RANDOM_STRATEGY]
-            //});
+            strategiesList.Add(new List<ISelectionStrategy> {
+                possibleStrategy[MONTE_CARLO],
+                possibleStrategy[RANDOM_STRATEGY]
+            });
+            /*strategiesList.Add(new List<ISelectionStrategy> {
+                possibleStrategy[RANDOM_STRATEGY],
+                possibleStrategy[MONTE_CARLO]
+            });
+            strategiesList.Add(new List<ISelectionStrategy> {
+                possibleStrategy[MONTE_CARLO],
+                possibleStrategy[RANDOM_STRATEGY],
+                possibleStrategy[RANDOM_STRATEGY]
+            });
+            strategiesList.Add(new List<ISelectionStrategy> {
+                possibleStrategy[RANDOM_STRATEGY],
+                possibleStrategy[MONTE_CARLO],
+                possibleStrategy[RANDOM_STRATEGY]
+            });
+            strategiesList.Add(new List<ISelectionStrategy> {
+                possibleStrategy[RANDOM_STRATEGY],
+                possibleStrategy[RANDOM_STRATEGY],
+                possibleStrategy[MONTE_CARLO]
+            });*/
             //strategiesList.Add(new List<ISelectionStrategy> {
             //    possibleStrategy[MONTE_CARLO],
             //    possibleStrategy[DEFENCE_STRATEGY],
             //    possibleStrategy[DEVELOP_STRATEGY],
             //});
-            strategiesList.Add(new List<ISelectionStrategy> {
+            /*strategiesList.Add(new List<ISelectionStrategy> {
                 possibleStrategy[MONTE_CARLO],
                 possibleStrategy[DEFENCE_STRATEGY],
                 possibleStrategy[DEVELOP_STRATEGY],
@@ -143,7 +263,7 @@ namespace Corps.Analysis
                 possibleStrategy[ATTACK_STRATEGY],
                 possibleStrategy[DEFENCE_STRATEGY],
                 possibleStrategy[DEVELOP_STRATEGY],
-            });
+            });*/
         }
 
         /// <summary>

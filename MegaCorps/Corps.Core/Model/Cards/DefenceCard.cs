@@ -16,6 +16,11 @@ namespace MegaCorps.Core.Model.Cards
             AttackTypes = attackTypes;
         }
 
+        public override DefenceCard Copy()
+        {
+            return (DefenceCard)Clone();
+        }
+
         public DefenceCard(DefenceCard card) : this(card.Id, card.AttackTypes) { }
     }
 }

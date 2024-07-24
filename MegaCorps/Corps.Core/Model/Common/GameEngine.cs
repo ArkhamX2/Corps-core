@@ -31,13 +31,16 @@ namespace MegaCorps.Core.Model
         /// <summary>
         /// Количество игроков
         /// </summary>
-        private int NumberOfPlayers { get; }
+        private int NumberOfPlayers { get; set; }
 
 
         public GameEngine(Deck deck, List<string> usernameList)
         {
-            Deck = deck;
-            deck.Shuffle();
+            Deck = deck; // перегрузить operator=
+                         // Deck.copy() { dest.f = source.f; dest.s = source.s; }
+                         //deck->Shuffle(); 
+            //Deck.PlayedCards = deck.PlayedCards; // 
+            Deck.Shuffle();
             Players = UserSetup.CreateUserList(usernameList);
             NumberOfPlayers = Players.Count;
 
@@ -74,6 +77,20 @@ namespace MegaCorps.Core.Model
         }
 
         public GameEngine() { }
+
+        public GameEngine Copy()
+        {
+            GameEngine copy = new GameEngine();
+            copy.Deck = Deck.Copy();
+            foreach (var player in Players)
+            {
+                copy.Players.Add(player.Copy());
+            }
+            copy.Win = Win;
+            copy.Winner = Winner;
+            copy.NumberOfPlayers = NumberOfPlayers;
+            return copy;
+        }
 
         /// <summary>
         /// Раздать карты игрокам
@@ -198,6 +215,7 @@ namespace MegaCorps.Core.Model
         private void CheckWin()
         {
             Win = Players.Any(player => player.Score >= 10);
+            if (Win)
             Winner = Players.FindIndex(player => player.Score == Players.Max((item) => item.Score)) + 1;
         }
 

@@ -34,6 +34,21 @@ namespace MegaCorps.Core.Model
 
         public Player(int id, string username) : this(id) => Name = username;
 
+        public Player()
+        {
+
+        }
+        public Player Copy()
+        {
+            Player copy = new Player();
+            copy.Id = Id;
+            copy.Score = Score;
+            copy.Hand = Hand.Copy();
+            copy.Name = Name;
+            copy.IsReady = IsReady;
+            return copy;
+        }
+
         /// <summary>
         /// Сыграть руку
         /// </summary>
@@ -65,7 +80,39 @@ namespace MegaCorps.Core.Model
         public List<int> SelectedCardQueue { get; private set; } = new();
 
         public PlayerHand(List<GameCard> cards) => Cards = cards;
+        public PlayerHand() { }
 
+        public PlayerHand Copy()
+        {
+            PlayerHand copy = new PlayerHand();
+            foreach (GameCard card in Cards)
+            {
+                copy.Cards.Add(card.Copy());
+            }
+            foreach (AttackCard card in Targeted)
+            {
+                copy.Targeted.Add(card.Copy());
+            }
+            foreach (int i in SelectedCardQueue)
+            {
+                copy.SelectedCardQueue.Add(i);
+            }
+            return copy;
+        }
+
+        public override string ToString()
+        {
+            string str = "{ [ ";
+            foreach (GameCard card in Cards)
+            {
+                if (card == Cards.Last())
+                    str += card.ToString();
+                else
+                    str += card.ToString() + ", ";
+            }
+            str += "] }";
+            return str;
+        }
 
         /// <summary>
         /// Метод для реализации текущей руки. Отбиваем направленные атаки, используем выбранные карты
