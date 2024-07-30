@@ -1,4 +1,5 @@
-﻿using MegaCorps.Core.Model;
+﻿using Corps.Core.Model.Enums;
+using MegaCorps.Core.Model;
 using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.Enums;
 using MegaCorps.Core.Model.GameUtils;
@@ -18,49 +19,40 @@ namespace Corps.Core.Model.Common
 {
     public class Bot : Player
     {
-        Strategies strategies = new Strategies();
-        public int StrategyId { get; set; }
-        private ConcurrentDictionary<(int, PlayerHand, List<int>, Deck), (List<int>, double)>? PreviousResults;
-        public Bot(int id, int strategy, string username) : base(id) 
+        BotStrategies BotStrategies = new BotStrategies();
+        public BotStrategy Strategy { get; set; }
+        private SelectedCardsConcurrentDictionary? PreviousResults;
+        public Bot(int id, BotStrategy strategy, string username) : base(id) 
         {
             Id = id;
-            StrategyId = strategy;
+            Strategy = strategy;
             Name = username;
         }
-        public Bot(int id, int strategy, string username, ConcurrentDictionary<(int, PlayerHand, List<int>, Deck), (List<int>,double)> previousResults) : this(id, strategy, username) => PreviousResults = previousResults;
+        public Bot(int id, BotStrategy strategy, string username, SelectedCardsConcurrentDictionary previousResults) : this(id, strategy, username) => PreviousResults = previousResults;
         public List<int> SelectCards(List<int>? Scores, PlayerHand? hand, Deck? deck)
         {
             if (deck != null)
                 PrepareDeck(deck);
             var res = new List<int>();
-            switch (StrategyId)
+            switch (Strategy)
             {
-                case 0:
-                    res = strategies.Random(new List<int>(), hand);
+                case BotStrategy.Random:
+                    res = BotStrategies.Random(new List<int>(), hand);
                     break;
-                case 1:
-                    res = strategies.Aggressive(new List<int>(), hand);
+                case BotStrategy.Aggressive:
+                    res = BotStrategies.Aggressive(new List<int>(), hand);
                     break;
-                case 2:
-                    res = strategies.Defensive(new List<int>(), hand);
+                case BotStrategy.Defensive:
+                    res = BotStrategies.Defensive(new List<int>(), hand);
                     break;
-                case 3:
-                    res = strategies.Researchive(new List<int>(), hand);
+                case BotStrategy.Researchive:
+                    res = BotStrategies.Researchive(new List<int>(), hand);
                     break;
-                case 4:
-                    res = strategies.Clever(new List<int>(), hand, Scores, Id);
+                case BotStrategy.Clever:
+                    res = BotStrategies.Clever(new List<int>(), hand, Scores, Id);
                     break;
-                case 5:
-                    //res = strategies.MinMax(new List<int>(), hand, Scores, Id, Deck);
-                    break;
-                case 6:
-                    res = strategies.Montecarlo(new List<int>(), hand, Scores, Id, deck, 4).Item1;
-                    break;
-                case 7:
-                    res = strategies.MonecarloAlt(new List<int>(), hand, Scores, Id, deck, 1000, PreviousResults);
-                    break;
-                case 8:
-                    res = strategies.Neural(new List<int>(), hand);
+                case BotStrategy.MonteCarlo:
+                    res = BotStrategies.Monecarlo(new List<int>(), hand, Scores, Id, deck, 100, PreviousResults);
                     break;
             }
             return res;
@@ -75,14 +67,20 @@ namespace Corps.Core.Model.Common
         }
     }
 
-    public class Strategies
+    public class BotStrategies
     {
         private int WinScore = 10;
         private int MaxSelectedCards = 3;
 
-        public Strategies()
+        public BotStrategies()
         {
 
+        }
+
+        public BotStrategies(int winScore, int maxSelectedCards)
+        {
+            WinScore = winScore;
+            MaxSelectedCards = maxSelectedCards;
         }
 
         public List<int> Random(List<int> selectedCardsIds, PlayerHand Hand)
@@ -301,107 +299,12 @@ namespace Corps.Core.Model.Common
             selectedCardsIds = Defensive(selectedCardsIds, Hand);
             return selectedCardsIds;
         }
-        public (List<int>, PlayerHand, List<int>, int, Deck, int, GameEngine, double) Montecarlo(List<int> selectedCardsIds, PlayerHand Hand, List<int> Scores, int BotId, Deck deck, int depth, GameEngine Game = null, double localScore = 0)
-        {
-            List<string> names = new List<string>();
-            for (int i = 0; i < Scores.Count(); i++)
-            {
-                names.Add(i.ToString());
-            }
-            List<Bot> bots = new List<Bot>();
-            for (int i = 0; i < Scores.Count(); i++)
-            {
-                bots.Add(new Bot(i, 4, names[i]));
-                bots[i].Score = Scores[i];
-            }
-            if (depth > 0) 
-            {
-                GameEngine game;
-                double maxLocalScore = double.MinValue;
-                if (Game == null)
-                {
-                    game = new GameEngine(deck, names);
-                    game.DealExcept(6, BotId, Hand);
-                    foreach (var bot in bots)
-                    {
-                        game.Players[bot.Id].Score = bot.Score;
-                    }
-                    Game = game.Copy();
-                }
-                for (int i = 0; i < Hand.Cards.Count(); i++)
-                {
-                    for (int j = i + 1; j < Hand.Cards.Count(); j++)
-                    {
-                        for (int k = j + 1; k < Hand.Cards.Count(); k++)
-                        {
-                            game = Game.Copy();
-                            List<int> currentSelectedCardsIds = new List<int> { game.Players[BotId].Hand.Cards[i].Id, game.Players[BotId].Hand.Cards[j].Id, game.Players[BotId].Hand.Cards[k].Id };
-                            foreach (var bot in bots)
-                            {
-                                if (bot.Id != BotId)
-                                {
-                                    var cards = bot.SelectCards(game.GetPlayersScores(), game.Players[bot.Id].Hand.Copy(), null);
-                                    foreach (var card in cards)
-                                    {
-                                        game.Players[bot.Id].Hand.Cards[game.Players[bot.Id].Hand.Cards.FindIndex(x => x.Id == card)].State = CardState.Used;
-                                    }
-                                }
-                                else
-                                {
-                                    foreach (var card in currentSelectedCardsIds)
-                                    {
-                                        game.Players[bot.Id].Hand.Cards[game.Players[bot.Id].Hand.Cards.FindIndex(x => x.Id == card)].State = CardState.Used;
-                                    }
-                                }
-                            }
-                            game.TargetCards();
-                            game.Turn();
-                            game.Deal(3);
-                            if (game.Win)
-                                if (game.Winner - 1 == BotId)
-                                {
-                                    return (currentSelectedCardsIds, Hand, game.GetPlayersScores(), BotId, deck.Copy(), 0, game.Copy(), localScore + 1);
-                                }
-                                else
-                                {
-                                    return (currentSelectedCardsIds, Hand, game.GetPlayersScores(), BotId, deck.Copy(), 0, game.Copy(), localScore - 1);
-                                }
-                            else
-                            {
-                                localScore += (double)(game.GetPlayersScores()[BotId] - (game.GetPlayersScores().Sum() - game.GetPlayersScores()[BotId]) / (bots.Count() - 1)) / (double)(20^4);
-                                /*var tmp1 = 0;
-                                var tmp2 = 0;
-                                foreach (var bot in bots)
-                                {
-                                    if (bot.Id != BotId)
-                                    {
-                                        tmp1 += game.Players[BotId].Hand.Cards.Where((card) => card is DeveloperCard).ToList().Sum((a) => (a as DeveloperCard).DevelopmentPoint);
-                                    }
-                                    else
-                                    {
-                                        tmp2 += game.Players[BotId].Hand.Cards.Where((card) => card is DeveloperCard).ToList().Sum((a) => (a as DeveloperCard).DevelopmentPoint);
-                                    }
-                                }
-                                localScore += (tmp2 - tmp1 / (bots.Count() - 1));*/
-                            }
-                            localScore = Montecarlo(new List<int>(), game.Players[BotId].Hand.Copy(), game.GetPlayersScores(), BotId, deck.Copy(), depth - 1, game.Copy(), localScore).Item8;
-                            if (localScore > maxLocalScore)
-                            {
-                                maxLocalScore = localScore;
-                                selectedCardsIds = currentSelectedCardsIds;
-                            }
-                        }
-                    }
-                }
-            }
-            return (selectedCardsIds, Hand, Scores, BotId, deck.Copy(), depth, Game, localScore);
-        }
-
-        public List<int> MonecarloAlt(List<int> selectedCardsIds, PlayerHand Hand, List<int> Scores, int BotId, Deck deck, int depth, ConcurrentDictionary<(int, PlayerHand, List<int>, Deck), (List<int>, double)> previousResults)
+        
+        public List<int> Monecarlo(List<int> selectedCardsIds, PlayerHand Hand, List<int> Scores, int BotId, Deck deck, int depth, SelectedCardsConcurrentDictionary previousResults, int turnLimit = 100)
         {
             //Stopwatch stopwatch = new Stopwatch();
             //stopwatch.Start();
-            if (!previousResults.ContainsKey((BotId, Hand, Scores, deck)))
+            if (!previousResults.concurrentDictionary.ContainsKey((BotId, Hand, Scores, deck)))
             {
                 List<string> names = new List<string>();
                 for (int i = 0; i < Scores.Count(); i++)
@@ -460,36 +363,52 @@ namespace Corps.Core.Model.Common
                             {
                                 for (int n = 0; n < depth; n++)
                                 {
-                                    var counter = 0;
+                                    var turn = 1;
                                     GameEngine gameEngine = localGame.Copy();
                                     gameEngine.Deck.Shuffle();
                                     while (!gameEngine.Win)
                                     {
-                                        counter++;
-                                        foreach (var bot in bots)
+                                        if (turn != turnLimit)
                                         {
-                                            var cards = bot.SelectCards(gameEngine.GetPlayersScores(), gameEngine.Players[bot.Id].Hand.Copy(), null);
-                                            foreach (var card in cards)
+                                            foreach (var bot in bots)
                                             {
-                                                gameEngine.Players[bot.Id].Hand.Cards[gameEngine.Players[bot.Id].Hand.Cards.FindIndex(x => x.Id == card)].State = CardState.Used;
+                                                var cards = bot.SelectCards(gameEngine.GetPlayersScores(), gameEngine.Players[bot.Id].Hand.Copy(), null);
+                                                foreach (var card in cards)
+                                                {
+                                                    gameEngine.Players[bot.Id].Hand.Cards[gameEngine.Players[bot.Id].Hand.Cards.FindIndex(x => x.Id == card)].State = CardState.Used;
+                                                }
                                             }
+                                            gameEngine.TargetCards();
+                                            gameEngine.Turn();
+                                            gameEngine.Deal(3);
+                                            turn++;
                                         }
-                                        gameEngine.TargetCards();
-                                        gameEngine.Turn();
-                                        gameEngine.Deal(3);
+                                        else
+                                        {
+                                            break;
+                                        }
                                     }
                                     if (gameEngine.Winner != -1)
                                     {
-                                        //Домножать глубину на очки (чем дальше от начала тем меньше шансов на победу)
                                         if (gameEngine.Winner - 1 == BotId)
                                             localScore += 1;
+                                    }
+                                    else
+                                    {
+                                        var scores = gameEngine.GetPlayersScores();
+                                        localScore += (scores[BotId] - (scores.Sum() - scores[BotId]))  / 10;
+                                        continue;
                                     }
                                 }
                             }
                             else
                             {
                                 if (localGame.Winner - 1 == BotId)
+                                {
                                     localScore = depth;
+                                    var scores = localGame.GetPlayersScores();
+                                    localScore += (scores[BotId] - (scores.Sum() - scores[BotId]));
+                                }
                             }
 
                             if (localScore > maxLocalScore)
@@ -502,13 +421,13 @@ namespace Corps.Core.Model.Common
                 }
                 var winPercent = Math.Round((double)(maxLocalScore / depth) * 100, 2);
                 Console.WriteLine("WinChance: " + winPercent + "%");
-                previousResults.TryAdd((BotId, Hand, Scores, deck),(selectedCardsIds, winPercent));
+                previousResults.concurrentDictionary.TryAdd((BotId, Hand, Scores, deck),(selectedCardsIds, winPercent));
                 //stopwatch.Stop();
                 //Console.WriteLine("Strategy: MonecarloAlt ElapsedSeconds: " + stopwatch.ElapsedMilliseconds / 1000 + " Chances:"+(double)maxLocalScore);
             }
             else
             {
-                selectedCardsIds = previousResults[(BotId, Hand, Scores, deck)].Item1;
+                selectedCardsIds = previousResults.concurrentDictionary[(BotId, Hand, Scores, deck)].Item1;
             }
             return selectedCardsIds;
         }

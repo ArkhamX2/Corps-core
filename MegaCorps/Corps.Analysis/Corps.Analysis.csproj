@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FreeSpire.XLS" Version="14.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Corps.Core\Corps.Core.csproj" />
     <ProjectReference Include="..\Corps.Server\Corps.Server.csproj" />
   </ItemGroup>

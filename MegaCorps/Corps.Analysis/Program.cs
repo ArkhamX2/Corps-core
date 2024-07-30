@@ -1,4 +1,6 @@
 ﻿using Corps.Core.Model.Common;
+using Corps.Core.Model.Enums;
+using Corps.Core.Model.GameUtils;
 using Corps.Server.Hubs;
 using Corps.Server.Services;
 using MegaCorps.Core.Model;
@@ -6,8 +8,12 @@ using MegaCorps.Core.Model.Cards;
 using MegaCorps.Core.Model.Enums;
 using MegaCorps.Core.Model.GameUtils;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Spire.Xls;
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Text.Json;
 
@@ -56,44 +62,100 @@ namespace Corps.Analysis
             //TestBestStrategy();
             Console.ReadKey();*/
 
-            ConcurrentDictionary<(int, PlayerHand, List<int>, Deck), (List<int>, double)> previousResults = new ConcurrentDictionary<(int, PlayerHand, List<int>, Deck), (List<int>, double)>();
+            SelectedCardsConcurrentDictionary previousResults = new SelectedCardsConcurrentDictionary();
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             var botsSettings = new List<List<Bot>>()
             {
-                new List<Bot> { new Bot(0, 7, "montecarloAlt", previousResults), new Bot(1, 0, "random") },
-                new List<Bot> { new Bot(0, 7, "montecarloAlt", previousResults), new Bot(1, 4, "clever") },
-                //new List<Bot> { new Bot(0, 4, "clever"), new Bot(1, 0, "random") },
-                //new List<Bot> { new Bot(0, 4, "clever"), new Bot(1, 7, "montecarloAlt"), new Bot(2, 4, "clever") },
-                //new List<Bot> { new Bot(0, 7, "montecarloAlt"), new Bot(1, 4, "clever"),  new Bot(2, 4, "clever") },
-                //new List<Bot> { new Bot(0, 4, "clever"),  new Bot(1, 4, "clever"), new Bot(2, 7, "montecarloAlt")  }
+                /*new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Aggressive, "aggressive") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Defensive, "defensive") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Researchive, "researchive") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Clever, "clever") }*/
+                /*new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
+                new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Defensive, "defensive") },
+                new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Researchive, "researchive") },
+                new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Clever, "clever") },*/
+                new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Clever, "clever") }
             };
-            var tasks = 10;
-            var iterations = 1;
-            List<List<Dictionary<int, int>>> resultCollection = new List<List<Dictionary<int, int>>>();
-            foreach (var (value, i) in botsSettings.Select((value, i) => (value, i)))
+            int maxCards = 100;
+            //mod 7, mod 10
+            var deckSettings = new List<int[]>()
             {
-                try
+
+            };
+            fillDeckSettings(maxCards, deckSettings);
+
+            var tasks = 10;
+            var iterations = 20;
+
+            List<(int, List<Dictionary<int, int>>)> resultCollection = new List<(int, List<Dictionary<int, int>>)>();
+            foreach (var (deckSetting, j) in deckSettings.Select((deckSetting, j) => (deckSetting, j)))
+            {
+                foreach (var (botSetting, i) in botsSettings.Select((botSetting, i) => (botSetting, i)))
                 {
-                    resultCollection.Add(Simulate(tasks, iterations, value));
-                    Console.WriteLine("----------------------------------------");
-                    Console.WriteLine($"Simulation with config {i} computed.");
-                    Console.WriteLine("----------------------------------------");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("An error occurred: ", e.ToString());
+                    try
+                    {
+                        resultCollection.Add((j, Simulate(tasks, iterations, botSetting, deckSetting)));
+                        Console.WriteLine("----------------------------------------");
+                        Console.WriteLine($"Simulation with botSetting: {i}, deckSetting: {j} computed.");
+                        Console.WriteLine("----------------------------------------");
+                        if (resultCollection.Last().Item2.Any(x => x.Values.Sum() - x.Values.Last() < iterations / 2))
+                        {
+                            Console.WriteLine($"Game with deckSetting: {j} unconfident.");
+                            resultCollection.RemoveAll(a => a.Item1 == j);
+                            break;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("An error occurred: ", e.ToString());
+                    }
                 }
             }
+            Workbook workbook = new Workbook();
+            foreach (var (value, i) in deckSettings.Select((value, i) => (value, i)))
+            {
+                Worksheet worksheet;
+                try
+                {
+                    worksheet = workbook.Worksheets[i];
+                }
+                catch
+                {
+                    workbook.CreateEmptySheet($"Sheet{i+1}");
+                    worksheet = workbook.Worksheets[i];
+                }
+                worksheet.Range[1, 1].Value = "Deck size";
+                worksheet.Range[1, 2].Value2 = value[0];
+                worksheet.Range[1, 3].Value = "Attack cards count";
+                worksheet.Range[1, 4].Value2 = value[1];
+                worksheet.Range[1, 5].Value = "Defence cards count";
+                worksheet.Range[1, 6].Value2 = value[2];
+                worksheet.Range[1, 7].Value = "Number of games";
+                worksheet.Range[1, 8].Value2 = tasks*iterations;
+            }
+            var startWith = 0;
+            var page = 0;
             foreach (var (value, i) in resultCollection.Select((value, i) => (value, i)))
             {
+                if (page != value.Item1)
+                {
+                    startWith = 0;
+                    page = value.Item1;
+                }
+                Worksheet worksheet = workbook.Worksheets[value.Item1];
+                Console.WriteLine("deckSetting: " + value.Item1);
                 var result = new Dictionary<int, int>();
-                foreach (var results in value.First())
+                foreach (var results in value.Item2.First())
                 {
                     result.Add(results.Key, 0);
                 }
-                foreach (var results in value)
+                foreach (var results in value.Item2)
                 {
                     foreach (var r in results)
                     {
@@ -102,13 +164,22 @@ namespace Corps.Analysis
                 }
                 for (int j = 0; j < result.Count - 1; j++)
                 {
-                    Console.WriteLine("Strategy: " + botsSettings[i][j].Name + " Wins:" + result[j]);
+                    Console.WriteLine("Strategy: " + botsSettings[i % botsSettings.Count()][j].Name + " Wins:" + result[j]);
+                    worksheet.Range[3 + startWith + 2 * j, 1].Value = "Strategy";
+                    worksheet.Range[3 + startWith + 2 * j, 2].Value2 = botsSettings[i % botsSettings.Count()][j].Name;
+                    worksheet.Range[4 + startWith + 2 * j, 1].Value = "Wins";
+                    worksheet.Range[4 + startWith + 2 * j, 2].Value2 = result[j];
                 }
                 Console.WriteLine("TurnCount: " + result[result.Count - 1] / iterations / tasks);
+                worksheet.Range[3 + startWith + (result.Count - 1) * 2, 1].Value = "TurnCount";
+                worksheet.Range[3 + startWith + (result.Count - 1) * 2, 2].Value2 = result[result.Count - 1] / iterations / tasks;
+                startWith = startWith + (result.Count) * 2;
                 Console.WriteLine("----------------------------------------------------------");
             }
+            workbook.SaveToFile("SimResults.xlsx", ExcelVersion.Version2016);
             stopwatch.Stop();
             Console.WriteLine("Execution complited in " + stopwatch.ElapsedMilliseconds / 1000 + " seconds.");
+
             /*List<string> resultStr = new List<string>();
             foreach (var result in previousResults)
             {
@@ -151,7 +222,18 @@ namespace Corps.Analysis
             Console.ReadKey();
         }
 
-        private static List<Dictionary<int, int>> Simulate(int tasks, int iterations, List<Bot> bots)
+        private static void fillDeckSettings(int maxCards, List<int[]> deckSettings)
+        {
+            for (int i = 7; i < maxCards; i = i + 7)
+            {
+                for (int j = 10; j < maxCards - i; j = j + 10)
+                {
+                    deckSettings.Add(new int[3] { maxCards, i, j });
+                }
+            }
+        }
+
+        private static List<Dictionary<int, int>> Simulate(int tasks, int iterations, List<Bot> bots, int[] cards, int maxTurnCount = 100)
         {
             List<Dictionary<int, int>> resultCollection = new List<Dictionary<int, int>>();
             var res = Parallel.For(0, tasks, iterator =>
@@ -165,43 +247,47 @@ namespace Corps.Analysis
                 }
                 results.Add(bots.Count(), 0);
                 int n = iterations;
+                DynamicDeckBuilder deckBuilder = new DynamicDeckBuilder(cards[0], cards[1], cards[2]);
                 for (int i = 0; i < n; i++)
                 {
-                    ImageService imageService = new ImageService(
-                        "..\\..\\..\\..\\Corps.Server\\Resource\\Text\\Card\\Direction\\directions.json",
-                        "..\\..\\..\\..\\Corps.Server\\Resource\\Text\\Card\\Description",
-                        "..\\..\\..\\..\\Corps.Server\\Resource\\Image"
-                        );
-                    Deck deck = DeckBuilder.GetDeckFromResources(imageService.AttackInfos, imageService.DefenceInfos, imageService.DeveloperInfos, imageService.Directions, imageService.EventInfos);
+                    Deck deck = deckBuilder.GetDeck();
                     Deck defaultDeck = deck.Copy();
                     var turnCount = 0;
                     GameEngine game = new GameEngine(deck, names);
                     game.Deal(6);
                     while (true)
                     {
-                        foreach (var bot in bots)
+                        if (turnCount < maxTurnCount)
                         {
-                            List<int> cardIds;
-                            if (bot.StrategyId == 7)
-                                cardIds = bot.SelectCards(game.GetPlayersScores(), game.Players[bot.Id].Hand.Copy(), defaultDeck.Copy());
-                            else
-                                cardIds = bot.SelectCards(game.GetPlayersScores(), game.Players[bot.Id].Hand.Copy(), null);
-                            //List<GameCard> selectedCards = game.Players[bot.Id].Hand.Cards.Where(card => cardIds.Contains(card.Id)).ToList();
-                            game.Players[bot.Id].Hand.Cards.Where(card => cardIds.Contains(card.Id)).ToList().ForEach(card => card.State = CardState.Used);
+                            foreach (var bot in bots)
+                            {
+                                List<int> cardIds;
+                                if (bot.Strategy == BotStrategy.MonteCarlo)
+                                    cardIds = bot.SelectCards(game.GetPlayersScores(), game.Players[bot.Id].Hand.Copy(), defaultDeck.Copy());
+                                else
+                                    cardIds = bot.SelectCards(game.GetPlayersScores(), game.Players[bot.Id].Hand.Copy(), null);
+                                //List<GameCard> selectedCards = game.Players[bot.Id].Hand.Cards.Where(card => cardIds.Contains(card.Id)).ToList();
+                                game.Players[bot.Id].Hand.Cards.Where(card => cardIds.Contains(card.Id)).ToList().ForEach(card => card.State = CardState.Used);
+                            }
+                            game.TargetCards();
+                            game.Turn();
+                            turnCount += 1;
+                            if (game.Win)
+                            {
+                                results[bots.Count()] += turnCount;
+                                results[game.Winner - 1] += 1;
+                                Console.WriteLine("Task: " + iterator + " Finished: " + Math.Round(((double)i + 1) / ((double)n) * 100, 2) + "%");
+                                break;
+                            }
+
+                            game.Deal(3);
+                            defaultDeck.PlayedCards = deck.PlayedCards;
                         }
-                        game.TargetCards();
-                        game.Turn();
-                        turnCount += 1;
-                        if (game.Win)
+                        else
                         {
-                            results[bots.Count()] += turnCount;
-                            results[game.Winner - 1] += 1;
-                            Console.WriteLine("Task: " + iterator + " Finished: " + Math.Round(((double)i + 1) / ((double)n) * 100, 2) + "%");
+                            Console.WriteLine("MaxTurnCount on Task: " + iterator);
                             break;
                         }
-
-                        game.Deal(3);
-                        defaultDeck.PlayedCards = deck.PlayedCards;
                     }
                 }
                 Console.WriteLine("Ready: " + iterator);
