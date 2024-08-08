@@ -5,18 +5,28 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 def test():
+    # prepare
+    wb = Workbook()
+    wb.LoadFromFile("./SimResultsA.xlsx")
     ignoreSheets = []
     ignoreResults = [0]
     playerId = 0
-    totalGames = 10
-    totalCards = 100
+    totalGames = int(wb.Worksheets[0].AllocatedRange.Rows[0].Columns[7].Value)
+    totalCards = int(wb.Worksheets[0].AllocatedRange.Rows[0].Columns[1].Value)
     baseSheet = 0
-    graphCount = 6
+    graphCount = 0
+    names = []
+    for r in wb.Worksheets[0].AllocatedRange.Columns[0]:
+        if (r.Value==''):
+            graphCount+=1
+    for r in wb.Worksheets[0].AllocatedRange.Columns[1]:
+        if (r.Value!='' and not(r.Value.isdigit())):
+            names.append(r.Value)            
+    names = [ ' '.join(x) for x in zip(names[0::2], names[1::2]) ]
     graphs = []
     for i in range(graphCount):
         graphs.append([])
-    wb = Workbook()
-    wb.LoadFromFile("./SimResults.xlsx")
+    # read wb
     for s in range(len(wb.Worksheets)):
         if (s in ignoreSheets):
             pass
@@ -46,7 +56,7 @@ def test():
                     graphs[i].append((round(x,2),round(y,2),round(score[playerId]/(sum(score))*100,2)))
             else:
                 pass
-
+    # draw plots
     x,y = fill(totalCards)
     xgrid, ygrid = np.meshgrid(x, y)
     for i, graph in enumerate(graphs):
@@ -69,9 +79,14 @@ def test():
             fig, ax = plt.subplots()
             vmin = 0
             vmax = 100
-            contourf_ = ax.contourf(xgrid, ygrid, zgrid, levels=np.linspace(vmin,vmax,400),extend='max')
+            num = 100
+            contourf_ = ax.contourf(xgrid, ygrid, zgrid, levels=np.linspace(vmin,vmax,num),extend='max')
             cbar = fig.colorbar(contourf_,ticks=range(vmin, vmax+1, 25))
-
+            t = fig.get_axes()[0].axes
+            t.set_xlabel("Attack cards (%)")
+            t.set_ylabel("Defence cards (%)")
+            a,b = names[i].split(" ")
+            t.title.set_text(a + " vs " + b)
             fig.show()
     input()
 
@@ -84,7 +99,7 @@ def fill(deckSize):
     x = []
     y = []
     for t in a:
-        x.append(t[0])
-        y.append(t[1])
+        x.append(round(t[0]/deckSize*100,2))
+        y.append(round(t[1]/deckSize*100,2))
     return x,y
 test()

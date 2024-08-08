@@ -69,20 +69,41 @@ namespace Corps.Analysis
             var botsSettings = new List<List<Bot>>()
             {
                 /*new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Random, "random") },
-                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Random, "random") },
-                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Aggressive, "aggressive") },
-                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Defensive, "defensive") },
-                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Researchive, "researchive") },
-                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Clever, "clever") }*/
-                /*new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Defensive, "defensive") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Researchive, "researchive") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Clever, "clever") }*/
+                new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Random, "random") },
+
                 new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
                 new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Defensive, "defensive") },
                 new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Researchive, "researchive") },
-                new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Clever, "clever") },*/
-                new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Random, "random") },
-                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Clever, "clever") }
+                new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Clever, "clever") },
+
+                new List<Bot> { new Bot(0, BotStrategy.Aggressive, "aggressive"), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.Aggressive, "aggressive"), new Bot(1, BotStrategy.Defensive, "defensive") },
+                new List<Bot> { new Bot(0, BotStrategy.Aggressive, "aggressive"), new Bot(1, BotStrategy.Researchive, "researchive") },
+                new List<Bot> { new Bot(0, BotStrategy.Aggressive, "aggressive"), new Bot(1, BotStrategy.Clever, "clever") },
+
+                new List<Bot> { new Bot(0, BotStrategy.Defensive, "defensive"), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.Defensive, "defensive"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
+                new List<Bot> { new Bot(0, BotStrategy.Defensive, "defensive"), new Bot(1, BotStrategy.Researchive, "researchive") },
+                new List<Bot> { new Bot(0, BotStrategy.Defensive, "defensive"), new Bot(1, BotStrategy.Clever, "clever") },
+
+                new List<Bot> { new Bot(0, BotStrategy.Researchive, "researchive"), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.Researchive, "researchive"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
+                new List<Bot> { new Bot(0, BotStrategy.Researchive, "researchive"), new Bot(1, BotStrategy.Defensive, "defensive") },
+                new List<Bot> { new Bot(0, BotStrategy.Researchive, "researchive"), new Bot(1, BotStrategy.Clever, "clever") },
+
+                new List<Bot> { new Bot(0, BotStrategy.Clever, "clever"), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.Clever, "clever"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
+                new List<Bot> { new Bot(0, BotStrategy.Clever, "clever"), new Bot(1, BotStrategy.Defensive, "defensive") },
+                new List<Bot> { new Bot(0, BotStrategy.Clever, "clever"), new Bot(1, BotStrategy.Researchive, "researchive") },
+                /*new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Clever, "clever") }*/
             };
-            int maxCards = 100;
+            int maxCards = 300;
             //mod 7, mod 10
             var deckSettings = new List<int[]>()
             {
@@ -91,7 +112,7 @@ namespace Corps.Analysis
             fillDeckSettings(maxCards, deckSettings);
 
             var tasks = 10;
-            var iterations = 20;
+            var iterations = 100;
 
             List<(int, List<Dictionary<int, int>>)> resultCollection = new List<(int, List<Dictionary<int, int>>)>();
             foreach (var (deckSetting, j) in deckSettings.Select((deckSetting, j) => (deckSetting, j)))
@@ -104,7 +125,7 @@ namespace Corps.Analysis
                         Console.WriteLine("----------------------------------------");
                         Console.WriteLine($"Simulation with botSetting: {i}, deckSetting: {j} computed.");
                         Console.WriteLine("----------------------------------------");
-                        if (resultCollection.Last().Item2.Any(x => x.Values.Sum() - x.Values.Last() < iterations / 2))
+                        if (resultCollection.Last().Item2.Any(x => x.Values.Sum() - x.Values.Last() < iterations / 2) && i == 0)
                         {
                             Console.WriteLine($"Game with deckSetting: {j} unconfident.");
                             resultCollection.RemoveAll(a => a.Item1 == j);
