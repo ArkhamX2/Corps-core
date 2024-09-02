@@ -64,11 +64,11 @@ namespace Corps.Core.Model.GameUtils
                     deck.Add(new DefenceCard(
                         i,
                         new List<AttackType> { attackTypes[
-                            i % attackTypes.Count() > 0 ?
-                                i % attackTypes.Count() - 1 :
+                            (i - MAX_ATTACK_CARDS_COUNT + 1) % attackTypes.Count() > 0 ?
+                                (i - MAX_ATTACK_CARDS_COUNT + 1) % attackTypes.Count() - 1 :
                                 attackTypes.Count() - 1
                             ],
-                            attackTypes[i % attackTypes.Count()] }));
+                            attackTypes[(i - MAX_ATTACK_CARDS_COUNT + 1) % attackTypes.Count()] }));
                 }
                 else
                 {

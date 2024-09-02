@@ -216,7 +216,20 @@ namespace MegaCorps.Core.Model
         {
             Win = Players.Any(player => player.Score >= 10);
             if (Win)
-            Winner = Players.FindIndex(player => player.Score == Players.Max((item) => item.Score)) + 1;
+                CheckTie();
+        }
+
+        private void CheckTie()
+        {
+            var winners = Players.FindAll(player => player.Score == Players.Max((item) => item.Score));
+            if (winners.Count > 1)
+            {
+                Winner = 0;
+            }
+            else
+            {
+                Winner = winners.First().Id + 1;
+            }
         }
 
         private void PrepareForNextTurn()

@@ -68,51 +68,68 @@ namespace Corps.Analysis
             stopwatch.Start();
             var botsSettings = new List<List<Bot>>()
             {
-                /*new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Random, "random") },
-                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Random, "random") },
-                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
-                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Defensive, "defensive") },
-                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Researchive, "researchive") },
-                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Clever, "clever") }*/
                 new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Random, "random") },
-
-                new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
+                //new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Random, "random") },
+                //new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
+                //new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Defensive, "defensive") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Researchive, "researchive") },
+                //new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Clever, "clever") },
+                /*new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
                 new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Defensive, "defensive") },
                 new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Researchive, "researchive") },
-                new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Clever, "clever") },
+                new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Clever, "clever") },*/
 
-                new List<Bot> { new Bot(0, BotStrategy.Aggressive, "aggressive"), new Bot(1, BotStrategy.Random, "random") },
+                /*new List<Bot> { new Bot(0, BotStrategy.Aggressive, "aggressive"), new Bot(1, BotStrategy.Random, "random") },
                 new List<Bot> { new Bot(0, BotStrategy.Aggressive, "aggressive"), new Bot(1, BotStrategy.Defensive, "defensive") },
                 new List<Bot> { new Bot(0, BotStrategy.Aggressive, "aggressive"), new Bot(1, BotStrategy.Researchive, "researchive") },
-                new List<Bot> { new Bot(0, BotStrategy.Aggressive, "aggressive"), new Bot(1, BotStrategy.Clever, "clever") },
+                new List<Bot> { new Bot(0, BotStrategy.Aggressive, "aggressive"), new Bot(1, BotStrategy.Clever, "clever") },*/
 
-                new List<Bot> { new Bot(0, BotStrategy.Defensive, "defensive"), new Bot(1, BotStrategy.Random, "random") },
+                /*new List<Bot> { new Bot(0, BotStrategy.Defensive, "defensive"), new Bot(1, BotStrategy.Random, "random") },
                 new List<Bot> { new Bot(0, BotStrategy.Defensive, "defensive"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
                 new List<Bot> { new Bot(0, BotStrategy.Defensive, "defensive"), new Bot(1, BotStrategy.Researchive, "researchive") },
-                new List<Bot> { new Bot(0, BotStrategy.Defensive, "defensive"), new Bot(1, BotStrategy.Clever, "clever") },
+                new List<Bot> { new Bot(0, BotStrategy.Defensive, "defensive"), new Bot(1, BotStrategy.Clever, "clever") },*/
 
-                new List<Bot> { new Bot(0, BotStrategy.Researchive, "researchive"), new Bot(1, BotStrategy.Random, "random") },
+                /*new List<Bot> { new Bot(0, BotStrategy.Researchive, "researchive"), new Bot(1, BotStrategy.Random, "random") },
                 new List<Bot> { new Bot(0, BotStrategy.Researchive, "researchive"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
                 new List<Bot> { new Bot(0, BotStrategy.Researchive, "researchive"), new Bot(1, BotStrategy.Defensive, "defensive") },
-                new List<Bot> { new Bot(0, BotStrategy.Researchive, "researchive"), new Bot(1, BotStrategy.Clever, "clever") },
+                new List<Bot> { new Bot(0, BotStrategy.Researchive, "researchive"), new Bot(1, BotStrategy.Clever, "clever") },*/
+
+                /*new List<Bot> { new Bot(0, BotStrategy.Clever, "clever"), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.Clever, "clever"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
+                new List<Bot> { new Bot(0, BotStrategy.Clever, "clever"), new Bot(1, BotStrategy.Defensive, "defensive") },
+                new List<Bot> { new Bot(0, BotStrategy.Clever, "clever"), new Bot(1, BotStrategy.Researchive, "researchive") },*/
+                /*new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Clever, "clever") }*/
+                /*new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Random, "random") },
 
                 new List<Bot> { new Bot(0, BotStrategy.Clever, "clever"), new Bot(1, BotStrategy.Random, "random") },
                 new List<Bot> { new Bot(0, BotStrategy.Clever, "clever"), new Bot(1, BotStrategy.Aggressive, "aggressive") },
                 new List<Bot> { new Bot(0, BotStrategy.Clever, "clever"), new Bot(1, BotStrategy.Defensive, "defensive") },
                 new List<Bot> { new Bot(0, BotStrategy.Clever, "clever"), new Bot(1, BotStrategy.Researchive, "researchive") },
+
+                new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Clever, "clever") },
+                new List<Bot> { new Bot(0, BotStrategy.Aggressive, "aggressive"), new Bot(1, BotStrategy.Clever, "clever") },
+                new List<Bot> { new Bot(0, BotStrategy.Defensive, "defensive"), new Bot(1, BotStrategy.Clever, "clever") },
+                new List<Bot> { new Bot(0, BotStrategy.Researchive, "researchive"), new Bot(1, BotStrategy.Clever, "clever") }*/
+
+                //new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Clever, "clever") },
                 /*new List<Bot> { new Bot(0, BotStrategy.Random, "random"), new Bot(1, BotStrategy.Random, "random") },
-                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo", previousResults), new Bot(1, BotStrategy.Clever, "clever") }*/
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Clever, "clever") },
+                new List<Bot> { new Bot(0, BotStrategy.MonteCarlo, "monteCarlo"), new Bot(1, BotStrategy.Random, "random") },
+                new List<Bot> { new Bot(0, BotStrategy.Clever, "clever"), new Bot(1, BotStrategy.Random, "random") }*/
             };
-            int maxCards = 300;
+            int maxCards = 100;
             //mod 7, mod 10
             var deckSettings = new List<int[]>()
             {
-
+                //new int[3] {maxCards, 42 , 11},
+                //new int[3] {maxCards, 34 , 38},
+                //new int[3] {maxCards, 40 , 19},
             };
             fillDeckSettings(maxCards, deckSettings);
-
+            //fillDeckSettingsSquare(maxCards, deckSettings, 5);
             var tasks = 10;
-            var iterations = 100;
+            var iterations = 10;
 
             List<(int, List<Dictionary<int, int>>)> resultCollection = new List<(int, List<Dictionary<int, int>>)>();
             foreach (var (deckSetting, j) in deckSettings.Select((deckSetting, j) => (deckSetting, j)))
@@ -121,7 +138,7 @@ namespace Corps.Analysis
                 {
                     try
                     {
-                        resultCollection.Add((j, Simulate(tasks, iterations, botSetting, deckSetting)));
+                        resultCollection.Add((j, Simulate(tasks, iterations, botSetting, deckSetting, 0, 30)));
                         Console.WriteLine("----------------------------------------");
                         Console.WriteLine($"Simulation with botSetting: {i}, deckSetting: {j} computed.");
                         Console.WriteLine("----------------------------------------");
@@ -243,18 +260,33 @@ namespace Corps.Analysis
             Console.ReadKey();
         }
 
+        private static void fillDeckSettingsSquare(int maxCards, List<int[]> deckSettings, int diam)
+        {
+            int rad = (diam - 1) / 2;
+            for (int i = -rad; i <= rad; i = i + 1)
+            {
+                for (int j = -rad; j <= rad; j = j + 1)
+                {
+                    if (i == 0 & j == 0)
+                        continue;
+                    else
+                        deckSettings.Add(new int[3] { maxCards, deckSettings[0][1] +i, deckSettings[0][2] + j });
+                }
+            }
+        }
+
         private static void fillDeckSettings(int maxCards, List<int[]> deckSettings)
         {
-            for (int i = 7; i < maxCards; i = i + 7)
+            for (int i = 7; i < maxCards; i = i + 1)
             {
-                for (int j = 10; j < maxCards - i; j = j + 10)
+                for (int j = 7; j < maxCards - i; j = j + 1)
                 {
                     deckSettings.Add(new int[3] { maxCards, i, j });
                 }
             }
         }
 
-        private static List<Dictionary<int, int>> Simulate(int tasks, int iterations, List<Bot> bots, int[] cards, int maxTurnCount = 100)
+        private static List<Dictionary<int, int>> Simulate(int tasks, int iterations, List<Bot> bots, int[] cards, int minTurnCount = 4, int maxTurnCount = 30)
         {
             List<Dictionary<int, int>> resultCollection = new List<Dictionary<int, int>>();
             var res = Parallel.For(0, tasks, iterator =>
@@ -284,9 +316,9 @@ namespace Corps.Analysis
                             {
                                 List<int> cardIds;
                                 if (bot.Strategy == BotStrategy.MonteCarlo)
-                                    cardIds = bot.SelectCards(game.GetPlayersScores(), game.Players[bot.Id].Hand.Copy(), defaultDeck.Copy());
+                                    cardIds = bot.SelectCards(game.GetPlayersScores(), game.Players[bot.Id].Hand.Copy(), defaultDeck.Copy(), maxTurnCount - turnCount);
                                 else
-                                    cardIds = bot.SelectCards(game.GetPlayersScores(), game.Players[bot.Id].Hand.Copy(), null);
+                                    cardIds = bot.SelectCards(game.GetPlayersScores(), game.Players[bot.Id].Hand.Copy(), null, null);
                                 //List<GameCard> selectedCards = game.Players[bot.Id].Hand.Cards.Where(card => cardIds.Contains(card.Id)).ToList();
                                 game.Players[bot.Id].Hand.Cards.Where(card => cardIds.Contains(card.Id)).ToList().ForEach(card => card.State = CardState.Used);
                             }
@@ -295,12 +327,21 @@ namespace Corps.Analysis
                             turnCount += 1;
                             if (game.Win)
                             {
-                                results[bots.Count()] += turnCount;
-                                results[game.Winner - 1] += 1;
-                                Console.WriteLine("Task: " + iterator + " Finished: " + Math.Round(((double)i + 1) / ((double)n) * 100, 2) + "%");
+                                if (game.Winner != 0)
+                                {
+                                    if (turnCount > minTurnCount)
+                                    {
+                                        results[bots.Count()] += turnCount;
+                                        results[game.Winner - 1] += 1;
+                                        Console.WriteLine("Task: " + iterator + " Finished: " + Math.Round(((double)i + 1) / ((double)n) * 100, 2) + "%");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("MinTurnCount on Task: " + iterator);
+                                    }
+                                }
                                 break;
                             }
-
                             game.Deal(3);
                             defaultDeck.PlayedCards = deck.PlayedCards;
                         }

@@ -7,25 +7,32 @@ import numpy as np
 def test():
     # prepare
     wb = Workbook()
-    wb.LoadFromFile("./SimResultsA.xlsx")
+    wb.LoadFromFile("./SimResultsReN.xlsx")
     ignoreSheets = []
     ignoreResults = [0]
     playerId = 0
     totalGames = int(wb.Worksheets[0].AllocatedRange.Rows[0].Columns[7].Value)
     totalCards = int(wb.Worksheets[0].AllocatedRange.Rows[0].Columns[1].Value)
     baseSheet = 0
+    minTurnCount = 8
     graphCount = 0
     names = []
-    for r in wb.Worksheets[0].AllocatedRange.Columns[0]:
-        if (r.Value==''):
-            graphCount+=1
-    for r in wb.Worksheets[0].AllocatedRange.Columns[1]:
-        if (r.Value!='' and not(r.Value.isdigit())):
-            names.append(r.Value)            
-    names = [ ' '.join(x) for x in zip(names[0::2], names[1::2]) ]
-    graphs = []
-    for i in range(graphCount):
-        graphs.append([])
+    counter = 0
+    while(True):
+        for r in wb.Worksheets[counter].AllocatedRange.Columns[0]:
+            if (r.Value==''):
+                graphCount+=1
+        for r in wb.Worksheets[counter].AllocatedRange.Columns[1]:
+            if (r.Value!='' and not(r.Value.isdigit())):
+                names.append(r.Value)            
+        names = [ ' '.join(x) for x in zip(names[0::2], names[1::2]) ]
+        graphs = []
+        for i in range(graphCount):
+            graphs.append([])
+        if (len(graphs)!=0):
+            break
+        else:
+            counter+=1
     # read wb
     for s in range(len(wb.Worksheets)):
         if (s in ignoreSheets):
@@ -42,6 +49,8 @@ def test():
             botScore = []
             botScore.append([])
             j=0
+            c = 0
+            botScore[j].append(c)
             x = float(int(textList[0].split("  ")[3])/totalCards*100)
             y = float(int(textList[0].split("  ")[5])/totalCards*100)
             if (len(textList) > 1):
@@ -49,11 +58,20 @@ def test():
                     if ((textList[i].split("  ")[0]=="Strategy")):
                         botScore[j].append((int(textList[i+1].split("  ")[1])))
                     else:
-                        if ((textList[i].split("  ")[0]=="")):
-                            j = j + 1
-                            botScore.append([])
+                        if ((textList[i].split("  ")[0]=="TurnCount")):
+                            if (int(textList[i].split("  ")[1]) <= minTurnCount):
+                                botScore.pop()
+                                j = j - 1
+                            else:
+                                pass
+                        else:
+                            if ((textList[i].split("  ")[0]=="")):
+                                j = j + 1
+                                c = c + 1
+                                botScore.append([])
+                                botScore[j].append(c)
                 for i, score in enumerate(botScore):
-                    graphs[i].append((round(x,2),round(y,2),round(score[playerId]/(sum(score))*100,2)))
+                    graphs[score[0]].append((round(x,2),round(y,2),round(score[playerId + 1]/(sum(score)-score[0])*100,2)))
             else:
                 pass
     # draw plots
@@ -63,9 +81,14 @@ def test():
         if (i in ignoreResults):
             pass
         else:
+            # x = []
+            # y = []
             z = {}
             for g in graph:
+                # x.append(g[0])
+                # y.append(g[1])
                 z[(g[0],g[1])]=g[2]
+            # xgrid, ygrid = np.meshgrid(x, y)
             zgrid = []
             for j in range(len(xgrid)):
                 zgrid.append([])
@@ -93,8 +116,8 @@ def test():
 def fill(deckSize):
     a=[]
     max = deckSize
-    for i in range(7,max,7):
-        for j in range(10, max-i,10):
+    for i in range(7,max,1):
+        for j in range(7, max-i,1):
             a.append((i,j))
     x = []
     y = []
