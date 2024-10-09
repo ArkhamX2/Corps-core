@@ -27,6 +27,7 @@ namespace MegaCorps.Core.Model
         List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect)
         {
             Dictionary<float, List<int>> selectedList = new Dictionary<float, List<int>>();
+            
             for (int i = 0; i < cards[0].Count() - 2; i++)
             {
                 for (int j = i + 1; j < cards[0].Count() - 1; j++)
@@ -34,10 +35,13 @@ namespace MegaCorps.Core.Model
                     for (int k = j + 1; k < cards[0].Count(); k++)
                     {
                         List<int> tmp = new List<int> { i, j, k };
-                        selectedList[AnalizeMonteCarlo(tmp, Scores, cards, Deck, Strategies)] = tmp;
+                        selectedList[AnalizeMonteCarlo(
+                            tmp, Scores, cards, Deck, Strategies
+                            )] = tmp;
                     }
                 }
             }
+
             ChosenProbability.Add(selectedList.Keys.Max());
             return selectedList[ChosenProbability.Last()];
         }
@@ -82,6 +86,7 @@ namespace MegaCorps.Core.Model
                 });
                 engine = new GameEngine(new List<int>(scores), cardsCopy, DeckBuilder.CopyDeck(deck));
                 List<List<int>> tmpSelected = selectHelper.SelectCards(engine.GetPlayersHands(), selectionStrategies, CARDS_TO_CHOOSE, engine.GetPlayersScores(), engine.Deck);
+
                 tmpSelected[0] = currentChoose;
                 engine.SelectCards(tmpSelected);
                 engine.TargetCards();
@@ -117,7 +122,10 @@ namespace MegaCorps.Core.Model
     {
         List<int> ISelectionStrategy.Select(int playerIndex, List<List<GameCard>> cards, int numberToSelect)
         {
-            return Enumerable.Range(0, cards[0].Count()).OrderBy(x => RandomHelper.Next()).Take(numberToSelect).ToList();
+            return Enumerable
+                .Range(0, cards[0].Count())
+                .OrderBy(x => RandomHelper.Next())
+                .Take(numberToSelect).ToList();
         }
         string ISelectionStrategy.Print()
         {

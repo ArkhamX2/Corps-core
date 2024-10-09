@@ -11,6 +11,7 @@ namespace Corps.Analysis
         private int _numberOfPlayers;
         private List<int> _winners;
         private List<ISelectionStrategy> _selectionStrategyList;
+
         public Analizer(List<ISelectionStrategy> selectionStrategyList)
         {
             _numberOfPlayers = selectionStrategyList.Count();
@@ -45,6 +46,7 @@ namespace Corps.Analysis
                 while (!_engine.Win)
                 {
                     List<List<int>> tmp = selectHelper.SelectCards(_engine.GetPlayersHands(), _selectionStrategyList, CARDS_TO_CHOOSE, _engine.GetPlayersScores(), _engine.Deck);
+
                     _engine.SelectCards(tmp);
                     _engine.TargetCards();
                     _engine.Turn();
@@ -66,7 +68,12 @@ namespace Corps.Analysis
 
             _winners = Enumerable.Repeat(0, NumberOfPlayers).ToList();
 
-            return new AnalizerResult(averageTurnCount, averageWins, scores, string.Join("%|-|", (_selectionStrategyList.Where(x => x is MonteCarloSelectStrategy).First() as MonteCarloSelectStrategy)!.ChosenProbability.Select(x => (x / 1000) * 100)));
+            return new AnalizerResult(
+                averageTurnCount, 
+                averageWins, 
+                scores, 
+                string.Join("%|-|", 
+                (_selectionStrategyList.Where(x => x is MonteCarloSelectStrategy).First() as MonteCarloSelectStrategy)!.ChosenProbability.Select(x => (x / 1000) * 100)));
         }
     }
 
@@ -79,6 +86,7 @@ namespace Corps.Analysis
         public List<float> averageWins;
         public List<string> scores;
         public string MCProbability;
+
         public AnalizerResult(float averageTurnCount, List<float> averageWins, List<string> scores, string probabilities)
         {
             this.averageTurnCount = averageTurnCount;

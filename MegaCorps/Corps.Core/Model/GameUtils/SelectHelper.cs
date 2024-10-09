@@ -18,7 +18,9 @@ namespace MegaCorps.Core.Model
                     monteCarloSelectStrategy.Deck = deck;
                     monteCarloSelectStrategy.Scores = scores;
                     monteCarloSelectStrategy.Strategies = strategyList;
+
                     selected.Add((monteCarloSelectStrategy as ISelectionStrategy).Select(i, hands, numberToSelect));
+
                     (strategyList[i] as MonteCarloSelectStrategy)!.ChosenProbability.AddRange(monteCarloSelectStrategy.ChosenProbability);
                 }
                 else

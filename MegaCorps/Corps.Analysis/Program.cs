@@ -11,6 +11,7 @@ namespace Corps.Analysis
         private const string DEFENCE_STRATEGY = "DefenseStrategy";
         private const string DEVELOP_STRATEGY = "DeveloperStrategy";
         private const int ITERATION_COUNT = 50;
+
         private static Dictionary<string, ISelectionStrategy> possibleStrategy = new Dictionary<string, ISelectionStrategy>() {
             {MONTE_CARLO ,new MonteCarloSelectStrategy() },
             {RANDOM_STRATEGY ,new RandomSelectStrategy() },

@@ -36,7 +36,11 @@ namespace MegaCorps.Core.Model
         public void Shuffle()
         {
             var r = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
-            UnplayedCards = UnplayedCards.OrderBy(x => r.Value!.Next(UnplayedCards.Count - 1)).ToList();
+
+            UnplayedCards = UnplayedCards
+                .OrderBy(x => r.Value!
+                    .Next(UnplayedCards.Count - 1))
+                .ToList();
         }
 
         /// <summary>
